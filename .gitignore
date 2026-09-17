@@ -16,3 +16,4 @@ playwright-report/
 *.swp
 .DS_Store
 .claude/*
+pnpm-debug.log*

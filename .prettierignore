@@ -1,0 +1,11 @@
+dist/
+.astro/
+node_modules/
+pnpm-lock.yaml
+*.md
+*.mdx
+LICENSE
+LICENSE-CONTENT
+.github/
+*.yaml
+*.yml

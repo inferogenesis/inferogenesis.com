@@ -178,10 +178,10 @@ Each checkbox is a review target. A phase closes when every box is ticked and it
 
 ### P0. Foundation and spike (target: end of September)
 
-- [ ] Create `inferogenesis/inferogenesis.com` with Astro (current major), pnpm, Node LTS pinned
+- [x] Create `inferogenesis/inferogenesis.com` with Astro (current major), pnpm, Node LTS pinned
 - [ ] One-day spike per §3.1, both branches pushed
 - [ ] ADR-001 recording the spike outcome
-- [ ] GitHub Actions: build, test, deploy to Pages with the retry wrapper
+- [x] GitHub Actions: build, test, deploy to Pages with the retry wrapper
 - [ ] Apex DNS at Namecheap, HTTPS enforced, `www` redirects to apex
 - [ ] Search Console property confirmed or added for the apex
 - [ ] `CLAUDE.md` with prose rules and the MDX grep gate
