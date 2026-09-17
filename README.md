@@ -19,7 +19,6 @@ Node is pinned in `.node-version` and pnpm in the `packageManager` field of
 same pair. With fnm:
 
 ```sh
-sudo apt install unzip                              # the fnm installer needs it
 curl -fsSL https://fnm.vercel.app/install | bash   # then open a new shell
 fnm install          # reads .node-version
 fnm use
