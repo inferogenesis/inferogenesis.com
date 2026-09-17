@@ -1,0 +1,26 @@
+---
+import { bibtex, type Citable } from '../../lib/cite';
+
+interface Props {
+  project: Citable;
+}
+
+const { project } = Astro.props;
+const cffUrl = `${project.repo}/blob/v${project.version}/CITATION.cff`;
+---
+
+<pre class="bibtex"><code>{bibtex(project)}</code></pre>
+<p>
+  The same record in Citation File Format:{' '}
+  <a href={cffUrl}>CITATION.cff at v{project.version}</a>.
+</p>
+
+<style>
+  pre {
+    padding: 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+    overflow-x: auto;
+  }
+</style>

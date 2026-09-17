@@ -1,0 +1,36 @@
+<button
+  type="button"
+  class="menu-toggle"
+  aria-expanded="false"
+  aria-controls="site-sidebar"
+  data-menu-toggle
+>
+  Menu
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const sidebar = document.getElementById('site-sidebar');
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!open));
+    sidebar?.toggleAttribute('data-open', !open);
+  });
+</script>
+
+<style>
+  .menu-toggle {
+    display: none;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  @media (max-width: 767px) {
+    .menu-toggle {
+      display: inline-block;
+    }
+  }
+</style>

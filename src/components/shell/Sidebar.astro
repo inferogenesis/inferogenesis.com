@@ -1,0 +1,77 @@
+---
+import { nav } from '../../lib/nav';
+
+const current = Astro.url.pathname;
+---
+
+<nav class="sidebar" id="site-sidebar" aria-label="Section">
+  {nav.map((group) => (
+    <section>
+      <h2>{group.label}</h2>
+      <ul>
+        {group.items.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={item.href === current ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</nav>
+
+<style>
+  .sidebar {
+    padding: 2rem 0;
+    border-right: 1px solid var(--text-muted);
+  }
+  h2 {
+    margin: 1rem 0 0.25rem;
+    color: var(--text-muted);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    position: relative;
+    display: block;
+    padding: 0.3rem 0 0.3rem 1rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  a[aria-current='page'] {
+    color: var(--accent);
+  }
+  a[aria-current='page']::before {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    left: 0;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  @media (max-width: 767px) {
+    .sidebar {
+      display: none;
+      padding: 1rem 0;
+      border-right: 0;
+      border-bottom: 1px solid var(--text-muted);
+    }
+    .sidebar[data-open] {
+      display: block;
+    }
+  }
+</style>

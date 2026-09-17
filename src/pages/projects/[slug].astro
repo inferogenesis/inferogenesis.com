@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from 'astro:content';
+import ProjectBody from '../../components/project/ProjectBody.astro';
+import Base from '../../layouts/Base.astro';
+import { lastModified } from '../../lib/lastModified';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const releaseFiles = import.meta.glob<{
+  default: { tag: string; date: string; url: string }[];
+}>('../../../data/releases/*.json', { eager: true });
+const releases = releaseFiles[`../../../data/releases/${entry.id}.json`]?.default ?? [];
+
+const sourcePath = `src/content/projects/${entry.id}.mdx`;
+const fixedHeadings = [
+  { depth: 2, slug: 'install', text: 'Install' },
+  { depth: 2, slug: 'example', text: 'Example' },
+  ...headings,
+  { depth: 2, slug: 'capabilities', text: 'Capabilities' },
+  { depth: 2, slug: 'releases', text: 'Releases' },
+  { depth: 2, slug: 'cite', text: 'Cite this' },
+];
+---
+
+<Base
+  title={entry.data.name}
+  description={entry.data.description}
+  headings={fixedHeadings}
+  crumbs={[{ label: 'Projects', href: '/projects/' }, { label: entry.data.name }]}
+>
+  <ProjectBody
+    entry={entry}
+    releases={releases}
+    lastModified={lastModified(sourcePath)}
+    editUrl={`https://github.com/inferogenesis/inferogenesis.com/edit/main/${sourcePath}`}
+    issueUrl="https://github.com/inferogenesis/inferogenesis.com/issues/new/choose"
+  >
+    <Content />
+  </ProjectBody>
+</Base>

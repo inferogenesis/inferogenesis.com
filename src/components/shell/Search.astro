@@ -1,0 +1,67 @@
+---
+import searchCss from '@pagefind/component-ui/css/pagefind-component-ui.css?url';
+---
+
+<button type="button" class="search-open" data-search-open aria-haspopup="dialog">
+  Search
+</button>
+<dialog
+  class="search-dialog"
+  id="search-dialog"
+  aria-label="Search the site"
+  data-css={searchCss}
+>
+  <pagefind-config bundle-path="/pagefind/"></pagefind-config>
+  <pagefind-searchbox></pagefind-searchbox>
+  <button type="button" class="search-close" data-search-close>
+    Close
+  </button>
+</dialog>
+
+<script>
+  const opener = document.querySelector<HTMLButtonElement>('[data-search-open]');
+  const closer = document.querySelector<HTMLButtonElement>('[data-search-close]');
+  const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+  let loaded = false;
+
+  opener?.addEventListener('click', async () => {
+    if (!loaded) {
+      // The search UI and its stylesheet load on first use, so no page pays for them up front.
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = dialog?.dataset.css ?? '';
+      document.head.append(link);
+      await import('@pagefind/component-ui');
+      loaded = true;
+    }
+    dialog?.showModal();
+    dialog?.querySelector('input')?.focus();
+  });
+  closer?.addEventListener('click', () => dialog?.close());
+</script>
+
+<style>
+  .search-open,
+  .search-close {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .search-dialog {
+    width: min(90vw, 40rem);
+    padding: 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+  }
+  .search-dialog::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+  .search-close {
+    margin-top: 1rem;
+  }
+</style>

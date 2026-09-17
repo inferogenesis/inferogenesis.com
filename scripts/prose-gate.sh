@@ -12,6 +12,7 @@ strip_non_prose() {
     front                          { next }
     /^[[:space:]]*(```|~~~)/       { fence = !fence; next }
     fence                          { next }
+    /^(import|export) /            { next }
     {
       line = $0
       for (;;) {
