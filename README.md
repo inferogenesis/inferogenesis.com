@@ -9,26 +9,44 @@ go in `DECISIONS.md` as append-only ADRs, starting with the P0 spike.
 
 ## Status
 
-Scoped. The tooling is in place and the Astro scaffold is next (plan section 9, P0).
+P0 in progress (plan section 9). The scaffold, the CI pipeline and a placeholder page
+are in. The spike, DNS and Search Console are next.
 
 ## Working on it
 
-One-time setup after cloning:
+Node is pinned in `.node-version` and pnpm in the `packageManager` field of
+`package.json`. A version manager that reads those files keeps every machine on the
+same pair. With fnm:
+
+```sh
+curl -fsSL https://fnm.vercel.app/install | bash   # then open a new shell
+fnm install          # reads .node-version
+fnm use
+corepack enable      # ships with Node
+corepack install     # reads packageManager, installs the pinned pnpm
+pnpm install
+pnpm dev
+```
+
+`fnm env --use-on-cd` in the shell profile switches Node on entering the repo.
+
+The checks CI runs, in order:
+
+```sh
+uvx pre-commit run --all-files   # markdownlint, cspell, prose gate, whitespace
+pnpm lint                        # eslint
+pnpm format:check                # prettier
+pnpm check                       # astro check
+pnpm build
+sudo pnpm exec playwright install --with-deps chromium   # once, for the browser and its libraries
+pnpm test                        # playwright with axe, against the built site
+```
+
+One-time setup for the commit hooks:
 
 ```sh
 uvx pre-commit install --hook-type pre-commit --hook-type commit-msg
 ```
-
-The whole gate, which CI's `lint` job also runs:
-
-```sh
-uvx pre-commit run --all-files
-```
-
-It runs markdownlint, cspell, the prose gate in `scripts/prose-gate.sh` and the
-whitespace hooks. pre-commit provisions its own Node for the markdown hooks, so the
-system Node version does not matter for the gate. The site build needs the LTS pinned
-in `.node-version` once the scaffold lands.
 
 Commit messages are one line in Conventional Commit shape. Each unit of work is one
 PR on a fresh branch from `main`.
