@@ -1,0 +1,38 @@
+---
+interface Release {
+  tag: string;
+  date: string;
+  url: string;
+}
+
+interface Props {
+  releases: Release[];
+}
+
+const { releases } = Astro.props;
+---
+
+<ul class="releases">
+  {releases.map((release) => (
+    <li>
+      <a href={release.url}>{release.tag}</a>
+      <time datetime={release.date}>{release.date}</time>
+    </li>
+  ))}
+</ul>
+
+<style>
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  time {
+    color: var(--text-muted);
+  }
+</style>

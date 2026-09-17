@@ -17,10 +17,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "playwright test",
-    "astro": "astro"
+    "astro": "astro",
+    "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
-    "astro": "^7.3.3"
+    "@astrojs/mdx": "^8.0.1",
+    "@pagefind/component-ui": "^1.5.2",
+    "astro": "^7.3.3",
+    "astro-pagefind": "^2.0.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -33,6 +37,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "prettier": "^3.9.7",
     "prettier-plugin-astro": "^1.0.1",
+    "sharp": "^0.35.4",
     "typescript": "^6.0.0",
     "typescript-eslint": "^8.70.0"
   }

@@ -1,0 +1,63 @@
+---
+type Support = 'yes' | 'partial' | 'no';
+
+interface Capability {
+  feature: string;
+  since: string;
+  backends: Record<string, Support>;
+}
+
+interface Props {
+  backends: string[];
+  capabilities: Capability[];
+}
+
+const { backends, capabilities } = Astro.props;
+---
+
+<table class="capabilities">
+  <thead>
+    <tr>
+      <th scope="col">Feature</th>
+      <th scope="col">Since</th>
+      {backends.map((backend) => (
+        <th scope="col">{backend}</th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {capabilities.map((capability) => (
+      <tr>
+        <th scope="row">{capability.feature}</th>
+        <td>{capability.since}</td>
+        {backends.map((backend) => (
+          <td class={capability.backends[backend] ?? 'no'}>
+            {capability.backends[backend] ?? 'no'}
+          </td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--text-muted);
+    text-align: left;
+  }
+  th[scope='row'] {
+    font-weight: 500;
+  }
+  .yes {
+    color: var(--pass);
+  }
+  .no {
+    color: var(--fail);
+  }
+</style>

@@ -1,0 +1,90 @@
+<button
+  type="button"
+  class="theme-toggle"
+  aria-label="Switch to light theme"
+  data-theme-toggle
+>
+  <svg class="sun" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+    <circle cx="10" cy="10" r="4" fill="currentColor"></circle>
+    <circle
+      cx="10"
+      cy="10"
+      r="8"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-dasharray="2 2.2"
+    ></circle>
+  </svg>
+  <svg class="moon" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+    <circle
+      cx="10"
+      cy="10"
+      r="7"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+    ></circle>
+  </svg>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const prefersLight = window.matchMedia('(prefers-color-scheme: light)');
+
+  function current(): 'light' | 'dark' {
+    const set = root.dataset.theme;
+    if (set === 'light' || set === 'dark') return set;
+    return prefersLight.matches ? 'light' : 'dark';
+  }
+
+  function relabel() {
+    const next = current() === 'light' ? 'dark' : 'light';
+    button?.setAttribute('aria-label', `Switch to ${next} theme`);
+  }
+
+  button?.addEventListener('click', () => {
+    const next = current() === 'light' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // Storage can be blocked. The toggle still works for this page.
+    }
+    relabel();
+  });
+  relabel();
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    padding: 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    border-color: var(--text-muted);
+  }
+  .moon {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .sun {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .moon {
+    display: inline;
+  }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-theme='dark'])) .sun {
+      display: none;
+    }
+    :global(:root:not([data-theme='dark'])) .moon {
+      display: inline;
+    }
+  }
+</style>

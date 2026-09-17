@@ -1,0 +1,91 @@
+---
+import Callout from '../components/Callout.astro';
+import CapabilityTable from '../components/project/CapabilityTable.astro';
+import InstallBlock from '../components/project/InstallBlock.astro';
+import Snippet from '../components/project/Snippet.astro';
+import StatusGlyph from '../components/StatusGlyph.astro';
+import Base from '../layouts/Base.astro';
+
+const headings = [
+  { depth: 2, slug: 'text', text: 'Text' },
+  { depth: 2, slug: 'code', text: 'Code' },
+  { depth: 2, slug: 'callouts', text: 'Callouts' },
+  { depth: 2, slug: 'status', text: 'Status glyphs' },
+  { depth: 2, slug: 'tables', text: 'Tables' },
+];
+const states = ['pass', 'pending', 'fail', 'void'] as const;
+---
+
+<Base
+  title="Kitchen sink"
+  description="Every component in one page, for the theme and accessibility checks."
+  headings={headings}
+  crumbs={[{ label: 'Kitchen sink' }]}
+  noindex
+>
+  <h1>Kitchen sink</h1>
+  <p>Every component on one page. This page is excluded from search engines.</p>
+
+  <h2 id="text">Text</h2>
+  <p>
+    Body text in Inter with a <a href="/">link</a>, some <code>inline code</code> and a
+    <strong>strong</strong> run. Headings are Space Grotesk.
+  </p>
+  <h3>A third-level heading</h3>
+  <p>Muted meta text sits under headings and in captions.</p>
+
+  <h2 id="code">Code</h2>
+  <InstallBlock command="pip install cpomdp" />
+  <Snippet
+    code={'from cpomdp import Agent\n\nagent = Agent(model, goal)'}
+    source="a fixture"
+  />
+
+  <h2 id="callouts">Callouts</h2>
+  <Callout kind="note">A note carries a solid ring in the link colour.</Callout>
+  <Callout kind="warning">A warning carries a solid ring in the fail colour.</Callout>
+  <Callout kind="roadmap">
+    A roadmap item carries a dashed ring, so planned work never reads as shipped.
+  </Callout>
+
+  <h2 id="status">Status glyphs</h2>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">State</th>
+        <th scope="col">14 px</th>
+        <th scope="col">20 px</th>
+      </tr>
+    </thead>
+    <tbody>
+      {states.map((state) => (
+        <tr>
+          <th scope="row">{state}</th>
+          <td>
+            <StatusGlyph state={state} size={14} />
+          </td>
+          <td>
+            <StatusGlyph state={state} size={20} />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2 id="tables">Tables</h2>
+  <CapabilityTable
+    backends={['JAX', 'RxInfer']}
+    capabilities={[
+      {
+        feature: 'A feature',
+        since: '0.1.0',
+        backends: { JAX: 'yes', RxInfer: 'partial' },
+      },
+      {
+        feature: 'Another feature',
+        since: '0.4.0',
+        backends: { JAX: 'yes', RxInfer: 'no' },
+      },
+    ]}
+  />
+</Base>

@@ -179,8 +179,8 @@ Each checkbox is a review target. A phase closes when every box is ticked and it
 ### P0. Foundation and spike (target: end of September)
 
 - [x] Create `inferogenesis/inferogenesis.com` with Astro (current major), pnpm, Node LTS pinned
-- [ ] One-day spike per §3.1, both branches pushed
-- [ ] ADR-001 recording the spike outcome
+- [x] One-day spike per §3.1, both branches pushed
+- [x] ADR-001 recording the spike outcome
 - [x] GitHub Actions: build, test, deploy to Pages with the retry wrapper
 - [ ] Apex DNS at Namecheap, HTTPS enforced, `www` redirects to apex
 - [ ] Search Console property confirmed or added for the apex
@@ -192,12 +192,12 @@ Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
 ### P1. Shell and theme (target: mid October)
 
 - [ ] `tokens.css` with both themes, published at a tagged URL
-- [ ] Self-hosted Space Grotesk, Inter and JetBrains Mono
-- [ ] Header: mark, wordmark, top nav, search, theme toggle
-- [ ] Sidebar with pill active indicator, drawer below 768 px
-- [ ] Breadcrumbs, contents panel, footer meta
+- [x] Self-hosted Space Grotesk, Inter and JetBrains Mono
+- [x] Header: mark, wordmark, top nav, search, theme toggle
+- [x] Sidebar with pill active indicator, drawer below 768 px
+- [x] Breadcrumbs, contents panel, footer meta
 - [ ] Status glyph component, four states, `aria-label` set, 14 px legibility check passed
-- [ ] Callout components: note, warning, roadmap
+- [x] Callout components: note, warning, roadmap
 - [ ] Favicon and apple-touch icons from the supplied avatar SVGs
 - [ ] JS baseline measured and budgets written into the bundle check
 - [ ] axe and Lighthouse CI wired

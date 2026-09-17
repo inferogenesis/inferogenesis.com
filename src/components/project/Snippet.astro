@@ -1,0 +1,42 @@
+---
+import { Code } from 'astro:components';
+
+interface Props {
+  code: string;
+  source: string;
+}
+
+const { code, source } = Astro.props;
+---
+
+<figure class="snippet">
+  <Code code={code} lang="python" theme="css-variables" />
+  <figcaption>From {source}.</figcaption>
+</figure>
+
+<style>
+  .snippet {
+    margin: 0;
+    --astro-code-foreground: var(--text);
+    --astro-code-background: var(--surface);
+    --astro-code-token-constant: var(--link);
+    --astro-code-token-string: var(--pass);
+    --astro-code-token-comment: var(--text-muted);
+    --astro-code-token-keyword: var(--accent);
+    --astro-code-token-parameter: var(--text);
+    --astro-code-token-function: var(--link);
+    --astro-code-token-string-expression: var(--pass);
+    --astro-code-token-punctuation: var(--text-muted);
+    --astro-code-token-link: var(--link);
+  }
+  .snippet :global(pre) {
+    padding: 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  figcaption {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

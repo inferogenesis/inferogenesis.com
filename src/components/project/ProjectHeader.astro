@@ -1,0 +1,76 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  status: string;
+  version: string;
+  licence: string;
+  doi?: string;
+}
+
+const { name, description, status, version, licence, doi } = Astro.props;
+---
+
+<header class="project-header">
+  <h1 id="_top">{name}</h1>
+  <p class="description">{description}</p>
+  <dl class="meta">
+    <div>
+      <dt>Status</dt>
+      <dd>
+        <span class="badge">{status}</span>
+      </dd>
+    </div>
+    <div>
+      <dt>Version</dt>
+      <dd>{version}</dd>
+    </div>
+    <div>
+      <dt>Licence</dt>
+      <dd>{licence}</dd>
+    </div>
+    {doi && (
+      <div>
+        <dt>DOI</dt>
+        <dd>
+          <a href={`https://doi.org/${doi}`}>{doi}</a>
+        </dd>
+      </div>
+    )}
+  </dl>
+</header>
+
+<style>
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+  .description {
+    margin-top: 0;
+    color: var(--text-muted);
+    font-size: 1.125rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 1rem 0 0;
+    padding: 0;
+  }
+  .meta div {
+    display: flex;
+    gap: 0.5rem;
+  }
+  dt {
+    color: var(--text-muted);
+  }
+  dd {
+    margin: 0;
+  }
+  .badge {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--pass);
+    border-radius: 999px;
+    color: var(--pass);
+    font-size: 0.875rem;
+  }
+</style>

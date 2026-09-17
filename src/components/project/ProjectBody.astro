@@ -1,0 +1,84 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CapabilityTable from './CapabilityTable.astro';
+import CiteThis from './CiteThis.astro';
+import InstallBlock from './InstallBlock.astro';
+import ProjectHeader from './ProjectHeader.astro';
+import Releases from './Releases.astro';
+import Snippet from './Snippet.astro';
+
+interface Release {
+  tag: string;
+  date: string;
+  url: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+  releases: Release[];
+  lastModified?: Date;
+  editUrl: string;
+  issueUrl: string;
+}
+
+const { entry, releases, lastModified, editUrl, issueUrl } = Astro.props;
+const project = entry.data;
+---
+
+<ProjectHeader
+  name={project.name}
+  description={project.description}
+  status={project.status}
+  version={project.version}
+  licence={project.licence}
+  doi={project.doi}
+/>
+
+<h2 id="install">Install</h2>
+<InstallBlock command={project.install} />
+{project.python && (
+  <p>
+    Python {project.python}. Documentation at{' '}
+    <a href={project.docs}>{new URL(project.docs).host}</a>.
+  </p>
+)}
+
+<h2 id="example">Example</h2>
+<Snippet code={project.snippet.code} source={project.snippet.source} />
+
+<slot />
+
+<h2 id="capabilities">Capabilities</h2>
+<CapabilityTable backends={project.backends} capabilities={project.capabilities} />
+
+<h2 id="releases">Releases</h2>
+<Releases releases={releases} />
+
+<h2 id="cite">Cite this</h2>
+<CiteThis project={project} />
+
+<footer class="page-meta">
+  {lastModified && (
+    <span>
+      Last modified{' '}
+      <time datetime={lastModified.toISOString()}>
+        {lastModified.toISOString().slice(0, 10)}
+      </time>
+    </span>
+  )}
+  <a href={editUrl}>Edit on GitHub</a>
+  <a href={issueUrl}>Report an issue</a>
+</footer>
+
+<style>
+  .page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

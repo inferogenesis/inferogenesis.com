@@ -1,0 +1,82 @@
+---
+type State = 'pass' | 'fail' | 'void' | 'pending';
+
+interface Props {
+  state: State;
+  size?: 14 | 20;
+  label?: string;
+}
+
+const labels: Record<State, string> = {
+  pass: 'PASS',
+  fail: 'FAIL',
+  void: 'VOID',
+  pending: 'Pending',
+};
+const { state, size = 14, label = labels[state] } = Astro.props;
+---
+
+<svg
+  class:list={['glyph', state]}
+  width={size}
+  height={size}
+  viewBox="0 0 20 20"
+  role="img"
+  aria-label={label}
+>
+  {state === 'pass' && <circle cx="10" cy="10" r="8" fill="currentColor" />}
+  {state === 'pending' && (
+    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="3" />
+  )}
+  {state === 'fail' && (
+    <>
+      <circle
+        cx="10"
+        cy="10"
+        r="7"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+      />
+      <line
+        x1="4"
+        y1="16"
+        x2="16"
+        y2="4"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+      />
+    </>
+  )}
+  {state === 'void' && (
+    <circle
+      cx="10"
+      cy="10"
+      r="7"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-dasharray="3.5 3.5"
+    />
+  )}
+</svg>
+
+<style>
+  .glyph {
+    display: inline-block;
+    vertical-align: -0.1em;
+  }
+  .pass {
+    color: var(--pass);
+  }
+  .fail {
+    color: var(--fail);
+  }
+  .void {
+    color: var(--void);
+  }
+  .pending {
+    color: var(--text-muted);
+  }
+</style>

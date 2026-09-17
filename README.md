@@ -42,6 +42,12 @@ sudo pnpm exec playwright install --with-deps chromium   # once, for the browser
 pnpm test                        # playwright with axe, against the built site
 ```
 
+Other scripts:
+
+```sh
+pnpm icons                       # rasterise public/favicon.svg into the touch icons
+```
+
 One-time setup for the commit hooks:
 
 ```sh
