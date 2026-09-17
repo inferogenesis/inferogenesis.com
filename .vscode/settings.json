@@ -1,0 +1,29 @@
+{
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.rulers": [88],
+  "cSpell.enabledFileTypes": {
+    "markdown": true,
+    "mdx": true,
+    "astro": true,
+    "typescript": true,
+    "css": true,
+    "yaml": true
+  },
+  "[astro]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[mdx]": { "editor.wordWrap": "on" },
+  "[markdown]": { "editor.wordWrap": "on" },
+  "files.exclude": {
+    "**/node_modules": true,
+    "dist": true,
+    ".astro": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "dist": true,
+    ".astro": true,
+    "pnpm-lock.yaml": true
+  }
+}

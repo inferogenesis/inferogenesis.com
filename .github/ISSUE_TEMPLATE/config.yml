@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: cpomdp bugs and features
+    url: https://github.com/inferogenesis/cpomdp/issues
+    about: A problem with the cpomdp library itself, rather than with its page on this site.
+  - name: cpomdp documentation
+    url: https://cpomdp.inferogenesis.com/
+    about: The API reference lives on the docs subdomain, not on this site.
