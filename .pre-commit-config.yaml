@@ -1,0 +1,41 @@
+# Setup: uvx pre-commit install --hook-type pre-commit --hook-type commit-msg
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.22.1
+    hooks:
+      - id: markdownlint-cli2
+        # Pinned so pre-commit provisions its own Node. The system Node is too old.
+        language_version: "22.23.2"
+
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v10.0.1
+    hooks:
+      - id: cspell
+        language_version: "22.23.2"
+        name: cspell (markdown and mdx)
+        # By extension because pre-commit's file classifier has no type for MDX.
+        files: \.(md|mdx)$
+
+  - repo: local
+    hooks:
+      - id: prose-gate
+        name: prose gate (markdown and mdx)
+        entry: scripts/prose-gate.sh
+        language: script
+        files: \.(md|mdx)$
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]

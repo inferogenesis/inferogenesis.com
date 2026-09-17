@@ -1,0 +1,77 @@
+name: claude review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: claude review
+    # Forks don't get the secret.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Stacked PRs diff against a base a shallow clone never fetched.
+          fetch-depth: 0
+      - uses: anthropics/claude-code-action@v1
+        # Gates nothing: main has no required checks and forks skip the job.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Review this PR against its merge base.
+
+            Report every issue you find. Do not filter by severity while
+            searching, and tag each finding [BLOCKER] or [NIT]. A severity
+            floor applied during the search reads as an instruction to look
+            less hard. Filter at output instead.
+
+            Every finding cites path:line and the concrete input, URL or call
+            that goes wrong. If you cannot give both, drop it.
+
+            Broken references are the failure mode this repo hits: a link, an
+            import, a token name, a frontmatter field or a schema key changed
+            in one place and not the others. Check every reference to anything
+            this PR renames or moves.
+
+            Any number, version or claim on a page needs a build-time source or
+            a hand pin in frontmatter. A warrant belongs on a programme page
+            only. A roadmap item belongs inside the roadmap callout only. Flag
+            each of these when the diff breaks it.
+
+            Check any item a present `BUILD_PLAN.md` claims this PR closes
+            against the diff. Say so if the file is absent.
+
+            Don't report formatting, import order, spelling or type-checker
+            output. Prettier, ESLint, cspell, the prose gate and `astro check`
+            own those.
+
+            Post one comment with `gh pr comment`: a tally line, blockers in
+            full, nits as one-liners capped at five with "plus K similar". Lead
+            with "no blockers" when there are none. Don't summarise what the PR
+            does, the author knows. Add no attribution footer and no links off
+            this repository.
+          # Read-only shell forms are allowed because a blocked call still costs a turn.
+          # Opus on the opening review, Sonnet on each later push.
+          claude_args: >-
+            --model ${{ (github.event.action == 'opened' || github.event_name ==
+            'workflow_dispatch') && 'claude-opus-5' || 'claude-sonnet-5' }}
+            --max-turns 80 --allowed-tools
+            "Read,Grep,Glob,Bash(git
+            diff:*),Bash(git log:*),Bash(git show:*),Bash(ls:*),Bash(cat:*),Bash(grep:*),Bash(gh
+            pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"
