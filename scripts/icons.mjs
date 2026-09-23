@@ -1,4 +1,3 @@
-/* global console */
 import sharp from 'sharp';
 
 const source = 'public/favicon.svg';

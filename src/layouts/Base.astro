@@ -27,6 +27,27 @@ const { title, description, headings = [], crumbs = [], noindex = false } = Astr
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
+    <link
+      rel="preload"
+      href="/fonts/InterVariable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/SpaceGrotesk-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/JetBrainsMono-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />

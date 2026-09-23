@@ -1,0 +1,12 @@
+{
+  "unit": "gzipped bytes per page, external plus inline",
+  "baselineMeasured": "2026-09-17 on /projects/cpomdp/: JS 947 external + 1666 inline raw, CSS 1827",
+  "js": {
+    "default": 8192,
+    "/": 8192
+  },
+  "css": {
+    "default": 12288
+  },
+  "ignore": ["/kitchen-sink/"]
+}

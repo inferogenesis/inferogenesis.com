@@ -45,7 +45,10 @@ pnpm test                        # playwright with axe, against the built site
 Other scripts:
 
 ```sh
+pnpm fonts                       # rebuild public/fonts and src/styles/fonts.css from upstream
 pnpm icons                       # rasterise public/favicon.svg into the touch icons
+pnpm bundle-check                # per-page gzipped JS and CSS against bundle-budget.json
+pnpm tokens:freeze               # copy src/styles/tokens.css to public/tokens/<version>.css
 ```
 
 One-time setup for the commit hooks:
@@ -56,6 +59,14 @@ uvx pre-commit install --hook-type pre-commit --hook-type commit-msg
 
 Commit messages are one line in Conventional Commit shape. Each unit of work is one
 PR on a fresh branch from `main`.
+
+## Design tokens
+
+`src/styles/tokens.css` is the single source of colour for the site and for the docs
+subdomains. The build serves it at `https://inferogenesis.com/tokens.css`. A frozen copy
+per site version lives at `https://inferogenesis.com/tokens/<version>.css`, made by
+`pnpm tokens:freeze` from the version in `package.json`. Importers pin a frozen URL.
+Bumping the version, freezing and tagging the release as `v<version>` go together.
 
 ## Licence
 

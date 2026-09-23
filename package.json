@@ -2,7 +2,7 @@
   "name": "inferogenesis.com",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "packageManager": "pnpm@12.4.2",
   "engines": {
@@ -18,10 +18,14 @@
     "format:check": "prettier --check .",
     "test": "playwright test",
     "astro": "astro",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "bundle-check": "node scripts/bundle-check.mjs",
+    "tokens:freeze": "node scripts/tokens-freeze.mjs",
+    "fonts": "node scripts/fonts.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
+    "@astrojs/sitemap": "^3.7.4",
     "@pagefind/component-ui": "^1.5.2",
     "astro": "^7.3.3",
     "astro-pagefind": "^2.0.1"
@@ -29,12 +33,16 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
+    "@capsizecss/core": "^4.1.3",
+    "@capsizecss/metrics": "^4.3.0",
+    "@capsizecss/unpack": "^4.0.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@types/node": "^24.0.0",
     "eslint": "^10.10.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "globals": "^17.12.0",
     "prettier": "^3.9.7",
     "prettier-plugin-astro": "^1.0.1",
     "sharp": "^0.35.4",

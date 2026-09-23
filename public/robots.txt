@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /kitchen-sink/
+Sitemap: https://inferogenesis.com/sitemap-index.xml
