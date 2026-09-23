@@ -27,6 +27,7 @@ function tokens() {
 export default defineConfig({
   site: 'https://inferogenesis.com',
   trailingSlash: 'always',
+  build: { inlineStylesheets: 'always' },
   integrations: [
     mdx(),
     sitemap({ filter: (page) => !page.includes('/kitchen-sink/') }),

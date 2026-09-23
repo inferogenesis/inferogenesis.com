@@ -20,7 +20,8 @@
     "astro": "astro",
     "icons": "node scripts/icons.mjs",
     "bundle-check": "node scripts/bundle-check.mjs",
-    "tokens:freeze": "node scripts/tokens-freeze.mjs"
+    "tokens:freeze": "node scripts/tokens-freeze.mjs",
+    "fonts": "node scripts/fonts.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
@@ -32,6 +33,9 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
+    "@capsizecss/core": "^4.1.3",
+    "@capsizecss/metrics": "^4.3.0",
+    "@capsizecss/unpack": "^4.0.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@types/node": "^24.0.0",
