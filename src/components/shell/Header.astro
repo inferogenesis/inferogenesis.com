@@ -3,14 +3,13 @@ import Mark from './Mark.astro';
 import MenuToggle from './MenuToggle.astro';
 import Search from './Search.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import { primaryNav } from '../../lib/nav';
 
-const top = [
-  { label: 'Projects', href: '/projects/' },
-  { label: 'Programmes', href: '/programmes/' },
-  { label: 'Research', href: '/research/' },
-  { label: 'Writing', href: '/writing/' },
-  { label: 'Learn', href: '/learn/' },
-];
+interface Props {
+  hasSidebar?: boolean;
+}
+
+const { hasSidebar = true } = Astro.props;
 const path = Astro.url.pathname;
 ---
 
@@ -21,7 +20,7 @@ const path = Astro.url.pathname;
   </a>
   <nav aria-label="Primary">
     <ul>
-      {top.map((item) => (
+      {primaryNav.map((item) => (
         <li>
           <a
             href={item.href}
@@ -36,7 +35,7 @@ const path = Astro.url.pathname;
   <div class="tools">
     <Search />
     <ThemeToggle />
-    <MenuToggle />
+    {hasSidebar && <MenuToggle />}
   </div>
 </header>
 

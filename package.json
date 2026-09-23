@@ -21,7 +21,8 @@
     "icons": "node scripts/icons.mjs",
     "bundle-check": "node scripts/bundle-check.mjs",
     "tokens:freeze": "node scripts/tokens-freeze.mjs",
-    "fonts": "node scripts/fonts.mjs"
+    "fonts": "node scripts/fonts.mjs",
+    "link-check": "node scripts/link-check.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",

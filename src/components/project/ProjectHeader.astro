@@ -1,4 +1,6 @@
 ---
+import StatusBadge from './StatusBadge.astro';
+
 interface Props {
   name: string;
   description: string;
@@ -18,7 +20,7 @@ const { name, description, status, version, licence, doi } = Astro.props;
     <div>
       <dt>Status</dt>
       <dd>
-        <span class="badge">{status}</span>
+        <StatusBadge status={status} />
       </dd>
     </div>
     <div>
@@ -65,12 +67,5 @@ const { name, description, status, version, licence, doi } = Astro.props;
   }
   dd {
     margin: 0;
-  }
-  .badge {
-    padding: 0.1rem 0.6rem;
-    border: 1px solid var(--pass);
-    border-radius: 999px;
-    color: var(--pass);
-    font-size: 0.875rem;
   }
 </style>

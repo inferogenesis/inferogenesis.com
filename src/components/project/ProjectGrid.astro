@@ -1,0 +1,20 @@
+---
+import { listProjects } from '../../lib/projects';
+import ProjectCard from './ProjectCard.astro';
+
+const projects = await listProjects();
+---
+
+<div class="project-grid">
+  {projects.map((entry) => (
+    <ProjectCard entry={entry} />
+  ))}
+</div>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+  }
+</style>

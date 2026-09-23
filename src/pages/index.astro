@@ -1,64 +1,36 @@
 ---
-import '../styles/tokens.css';
+import ProjectGrid from '../components/project/ProjectGrid.astro';
+import Landing from '../layouts/Landing.astro';
 
-const title = 'Inferogenesis';
 const tagline = 'continuous active inference, from the first cell';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={tagline} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href="https://inferogenesis.com/" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p class="tagline">{tagline}</p>
-      <p>
-        Home of <a href="https://cpomdp.inferogenesis.com/">cpomdp</a>, continuous
-        active inference for Python. The full site is under construction.
-      </p>
-      <ul>
-        <li>
-          <a href="https://github.com/inferogenesis">GitHub</a>
-        </li>
-        <li>
-          <a href="https://pypi.org/project/cpomdp/">cpomdp on PyPI</a>
-        </li>
-      </ul>
-    </main>
-  </body>
-</html>
+<Landing description={`Inferogenesis: ${tagline}.`}>
+  <h1>Inferogenesis</h1>
+  <p class="tagline">{tagline}</p>
+  <p class="intro">
+    Inferogenesis builds open-source software for continuous active inference, and the
+    research that tests it. Each project page starts with the install command and a
+    short example.
+  </p>
+
+  <h2>Projects</h2>
+  <ProjectGrid />
+</Landing>
 
 <style>
-  body {
+  h1 {
     margin: 0;
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--text);
-    font-family: system-ui, sans-serif;
-    line-height: 1.5;
-  }
-  main {
-    max-width: 75ch;
-    margin: 0 auto;
-    padding: 4rem 1rem;
+    font-size: 2.5rem;
   }
   .tagline {
+    margin: 0.25rem 0 1.5rem;
     color: var(--text-muted);
+    font-size: 1.125rem;
     font-style: italic;
   }
-  a {
-    color: var(--link);
-  }
-  a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+  .intro {
+    max-width: 65ch;
+    margin-bottom: 2.5rem;
   }
 </style>

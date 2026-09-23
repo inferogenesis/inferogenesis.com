@@ -1,0 +1,39 @@
+---
+import Header from '../components/shell/Header.astro';
+import SiteFooter from '../components/shell/SiteFooter.astro';
+import SiteHead from '../components/shell/SiteHead.astro';
+import '../styles/tokens.css';
+import '../styles/fonts.css';
+import '../styles/global.css';
+
+interface Props {
+  description: string;
+}
+
+const { description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SiteHead title="Inferogenesis" description={description} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <Header hasSidebar={false} />
+    <main id="main" class="landing">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .landing {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+  }
+</style>

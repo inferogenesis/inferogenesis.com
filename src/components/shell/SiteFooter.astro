@@ -1,0 +1,14 @@
+---
+import { footerNav } from '../../lib/nav';
+---
+
+<footer class="site-footer">
+  <ul>
+    {footerNav.map((item) => (
+      <li>
+        <a href={item.href}>{item.label}</a>
+      </li>
+    ))}
+  </ul>
+  <p>Code MIT. Content CC BY 4.0. Fonts under the SIL Open Font Licence.</p>
+</footer>

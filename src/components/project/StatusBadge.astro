@@ -1,0 +1,19 @@
+---
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+---
+
+<span class="status-badge">{status}</span>
+
+<style>
+  .status-badge {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--pass);
+    border-radius: 999px;
+    color: var(--pass);
+    font-size: 0.875rem;
+  }
+</style>
