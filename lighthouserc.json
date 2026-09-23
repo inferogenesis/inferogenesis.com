@@ -2,7 +2,11 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["http://localhost/", "http://localhost/projects/cpomdp/"],
+      "url": [
+        "http://localhost/",
+        "http://localhost/projects/cpomdp/",
+        "http://localhost/projects/warrantlib/"
+      ],
       "numberOfRuns": 2
     },
     "assert": {
