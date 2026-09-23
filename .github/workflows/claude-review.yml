@@ -27,6 +27,25 @@ jobs:
         with:
           # Stacked PRs diff against a base a shallow clone never fetched.
           fetch-depth: 0
+      # Describes the stored secret without printing it, so a bad value fails here in
+      # plain words instead of as the API's 401.
+      - name: check the review token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          case "$TOKEN" in
+            sk-ant-oat01-*) kind="an OAuth token from claude setup-token" ;;
+            sk-ant-api03-*) kind="an API key, not an OAuth token" ;;
+            "") kind="empty" ;;
+            *) kind="neither an OAuth token nor an API key" ;;
+          esac
+          whitespace=no
+          if [[ "$TOKEN" =~ [[:space:]] ]]; then whitespace=yes; fi
+          echo "CLAUDE_CODE_OAUTH_TOKEN: ${#TOKEN} characters, $kind, whitespace inside: $whitespace"
+          if [[ "$TOKEN" != sk-ant-oat01-* || "$whitespace" == yes ]]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN is $kind (whitespace: $whitespace). Reset it from claude setup-token."
+            exit 1
+          fi
       - uses: anthropics/claude-code-action@v1
         # Gates nothing: main has no required checks and forks skip the job.
         env:
