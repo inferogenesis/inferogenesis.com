@@ -183,15 +183,15 @@ Each checkbox is a review target. A phase closes when every box is ticked and it
 - [x] ADR-001 recording the spike outcome
 - [x] GitHub Actions: build, test, deploy to Pages with the retry wrapper
 - [ ] Apex DNS at Namecheap, HTTPS enforced, `www` redirects to apex
-- [ ] Search Console property confirmed or added for the apex
+- [x] Search Console property confirmed or added for the apex
 - [ ] `CLAUDE.md` with prose rules and the MDX grep gate
-- [ ] Placeholder page live at inferogenesis.com
+- [x] Placeholder page live at inferogenesis.com
 
 Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
 
 ### P1. Shell and theme (target: mid October)
 
-- [ ] `tokens.css` with both themes, published at a tagged URL
+- [x] `tokens.css` with both themes, published at a tagged URL
 - [x] Self-hosted Space Grotesk, Inter and JetBrains Mono
 - [x] Header: mark, wordmark, top nav, search, theme toggle
 - [x] Sidebar with pill active indicator, drawer below 768 px
@@ -199,8 +199,8 @@ Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
 - [ ] Status glyph component, four states, `aria-label` set, 14 px legibility check passed
 - [x] Callout components: note, warning, roadmap
 - [ ] Favicon and apple-touch icons from the supplied avatar SVGs
-- [ ] JS baseline measured and budgets written into the bundle check
-- [ ] axe and Lighthouse CI wired
+- [x] JS baseline measured and budgets written into the bundle check
+- [x] axe and Lighthouse CI wired
 
 Gate: a kitchen-sink page renders every component in both themes and passes axe with zero violations.
 

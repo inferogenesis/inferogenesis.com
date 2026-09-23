@@ -44,6 +44,11 @@ jobs:
       - run: pnpm format:check
       - run: pnpm check
       - run: pnpm build
+      - run: pnpm bundle-check
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test
       - uses: actions/upload-pages-artifact@v5

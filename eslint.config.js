@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import astro from 'eslint-plugin-astro';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
@@ -10,4 +11,8 @@ export default defineConfig([
   astro.configs.recommended,
   astro.configs['jsx-a11y-recommended'],
   { languageOptions: { parserOptions: { tsconfigRootDir: import.meta.dirname } } },
+  {
+    files: ['astro.config.mjs', 'scripts/**/*.mjs', 'playwright.config.ts'],
+    languageOptions: { globals: globals.node },
+  },
 ]);
