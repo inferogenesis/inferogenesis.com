@@ -3,24 +3,10 @@ export interface NavItem {
   href: string;
 }
 
-export interface NavGroup {
-  label: string;
-  items: NavItem[];
-}
+// A section joins the navigation in the PR that ships its first page. The link check
+// fails the build on any link to a page that does not exist.
+export const primaryNav: NavItem[] = [{ label: 'Projects', href: '/projects/' }];
 
-export const nav: NavGroup[] = [
-  {
-    label: 'Projects',
-    items: [
-      { label: 'cpomdp', href: '/projects/cpomdp/' },
-      { label: 'warrantlib', href: '/projects/warrantlib/' },
-    ],
-  },
-  {
-    label: 'Programmes',
-    items: [
-      { label: 'p*', href: '/programmes/p-star/' },
-      { label: 'SN', href: '/programmes/sn/' },
-    ],
-  },
+export const footerNav: NavItem[] = [
+  { label: 'GitHub', href: 'https://github.com/inferogenesis' },
 ];

@@ -214,7 +214,7 @@ The minimum the workshop deck can point at.
 - [ ] Same for warrantlib, once it has a repo of its own, else pinned to the monorepo path
 - [ ] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
 - [x] warrantlib page
-- [ ] Landing page with project grid (releases and posts strips deferred to P3)
+- [x] Landing page with project grid (releases and posts strips deferred to P3)
 - [ ] About: organisation statement, people, AI-use statement, self-funded note
 - [ ] Support page linking GitHub Sponsors
 - [ ] Header link from the cpomdp docs subdomain back to the apex

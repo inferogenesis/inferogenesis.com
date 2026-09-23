@@ -46,6 +46,7 @@ Other scripts:
 
 ```sh
 pnpm fonts                       # rebuild public/fonts and src/styles/fonts.css from upstream
+pnpm link-check                  # every internal link and #fragment in dist resolves
 pnpm icons                       # rasterise public/favicon.svg into the touch icons
 pnpm bundle-check                # per-page gzipped JS and CSS against bundle-budget.json
 pnpm tokens:freeze               # copy src/styles/tokens.css to public/tokens/<version>.css

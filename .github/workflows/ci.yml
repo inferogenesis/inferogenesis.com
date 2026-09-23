@@ -45,6 +45,7 @@ jobs:
       - run: pnpm check
       - run: pnpm build
       - run: pnpm bundle-check
+      - run: pnpm link-check
       - uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: ./lighthouserc.json

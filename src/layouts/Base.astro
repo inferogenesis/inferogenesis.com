@@ -3,6 +3,8 @@ import type { MarkdownHeading } from 'astro';
 import Breadcrumbs from '../components/shell/Breadcrumbs.astro';
 import Header from '../components/shell/Header.astro';
 import Sidebar from '../components/shell/Sidebar.astro';
+import SiteFooter from '../components/shell/SiteFooter.astro';
+import SiteHead from '../components/shell/SiteHead.astro';
 import Toc from '../components/shell/Toc.astro';
 import '../styles/tokens.css';
 import '../styles/fonts.css';
@@ -22,45 +24,11 @@ const { title, description, headings = [], crumbs = [], noindex = false } = Astr
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex" />}
-    <link
-      rel="preload"
-      href="/fonts/InterVariable.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
+    <SiteHead
+      title={`${title} | Inferogenesis`}
+      description={description}
+      noindex={noindex}
     />
-    <link
-      rel="preload"
-      href="/fonts/SpaceGrotesk-Variable.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/JetBrainsMono-Regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
-    <title>{title} | Inferogenesis</title>
-    <script is:inline>
-      try {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'light' || theme === 'dark')
-          document.documentElement.dataset.theme = theme;
-      } catch {
-        // Storage can be blocked. The page then follows the system scheme.
-      }
-    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">
@@ -75,19 +43,6 @@ const { title, description, headings = [], crumbs = [], noindex = false } = Astr
       </main>
       <Toc headings={headings} />
     </div>
-    <footer class="site-footer">
-      <ul>
-        <li>
-          <a href="/about/">About</a>
-        </li>
-        <li>
-          <a href="/support/">Support</a>
-        </li>
-        <li>
-          <a href="https://github.com/inferogenesis">GitHub</a>
-        </li>
-      </ul>
-      <p>Code MIT. Content CC BY 4.0. Fonts under the SIL Open Font Licence.</p>
-    </footer>
+    <SiteFooter />
   </body>
 </html>

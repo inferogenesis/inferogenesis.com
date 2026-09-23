@@ -1,7 +1,17 @@
 ---
-import { nav } from '../../lib/nav';
+import { listProjects } from '../../lib/projects';
 
 const current = Astro.url.pathname;
+// A group joins in the PR that ships its section's first page.
+const nav = [
+  {
+    label: 'Projects',
+    items: (await listProjects()).map((entry) => ({
+      label: entry.data.name,
+      href: `/projects/${entry.id}/`,
+    })),
+  },
+];
 ---
 
 <nav class="sidebar" id="site-sidebar" aria-label="Section">

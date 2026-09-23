@@ -1,0 +1,36 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const fonts = [
+  '/fonts/InterVariable.woff2',
+  '/fonts/SpaceGrotesk-Variable.woff2',
+  '/fonts/JetBrainsMono-Regular.woff2',
+];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="generator" content={Astro.generator} />
+<meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex" />}
+{fonts.map((href) => (
+  <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+))}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+<title>{title}</title>
+<script is:inline>
+  try {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'light' || theme === 'dark')
+      document.documentElement.dataset.theme = theme;
+  } catch {
+    // Storage can be blocked. The page then follows the system scheme.
+  }
+</script>
