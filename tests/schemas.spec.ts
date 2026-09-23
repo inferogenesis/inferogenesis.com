@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  pageSchema,
   programmeSchema,
   projectSchema,
   researchSchema,
@@ -191,5 +192,17 @@ test.describe('programme schema', () => {
     const row = { ...gate, registered: 'main' };
     const entry = { ...programme, gates: { asOf: '2026-09-23', rows: [row] } };
     expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+});
+
+test.describe('page schema', () => {
+  test('accepts a page with a title and a description', () => {
+    expect(
+      pageSchema.safeParse({ title: 'About', description: 'Who and how.' }).success,
+    ).toBe(true);
+  });
+
+  test('rejects a page without a description', () => {
+    expect(pageSchema.safeParse({ title: 'About' }).success).toBe(false);
   });
 });

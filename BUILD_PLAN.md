@@ -182,9 +182,9 @@ Each checkbox is a review target. A phase closes when every box is ticked and it
 - [x] One-day spike per §3.1, both branches pushed
 - [x] ADR-001 recording the spike outcome
 - [x] GitHub Actions: build, test, deploy to Pages with the retry wrapper
-- [ ] Apex DNS at Namecheap, HTTPS enforced, `www` redirects to apex
+- [x] Apex DNS at Namecheap, HTTPS enforced, `www` redirects to apex
 - [x] Search Console property confirmed or added for the apex
-- [ ] `CLAUDE.md` with prose rules and the MDX grep gate
+- [x] `CLAUDE.md` with prose rules and the MDX grep gate
 - [x] Placeholder page live at inferogenesis.com
 
 Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
@@ -212,13 +212,13 @@ The minimum the workshop deck can point at.
 - [x] Project layout with the §4 order enforced
 - [ ] `examples/site_snippet.py` added to the cpomdp repo and executed in cpomdp CI (task lives in the cpomdp repo, tracked here)
 - [ ] Same for warrantlib, once it has a repo of its own, else pinned to the monorepo path
-- [ ] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
+- [x] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
 - [x] warrantlib page
 - [x] Landing page with project grid (releases and posts strips deferred to P3)
-- [ ] About: organisation statement, people, AI-use statement, self-funded note
-- [ ] Support page linking GitHub Sponsors
+- [x] About: organisation statement, people, AI-use statement, self-funded note
+- [x] Support page linking GitHub Sponsors
 - [ ] Header link from the cpomdp docs subdomain back to the apex
-- [ ] Sitemap submitted
+- [x] Sitemap submitted
 
 Gate: the workshop deck's final slide links to inferogenesis.com and every link on that page resolves.
 

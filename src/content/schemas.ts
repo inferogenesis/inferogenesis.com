@@ -126,3 +126,8 @@ export const programmeSchema = z.object({
   papers: z.array(z.string()).default([]),
   gates: z.object({ asOf: z.coerce.date(), rows: z.array(gate).min(1) }).optional(),
 });
+
+export const pageSchema = z.object({
+  title: z.string(),
+  description: z.string().min(1),
+});
