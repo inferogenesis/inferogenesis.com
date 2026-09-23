@@ -208,12 +208,12 @@ Gate: a kitchen-sink page renders every component in both themes and passes axe 
 
 The minimum the workshop deck can point at.
 
-- [ ] Zod schemas for `projects`, `programmes`, `research`, `writing`
-- [ ] Project layout with the §4 order enforced
+- [x] Zod schemas for `projects`, `programmes`, `research`, `writing`
+- [x] Project layout with the §4 order enforced
 - [ ] `examples/site_snippet.py` added to the cpomdp repo and executed in cpomdp CI (task lives in the cpomdp repo, tracked here)
 - [ ] Same for warrantlib, once it has a repo of its own, else pinned to the monorepo path
 - [ ] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
-- [ ] warrantlib page
+- [x] warrantlib page
 - [ ] Landing page with project grid (releases and posts strips deferred to P3)
 - [ ] About: organisation statement, people, AI-use statement, self-funded note
 - [ ] Support page linking GitHub Sponsors

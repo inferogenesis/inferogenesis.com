@@ -1,6 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
-const baseURL = 'http://localhost:4321';
+// Its own port, so a running `pnpm dev` on 4321 is never mistaken for the built site.
+const port = 4329;
+const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: 'tests',
@@ -11,8 +13,8 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
   webServer: {
     // --ignore-lock keeps preview in the foreground and off the dev lock file.
-    command: 'pnpm preview --ignore-lock --host localhost --port 4321',
+    command: `pnpm preview --ignore-lock --host localhost --port ${port}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });

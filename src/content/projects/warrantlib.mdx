@@ -1,0 +1,104 @@
+---
+name: warrantlib
+description: A vocabulary for how well a claim is warranted, kept separate from whether it held.
+status: active
+version: 0.3.0
+released: 2026-08-26
+licence: MIT
+repo: https://github.com/inferogenesis/cpomdp/tree/main/packages/warrantlib
+docs: https://cpomdp.inferogenesis.com/api/warrant/
+pypi: warrantlib
+python: '>=3.11'
+install: pip install warrantlib
+authors:
+  - Inferogenesis
+snippet:
+  source: the README at commit 1d437ef, the tree published as 0.3.0
+  code: |
+    from warrantlib import (
+        CheckReport, Outcome, Provenance, SymbolicReduction, Tier, Warrant, check_summary,
+    )
+
+    report = CheckReport(
+        name="second gap coefficient",
+        check_id="gap_series.c2_closed_form",
+        warrant=Warrant.PROVED,
+        outcome=Outcome.NOT_TRIGGERED,
+        tier=Tier.EXACT,
+        detail="the CAS reduces the integral to the quoted constant",
+        evidence=(
+            SymbolicReduction(
+                claim="the second gap coefficient equals the quoted constant",
+                correspondence="hand derivation, section 3",
+                assumptions=("the expansion is formal, not convergent",),
+            ),
+        ),
+        provenance=(
+            Provenance(
+                registered_at="a76cf1b",
+                measured_at="9baaa22",
+                registered="the coefficient's closed form, registered 2026-08-07",
+            ),
+        ),
+    )
+
+    print(check_summary([report]))
+capabilities:
+  - feature: Warrant, Outcome and Tier, with CheckReport
+    since: 0.1.0
+  - feature: Completeness certificates for exhaustive enumeration
+    since: 0.1.0
+  - feature: Provenance required on every PROVED report
+    since: 0.2.0
+  - feature: A stable check_id on every report
+    since: 0.3.0
+  - feature: JSON records with a published JSON Schema
+    since: 0.3.0
+  - feature: A pytest plugin reporting in the warrant vocabulary
+    since: 0.3.0
+  - feature: A manifest of the checks a suite is registered to report
+    since: 0.3.0
+---
+
+## Warrant says what decided a claim
+
+A clean column of results cannot say whether anything was decided. `Warrant` names the
+prover class behind a claim. `PROVED` means it is decided. `CERTIFIED` means validated
+numerics proved a universal over a compact domain. `CORROBORATED` means a continuum was
+sampled, which never decides one. See
+[Warrant](https://cpomdp.inferogenesis.com/api/warrant/#warrantlib.Warrant).
+
+## Outcome says what a falsifier did
+
+A falsifier does not pass. It fires or it does not, so `PASS` is absent from the
+vocabulary. `NOT_RESOLVED`, `NOT_APPLICABLE` and `NOT_RUN_HERE` stay distinct, and the
+two that never ran carry no warrant. See
+[Outcome](https://cpomdp.inferogenesis.com/api/warrant/#warrantlib.Outcome).
+
+## Provenance ties a claim to where its bar was set
+
+A bar chosen after the number is visible decides nothing. `Provenance` records the ref
+that registered a claim and the ref that measured it. A ref is a commit SHA, a URL or a
+DOI. Branches, tags and paths are refused. See
+[Provenance](https://cpomdp.inferogenesis.com/api/warrant/#warrantlib.Provenance).
+
+## Reports as records
+
+`report_to_dict` writes a report with a fixed key order, so two runs of one suite produce
+the same bytes. Reading goes back through the constructor, so a stripped `PROVED` record
+still refuses to build. A JSON Schema ships beside the code. See
+[report_to_dict](https://cpomdp.inferogenesis.com/api/warrant/#warrantlib.report_to_dict).
+
+## Checks under pytest
+
+`pip install "warrantlib[pytest]"` adds a plugin that loads with no configuration. A
+test hands its findings to the `record_check` fixture. The run then reports
+`NOT TRIGGERED` where pytest would print `PASSED`. See the
+[plugin in the README](https://github.com/inferogenesis/cpomdp/blob/1d437ef/packages/warrantlib/README.md#running-checks-under-pytest).
+
+## A manifest of registered checks
+
+A count says a suite got shorter. It cannot say which check left. The manifest declares
+every check id a suite is registered to report, and a run is reconciled against it in
+both directions. See the
+[manifest in the README](https://github.com/inferogenesis/cpomdp/blob/1d437ef/packages/warrantlib/README.md#declaring-what-a-suite-is-registered-to-report).
