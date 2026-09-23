@@ -8,5 +8,7 @@ export interface NavItem {
 export const primaryNav: NavItem[] = [{ label: 'Projects', href: '/projects/' }];
 
 export const footerNav: NavItem[] = [
+  { label: 'About', href: '/about/' },
+  { label: 'Support', href: '/support/' },
   { label: 'GitHub', href: 'https://github.com/inferogenesis' },
 ];

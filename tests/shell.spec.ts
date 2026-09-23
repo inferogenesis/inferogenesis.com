@@ -7,6 +7,8 @@ const pages = [
   '/kitchen-sink/',
   '/projects/cpomdp/',
   '/projects/warrantlib/',
+  '/about/',
+  '/support/',
 ];
 const schemes = ['dark', 'light'] as const;
 const wcag = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
