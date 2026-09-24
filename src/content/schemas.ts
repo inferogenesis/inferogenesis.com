@@ -60,8 +60,8 @@ export const researchSchema = z
     arxiv: arxivId.optional(),
     venue: z.string().optional(),
     abstract: z.string().min(1),
-    // Terms for the abstract and any quoted material, which belong to the authors.
-    licence: z.string().optional(),
+    // The abstract is quoted, so its terms and their source are required.
+    licence: z.object({ name: z.string(), url: z.url() }),
     artefacts: z
       .array(z.object({ label: z.string(), url: z.url(), doi: doi.optional() }))
       .default([]),

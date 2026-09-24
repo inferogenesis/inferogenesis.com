@@ -14,6 +14,7 @@ const research = {
   published: '2026-07-24',
   arxiv: '2607.20306',
   abstract: 'An abstract.',
+  licence: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
 };
 
 test.describe('research schema', () => {
@@ -50,6 +51,17 @@ test.describe('research schema', () => {
     expect(
       researchSchema.safeParse({ ...research, arxiv: 'arXiv:2607.20306' }).success,
     ).toBe(false);
+  });
+
+  test('rejects an entry that quotes an abstract without its licence', () => {
+    expect(researchSchema.safeParse({ ...research, licence: undefined }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects licence terms without a link to them', () => {
+    const entry = { ...research, licence: { name: 'CC BY 4.0' } };
+    expect(researchSchema.safeParse(entry).success).toBe(false);
   });
 
   test('rejects an entry without an abstract', () => {

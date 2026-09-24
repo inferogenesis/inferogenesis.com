@@ -1,0 +1,105 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'research'>;
+}
+
+const { entry } = Astro.props;
+const research = entry.data;
+const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as const;
+const published = research.published.toISOString().slice(0, 10);
+---
+
+<article class="research-entry" id={entry.id}>
+  <h2>{research.title}</h2>
+  <p class="meta">
+    <span class="kind">{kinds[research.kind]}</span>
+    <span>{research.authors.join(', ')}</span>
+    <time datetime={published}>{published}</time>
+    {research.venue && <span>{research.venue}</span>}
+  </p>
+  <dl class="identifiers">
+    {research.doi && (
+      <div>
+        <dt>DOI</dt>
+        <dd>
+          <a href={`https://doi.org/${research.doi}`}>{research.doi}</a>
+        </dd>
+      </div>
+    )}
+    {research.arxiv && (
+      <div>
+        <dt>arXiv</dt>
+        <dd>
+          <a href={`https://arxiv.org/abs/${research.arxiv}`}>arXiv:{research.arxiv}</a>
+        </dd>
+      </div>
+    )}
+  </dl>
+  <h3>Abstract</h3>
+  <p class="abstract">{research.abstract}</p>
+  <p class="abstract-attribution">
+    Abstract by {research.authors.join(', ')}, under{' '}
+    <a href={research.licence.url}>{research.licence.name}</a>.
+  </p>
+  {research.artefacts.length > 0 && (
+    <>
+      <h3>Reproduction artefacts</h3>
+      <ul>
+        {research.artefacts.map((artefact) => (
+          <li>
+            <a href={artefact.url}>{artefact.label}</a>
+            {artefact.doi && <span class="artefact-doi">{artefact.doi}</span>}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</article>
+
+<style>
+  .research-entry {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  h2 {
+    margin-bottom: 0.25rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0;
+    color: var(--text-muted);
+  }
+  .kind {
+    padding: 0 0.6rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 999px;
+    font-size: 0.875rem;
+  }
+  .identifiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 2rem;
+  }
+  .identifiers div {
+    display: flex;
+    gap: 0.5rem;
+  }
+  dt {
+    color: var(--text-muted);
+  }
+  dd {
+    margin: 0;
+  }
+  .abstract-attribution,
+  .artefact-doi {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .artefact-doi {
+    margin-left: 0.75rem;
+  }
+</style>

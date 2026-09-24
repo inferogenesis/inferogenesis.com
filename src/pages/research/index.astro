@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import ResearchEntry from '../../components/research/ResearchEntry.astro';
+import Base from '../../layouts/Base.astro';
+
+const entries = (await getCollection('research')).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+const headings = entries.map((entry) => ({
+  depth: 2,
+  slug: entry.id,
+  text: entry.data.title,
+}));
+---
+
+<Base
+  title="Research"
+  description="Papers, preprints and datasets from Inferogenesis, each with its DOI and the artefacts that reproduce it."
+  headings={headings}
+  crumbs={[{ label: 'Research' }]}
+>
+  <h1>Research</h1>
+  {entries.map((entry) => (
+    <ResearchEntry entry={entry} />
+  ))}
+</Base>

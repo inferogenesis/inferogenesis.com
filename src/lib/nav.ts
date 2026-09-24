@@ -5,7 +5,10 @@ export interface NavItem {
 
 // A section joins the navigation in the PR that ships its first page. The link check
 // fails the build on any link to a page that does not exist.
-export const primaryNav: NavItem[] = [{ label: 'Projects', href: '/projects/' }];
+export const primaryNav: NavItem[] = [
+  { label: 'Projects', href: '/projects/' },
+  { label: 'Research', href: '/research/' },
+];
 
 export const footerNav: NavItem[] = [
   { label: 'About', href: '/about/' },

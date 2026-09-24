@@ -227,7 +227,7 @@ Gate: the workshop deck's final slide links to inferogenesis.com and every link 
 - [ ] Programme layout with hand-written gates table and "as of" date
 - [ ] p* programme page
 - [ ] SN programme page, every item inside the roadmap callout
-- [ ] Research list with arXiv:2607.20306 and its Zenodo artefacts
+- [x] Research list with arXiv:2607.20306 and its Zenodo artefacts
 - [x] Release-tag resolution from the authenticated GitHub API, with cached fallback
 - [ ] Snippet, `CITATION.cff` and release notes fetched at that tag
 - [x] PyPI JSON for the Python version range
