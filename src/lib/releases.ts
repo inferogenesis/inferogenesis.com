@@ -5,6 +5,7 @@ import {
   type ReleaseSnapshot,
   releaseSnapshotSchema,
 } from '../content/schemas';
+import { type Env, readsLiveData } from './liveData';
 
 export type { Release, ReleaseSnapshot };
 
@@ -16,13 +17,13 @@ interface GithubRelease {
   prerelease: boolean;
 }
 
-interface FetchOptions {
+export interface FetchOptions {
   fetch?: (input: string, init?: RequestInit) => Promise<Response>;
   today?: () => string;
 }
 
 interface ResolveOptions extends FetchOptions {
-  env?: Record<string, string | undefined>;
+  env?: Env;
 }
 
 const utcToday = () => new Date().toISOString().slice(0, 10);
@@ -83,15 +84,12 @@ export async function resolveReleaseSnapshot(
   { env = process.env, ...options }: ResolveOptions = {},
 ): Promise<ReleaseSnapshot> {
   const snapshot = readReleaseSnapshot(projectId);
-  if (snapshot.source !== 'github-releases') return snapshot;
+  if (snapshot.source !== 'github-releases' || !readsLiveData(env)) return snapshot;
   const token = env.GITHUB_TOKEN;
   if (!token) {
-    if (env.CI) {
-      throw new Error(
-        `CI reads ${snapshot.repository} releases live and needs GITHUB_TOKEN.`,
-      );
-    }
-    return snapshot;
+    throw new Error(
+      `CI reads ${snapshot.repository} releases live and needs GITHUB_TOKEN.`,
+    );
   }
   return fetchGithubReleases(snapshot.repository, token, options);
 }

@@ -12,12 +12,14 @@ interface Props {
   entry: CollectionEntry<'projects'>;
   releases: Release[];
   citationFile?: string;
+  pythonRange?: string | null;
   lastModified?: Date;
   editUrl: string;
   issueUrl: string;
 }
 
-const { entry, releases, citationFile, lastModified, editUrl, issueUrl } = Astro.props;
+const { entry, releases, citationFile, pythonRange, lastModified, editUrl, issueUrl } =
+  Astro.props;
 const project = entry.data;
 const [latest] = releases;
 const citable = {
@@ -40,12 +42,10 @@ const citable = {
 
 <h2 id="install">Install</h2>
 <InstallBlock command={project.install} />
-{project.python && (
-  <p>
-    Python {project.python}. Documentation at{' '}
-    <a href={project.docs}>{new URL(project.docs).host}</a>.
-  </p>
-)}
+<p>
+  {pythonRange && <>Python {pythonRange}. </>}Documentation at{' '}
+  <a href={project.docs}>{new URL(project.docs).host}</a>.
+</p>
 
 <h2 id="example">Example</h2>
 <Snippet code={project.snippet.code} source={project.snippet.source} />

@@ -1,0 +1,6 @@
+{
+  "package": "warrantlib",
+  "version": "0.3.0",
+  "requiresPython": ">=3.11",
+  "retrieved": "2026-09-24"
+}

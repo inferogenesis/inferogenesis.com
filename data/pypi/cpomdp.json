@@ -1,0 +1,6 @@
+{
+  "package": "cpomdp",
+  "version": "0.4.4",
+  "requiresPython": ">=3.10",
+  "retrieved": "2026-09-24"
+}

@@ -1,0 +1,7 @@
+{
+  "info": {
+    "name": "cpomdp",
+    "version": "0.4.4",
+    "requires_python": ">=3.10"
+  }
+}

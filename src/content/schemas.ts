@@ -14,7 +14,6 @@ export const projectSchema = z
     // The URL is built from the latest release tag, so it never names a stale version.
     hasCitationFile: z.boolean().default(false),
     pypi: z.string().optional(),
-    python: z.string().optional(),
     install: z.string(),
     authors: z.array(z.string()).min(1),
     snippet: z.object({ source: z.string(), code: z.string() }),
@@ -169,3 +168,13 @@ export const releaseSnapshotSchema = z
 
 export type ReleaseSnapshot = z.infer<typeof releaseSnapshotSchema>;
 export type Release = ReleaseSnapshot['releases'][number];
+
+// The Python range PyPI declares for one released version.
+export const pythonRangeSchema = z.object({
+  package: z.string(),
+  version: z.string(),
+  requiresPython: z.string().nullable(),
+  retrieved: z.iso.date(),
+});
+
+export type PythonRange = z.infer<typeof pythonRangeSchema>;

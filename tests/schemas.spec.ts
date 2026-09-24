@@ -90,6 +90,7 @@ const project = {
   licence: 'MIT',
   repo: 'https://github.com/inferogenesis/cpomdp/tree/main/packages/warrantlib',
   docs: 'https://cpomdp.inferogenesis.com/api/warrant/',
+  pypi: 'warrantlib',
   install: 'pip install warrantlib',
   authors: ['Inferogenesis'],
   snippet: { source: 'a fixture', code: 'import warrantlib' },
@@ -104,12 +105,13 @@ test.describe('project schema', () => {
     expect(parsed.hasCitationFile).toBe(false);
   });
 
-  for (const field of ['version', 'released']) {
-    test(`rejects a project that types its own ${field}, which comes from its releases`, () => {
-      const entry = {
-        ...project,
-        [field]: field === 'version' ? '0.3.0' : '2026-08-26',
-      };
+  for (const [field, value] of [
+    ['version', '0.3.0'],
+    ['released', '2026-08-26'],
+    ['python', '>=3.11'],
+  ]) {
+    test(`rejects a project that types its own ${field}, which comes from its release data`, () => {
+      const entry = { ...project, [field]: value };
       expect(projectSchema.safeParse(entry).success).toBe(false);
     });
   }
