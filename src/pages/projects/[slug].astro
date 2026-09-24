@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import ProjectBody from '../../components/project/ProjectBody.astro';
 import Base from '../../layouts/Base.astro';
 import { lastModified } from '../../lib/lastModified';
-import { latestReleases, resolveReleaseSnapshot } from '../../lib/releases';
+import { citationFileUrl, latestReleases, projectReleases } from '../../lib/releases';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -13,7 +13,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const releases = latestReleases(await resolveReleaseSnapshot(entry.id));
+const snapshot = await projectReleases(entry.id);
+const releases = latestReleases(snapshot);
+const citationFile = entry.data.hasCitationFile ? citationFileUrl(snapshot) : undefined;
 
 const sourcePath = `src/content/projects/${entry.id}.mdx`;
 const fixedHeadings = [
@@ -35,6 +37,7 @@ const fixedHeadings = [
   <ProjectBody
     entry={entry}
     releases={releases}
+    citationFile={citationFile}
     lastModified={lastModified(sourcePath)}
     editUrl={`https://github.com/inferogenesis/inferogenesis.com/edit/main/${sourcePath}`}
     issueUrl="https://github.com/inferogenesis/inferogenesis.com/issues/new/choose"

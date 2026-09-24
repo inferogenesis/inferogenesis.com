@@ -11,20 +11,29 @@ import type { Release } from '../../lib/releases';
 interface Props {
   entry: CollectionEntry<'projects'>;
   releases: Release[];
+  citationFile?: string;
   lastModified?: Date;
   editUrl: string;
   issueUrl: string;
 }
 
-const { entry, releases, lastModified, editUrl, issueUrl } = Astro.props;
+const { entry, releases, citationFile, lastModified, editUrl, issueUrl } = Astro.props;
 const project = entry.data;
+const [latest] = releases;
+const citable = {
+  ...project,
+  version: latest.version,
+  released: new Date(latest.published),
+  releaseTag: latest.releaseTag,
+  citationFile,
+};
 ---
 
 <ProjectHeader
   name={project.name}
   description={project.description}
   status={project.status}
-  version={project.version}
+  version={latest.version}
   licence={project.licence}
   doi={project.doi}
 />
@@ -50,7 +59,7 @@ const project = entry.data;
 <Releases releases={releases} />
 
 <h2 id="cite">Cite this</h2>
-<CiteThis project={project} />
+<CiteThis project={citable} />
 
 <footer class="page-meta">
   {lastModified && (

@@ -7,13 +7,12 @@ export const projectSchema = z
     name: z.string(),
     description: z.string(),
     status: z.enum(['active', 'maintenance', 'archived', 'planned']),
-    version: z.string(),
-    released: z.coerce.date(),
     licence: z.string(),
     doi: z.string().optional(),
     repo: z.url(),
     docs: z.url(),
-    citationFile: z.url().optional(),
+    // The URL is built from the latest release tag, so it never names a stale version.
+    hasCitationFile: z.boolean().default(false),
     pypi: z.string().optional(),
     python: z.string().optional(),
     install: z.string(),
@@ -30,6 +29,8 @@ export const projectSchema = z
       )
       .min(1),
   })
+  // Version and release date come from the release data. Strict, so typing either fails.
+  .strict()
   .refine(
     (project) =>
       project.capabilities.every((row) =>

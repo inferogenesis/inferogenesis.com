@@ -2,7 +2,7 @@
 import { bibtex, type Citable } from '../../lib/cite';
 
 interface Props {
-  project: Citable & { citationFile?: string };
+  project: Citable & { citationFile?: string; releaseTag?: string };
 }
 
 const { project } = Astro.props;
@@ -12,7 +12,7 @@ const { project } = Astro.props;
 {project.citationFile && (
   <p>
     The same record in Citation File Format:{' '}
-    <a href={project.citationFile}>CITATION.cff at v{project.version}</a>.
+    <a href={project.citationFile}>CITATION.cff at {project.releaseTag}</a>.
   </p>
 )}
 

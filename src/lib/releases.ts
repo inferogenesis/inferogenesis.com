@@ -95,3 +95,22 @@ export async function resolveReleaseSnapshot(
   }
   return fetchGithubReleases(snapshot.repository, token, options);
 }
+
+const perBuild = new Map<string, Promise<ReleaseSnapshot>>();
+
+// One resolution per project per build, so the page, its card and the landing grid agree
+// and CI asks GitHub once.
+export function projectReleases(projectId: string): Promise<ReleaseSnapshot> {
+  let snapshot = perBuild.get(projectId);
+  if (!snapshot) {
+    snapshot = resolveReleaseSnapshot(projectId);
+    perBuild.set(projectId, snapshot);
+  }
+  return snapshot;
+}
+
+export function citationFileUrl(snapshot: ReleaseSnapshot): string | undefined {
+  if (snapshot.source !== 'github-releases') return undefined;
+  const [latest] = snapshot.releases;
+  return `https://github.com/${snapshot.repository}/blob/${latest.releaseTag}/CITATION.cff`;
+}
