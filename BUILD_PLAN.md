@@ -198,7 +198,7 @@ Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
 - [x] Breadcrumbs, contents panel, footer meta
 - [ ] Status glyph component, four states, `aria-label` set, 14 px legibility check passed
 - [x] Callout components: note, warning, roadmap
-- [ ] Favicon and apple-touch icons from the supplied avatar SVGs
+- [x] Favicon and apple-touch icons from the supplied avatar SVGs
 - [x] JS baseline measured and budgets written into the bundle check
 - [x] axe and Lighthouse CI wired
 
