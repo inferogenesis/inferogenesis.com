@@ -44,6 +44,8 @@ jobs:
       - run: pnpm format:check
       - run: pnpm check
       - run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm bundle-check
       - run: pnpm link-check
       - uses: treosh/lighthouse-ci-action@v12

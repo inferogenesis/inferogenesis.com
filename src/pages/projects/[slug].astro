@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import ProjectBody from '../../components/project/ProjectBody.astro';
 import Base from '../../layouts/Base.astro';
 import { lastModified } from '../../lib/lastModified';
-import { latestReleases, readReleaseSnapshot } from '../../lib/releases';
+import { latestReleases, resolveReleaseSnapshot } from '../../lib/releases';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const releases = latestReleases(readReleaseSnapshot(entry.id));
+const releases = latestReleases(await resolveReleaseSnapshot(entry.id));
 
 const sourcePath = `src/content/projects/${entry.id}.mdx`;
 const fixedHeadings = [
