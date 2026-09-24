@@ -77,9 +77,12 @@ const faces = [
 
 const fontDir = 'public/fonts';
 const work = mkdtempSync(join(tmpdir(), 'fonts-'));
+// A fixed save time, since fontTools stamps instanced fonts with the current one and a
+// rerun would otherwise change bytes it did not change.
 const fonttools = (...args) =>
   execFileSync('uvx', ['-q', '--from', 'fonttools[woff]', ...args], {
     stdio: 'inherit',
+    env: { ...process.env, SOURCE_DATE_EPOCH: '0' },
   });
 
 try {

@@ -1,6 +1,11 @@
 import { glob } from 'astro/loaders';
 import { defineCollection } from 'astro:content';
-import { pageSchema, projectSchema, researchSchema } from './content/schemas';
+import {
+  pageSchema,
+  programmeSchema,
+  projectSchema,
+  researchSchema,
+} from './content/schemas';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/projects' }),
@@ -17,4 +22,9 @@ const research = defineCollection({
   schema: researchSchema,
 });
 
-export const collections = { projects, pages, research };
+const programmes = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/programmes' }),
+  schema: programmeSchema,
+});
+
+export const collections = { projects, pages, research, programmes };

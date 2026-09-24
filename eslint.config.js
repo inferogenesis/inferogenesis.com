@@ -12,6 +12,15 @@ export default defineConfig([
   astro.configs['jsx-a11y-recommended'],
   { languageOptions: { parserOptions: { tsconfigRootDir: import.meta.dirname } } },
   {
+    rules: {
+      // A labelled region that scrolls must be focusable to be scrolled by keyboard.
+      'astro/jsx-a11y/no-noninteractive-tabindex': [
+        'error',
+        { tags: [], roles: ['tabpanel', 'region'] },
+      ],
+    },
+  },
+  {
     files: ['astro.config.mjs', 'scripts/**/*.mjs', 'playwright.config.ts'],
     languageOptions: { globals: globals.node },
   },

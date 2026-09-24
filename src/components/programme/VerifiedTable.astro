@@ -1,0 +1,80 @@
+---
+import type { VerifiedCell } from '../../content/schemas';
+import { refUrl } from '../../lib/refs';
+
+interface Props {
+  cells: VerifiedCell[];
+  repository: string;
+}
+
+const { cells, repository } = Astro.props;
+---
+
+<div
+  class="verified-scroll"
+  role="region"
+  aria-label="Verified at release"
+  tabindex="0"
+>
+  <table class="verified">
+    <caption>
+      {
+        'Verified at release, not pre-registered. Each cell names the release its check shipped in.'
+      }
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Cell</th>
+        <th scope="col">Claim</th>
+        <th scope="col">Tier</th>
+        <th scope="col">Release</th>
+      </tr>
+    </thead>
+    <tbody>
+      {cells.map((cell) => (
+        <tr>
+          <th scope="row">{cell.cell}</th>
+          <td class="claim">
+            {cell.claim}
+            {cell.check && (
+              <span class="refs">
+                {'Check added at '}
+                <a href={refUrl(cell.check, repository)}>{cell.check}</a>
+              </span>
+            )}
+          </td>
+          <td>{cell.tier}</td>
+          <td>
+            <a href={`https://github.com/${repository}/releases/tag/${cell.release}`}>
+              {cell.release}
+            </a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .verified-scroll {
+    overflow-x: auto;
+  }
+  caption {
+    padding-bottom: 0.5rem;
+    color: var(--text-muted);
+    text-align: left;
+  }
+  th[scope='row'] {
+    width: 11rem;
+    font-weight: 500;
+  }
+  .claim {
+    min-width: 16rem;
+  }
+  .refs {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

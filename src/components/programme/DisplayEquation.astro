@@ -1,0 +1,50 @@
+---
+import temml from 'temml';
+import { typesetDisplaySvg } from '../../lib/typesetMath';
+
+interface Props {
+  tex: string;
+  label: string;
+}
+
+const { tex, label } = Astro.props;
+// Browsers stretch MathML braces unevenly, so sight gets a typeset SVG and assistive
+// technology gets the MathML.
+const svg = typesetDisplaySvg(tex);
+const mathml = temml.renderToString(tex, {
+  displayMode: true,
+  annotate: true,
+  throwOnError: true,
+});
+---
+
+<div class="programme-equation" role="region" aria-label={label} tabindex="0">
+  <div class="equation-typeset" aria-hidden="true" set:html={svg} />
+  <div class="visually-hidden" set:html={mathml} />
+</div>
+
+<style>
+  .programme-equation {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1rem;
+    overflow-x: auto;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.15rem;
+  }
+  .equation-typeset {
+    text-align: center;
+  }
+  /* Scale to the measure on wide screens. On a phone it keeps its size and scrolls. */
+  .equation-typeset :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+  @media (max-width: 767px) {
+    .equation-typeset :global(svg) {
+      max-width: none;
+    }
+  }
+</style>

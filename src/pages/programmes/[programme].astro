@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import DisplayEquation from '../../components/programme/DisplayEquation.astro';
+import GatesTable from '../../components/programme/GatesTable.astro';
+import VerifiedTable from '../../components/programme/VerifiedTable.astro';
+import WarrantlibMethod from '../../components/programme/WarrantlibMethod.astro';
+import Base from '../../layouts/Base.astro';
+import { researchRecord } from '../../lib/datacite';
+
+export async function getStaticPaths() {
+  const programmes = await getCollection('programmes');
+  return programmes.map((entry) => ({
+    params: { programme: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const programme = entry.data;
+const { Content, headings } = await render(entry);
+
+const research = await getCollection('research');
+const papers = await Promise.all(
+  programme.papers.map(async (id) => {
+    const paper = research.find((candidate) => candidate.id === id);
+    if (!paper)
+      throw new Error(`Programme ${entry.id} names paper "${id}", which has no entry.`);
+    return { id, record: await researchRecord(paper.id, paper.data.doi) };
+  }),
+);
+
+const fixedHeadings = [
+  ...(papers.length > 0 ? [{ depth: 2, slug: 'papers', text: 'Papers' }] : []),
+  ...(programme.gates
+    ? [{ depth: 2, slug: 'gates', text: 'Pre-registered gates' }]
+    : []),
+  ...(programme.verified.length > 0
+    ? [{ depth: 2, slug: 'verified', text: 'Verified at release' }]
+    : []),
+  ...headings,
+];
+---
+
+<Base
+  title={programme.title}
+  description={programme.question}
+  headings={fixedHeadings}
+  crumbs={[{ label: 'Programmes', href: '/programmes/' }, { label: programme.title }]}
+>
+  <h1>{programme.title}</h1>
+  <p class="programme-question">{programme.question}</p>
+  <p class="programme-scope">{programme.scope}</p>
+  {programme.equation && (
+    <DisplayEquation tex={programme.equation.tex} label={programme.equation.label} />
+  )}
+  {programme.certifiedWith === 'warrantlib' && <WarrantlibMethod />}
+
+  {papers.length > 0 && (
+    <>
+      <h2 id="papers">Papers</h2>
+      <ul class="programme-papers">
+        {papers.map(({ id, record }) => (
+          <li>
+            <a href={`/research/${id}/`}>{record.title}</a>, {record.authors.join(', ')}
+            , {record.published}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  {programme.gates && programme.repository && (
+    <>
+      <h2 id="gates">Pre-registered gates</h2>
+      <GatesTable
+        asOf={programme.gates.asOf}
+        rows={programme.gates.rows}
+        repository={programme.repository}
+      />
+    </>
+  )}
+
+  {programme.verified.length > 0 && programme.repository && (
+    <>
+      <h2 id="verified">Verified at release</h2>
+      <VerifiedTable cells={programme.verified} repository={programme.repository} />
+    </>
+  )}
+
+  <Content />
+</Base>
+
+<style>
+  .programme-question {
+    font-size: 1.25rem;
+  }
+  .programme-scope {
+    color: var(--text-muted);
+  }
+</style>

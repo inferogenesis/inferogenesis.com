@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const programmes = (await getCollection('programmes')).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title),
+);
+---
+
+<Base
+  title="Programmes"
+  description="The research programmes Inferogenesis runs, each with its question and its pre-registered gates."
+  crumbs={[{ label: 'Programmes' }]}
+>
+  <h1>Programmes</h1>
+  <ul class="programmes">
+    {programmes.map((entry) => (
+      <li>
+        <h2>
+          <a href={`/programmes/${entry.id}/`}>{entry.data.title}</a>
+        </h2>
+        <p>{entry.data.question}</p>
+      </li>
+    ))}
+  </ul>
+</Base>
+
+<style>
+  .programmes {
+    padding: 0;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,198 @@
+---
+title: 'p*: certifiable active inference'
+question: The free energy principle's standard derivation lets one distribution play both the agent's model and the world, so a wrong model has nowhere to show up. Hold the two apart. How much free energy does an agent then pay for being wrong about the world, and how much for being wrong about what its own model implies? How tightly can each be certified?
+scope: >-
+  The accounting under test splits expected free energy into a floor, a misspecification
+  term and an inference gap. The standard accounting identifies the model with the true
+  process and collapses all three to the floor. Every cell drives its agents with a
+  common exogenous action sequence, so no result here reads as closed-loop. No test
+  claims more than its prover licenses.
+status: active
+repository: inferogenesis/cpomdp
+equation:
+  label: 'The decomposition under test: expected free energy as a floor, a misspecification term and an inference gap'
+  tex: |-
+    \mathbb{E}_{p^*(\cdot\mid u)}[F] = \underbrace{H\big(p^*(\cdot\mid u)\big)}_{\text{floor}} + \underbrace{D_{\mathrm{KL}}\big[p^*(y\mid u)\,\|\,p(y\mid u)\big]}_{\text{misspecification}} + \underbrace{\mathbb{E}_{p^*(\cdot\mid u)}\Big[D_{\mathrm{KL}}\big[q(x)\,\|\,p(x\mid y)\big]\Big]}_{\text{inference gap}}
+certifiedWith: warrantlib
+papers:
+  - state-dependent-observation-noise
+gates:
+  asOf: 2026-09-12
+  rows:
+    - cell: C1 · calibration zero
+      claim: With p = p* and an exact filter, misspecification and the inference gap both sit below 1e-12.
+      outcome: pending
+      tier: exact
+      registered: 'e01f89e'
+    - cell: C2 · misspecification isolation
+      claim: Misspecify the model and keep inference exact. D_KL[p* ‖ p] is positive and stable, and the gap stays below 1e-12.
+      outcome: pending
+      tier: [exact, bounded]
+      registered: 'e01f89e'
+    - cell: C3 · inference-gap isolation
+      claim: Keep p = p* and degrade inference. The gap is positive, and misspecification stays below 1e-12.
+      outcome: pending
+      tier: [exact, bounded]
+      registered: 'e01f89e'
+    - cell: C4 · additivity
+      claim: The floor, misspecification and the gap rebuild the measured E[F] within the four-term bound.
+      outcome: pending
+      tier: exact
+      registered: 'e01f89e'
+    - cell: C5 · incompleteness demonstration
+      claim: Two agents the collapsed accounting scores identically at a matched E[F], which the instrument separates.
+      outcome: pending
+      tier: [exact, bounded]
+      registered: 'e01f89e'
+    - cell: C6 · breaking the calibration zero under R(x)
+      claim: Correct model, plug-in inference, state-dependent R. The gap is positive and separated from the certified error.
+      outcome: pending
+      tier: bounded
+      registered: 'e01f89e'
+    - cell: D1 · fidelity-ladder ordering
+      claim: Along five rungs, from plug-in R(μ⁻) to the exact reference, the inference gap decreases at a certified tolerance.
+      outcome: pending
+      tier: bounded
+      registered: 'b646cb6'
+    - cell: D1 · first reading, four orderings
+      claim: The same ordering read against measured bars, before a certified tolerance exists.
+      outcome: FAIL
+      qualifier: 3 of 4 fired
+      tier: computed
+      warrant: CORROBORATED
+      registered: 'ac9fbc5'
+      measured: 'bf34ea0'
+    - cell: D1 · route 6, derivative-of-covariance terms
+      claim: The derivative-of-covariance terms are visible as a resolved difference.
+      outcome: PASS
+      tier: computed
+      warrant: CORROBORATED
+      registered: 'ac9fbc5'
+      measured: 'bf34ea0'
+    - cell: D1 · route 6, iteration
+      claim: The iteration is visible as a resolved difference.
+      outcome: PASS
+      tier: computed
+      warrant: CORROBORATED
+      registered: 'ac9fbc5'
+      measured: 'bf34ea0'
+    - cell: D2 · scaling exponent
+      claim: The fitted σ-exponent lies in 2 ± 0.5, inside a fit window shown to be non-empty first.
+      outcome: pending
+      tier: bounded
+      registered: 'fc8aac4'
+    - cell: D3 · fourth falsifier, extension to {−4,…,2}
+      claim: Extending the action set gives H* ≤ 6. Measured H* = 6.
+      outcome: PASS
+      tier: bounded
+      warrant: PROVED
+      registered: '86d1f22'
+      measured: '17a1be7'
+    - cell: D3 · fourth falsifier, refinement at step 0.5
+      claim: Refining the action set moves H* by at most 1. Measured |ΔH*| = 0.
+      outcome: PASS
+      tier: bounded
+      warrant: PROVED
+      registered: '86d1f22'
+      measured: '3619016'
+    - cell: D3 · fourth falsifier, refinement at step 0.25
+      claim: Refining the action set moves H* by at most 1. Measured |ΔH*| = 0.
+      outcome: PASS
+      tier: bounded
+      warrant: PROVED
+      registered: '86d1f22'
+      measured: 'c37fac3'
+    - cell: D4 · c₄ out of sample, exp(x) and sin
+      claim: The G4b exponent sits within 0.25 of 6.
+      outcome: PASS
+      tier: bounded
+      warrant: CORROBORATED
+      registered: '38e2963'
+      measured: 'd267382'
+    - cell: D4 · c₄ out of sample, tanh
+      claim: The G4b exponent sits within 0.25 of 6. Measured σ^6.302 against a 0.25 bar.
+      outcome: FAIL
+      qualifier: fired
+      tier: bounded
+      warrant: CORROBORATED
+      registered: '38e2963'
+      measured: 'd267382'
+    - cell: D4 · certified discretisation bound (GATE-D4)
+      claim: The R6 gap exceeds the registered threshold T = 5.962e−4 nats.
+      outcome: pending
+      tier: bounded
+      registered: '8de86a3'
+    - cell: E1 · vs dual control, fixed-R signature
+      claim: Certainty equivalence holds exactly with fixed R, J_CE = J*.
+      outcome: pending
+      tier: exact
+      registered: 'e01f89e'
+    - cell: E1 · vs dual control, R(x) leg
+      claim: With state-dependent R beyond horizon 1, the agent beats certainty equivalence, J_agent < J_CE.
+      outcome: pending
+      tier: bounded
+      registered: 'e01f89e'
+verified:
+  - cell: A1 · flat epistemic term
+    claim: With fixed R, per-step epistemic value is constant across policies to machine precision.
+    tier: exact
+    release: v0.4.2
+  - cell: A2 · flattening reproduction
+    claim: With fixed R, a fixed-gain Kalman schedule reproduces the posterior for every policy.
+    tier: exact
+    release: v0.4.2
+  - cell: A3 · structural, not accidental
+    claim: The collapse survives any perturbation of A, B, C, Q and of the value of a fixed R.
+    tier: exact
+    release: v0.4.2
+  - cell: B1 · dual effect (H3)
+    claim: State-dependent R makes the posterior covariance depend on the policy.
+    tier: bounded
+    release: v0.4.2
+  - cell: B2 · determinant-visibility (H3′)
+    claim: Epistemic value varies across policies. Checked for scalar observations.
+    tier: bounded
+    release: v0.4.2
+  - cell: B3 · the Remark 4 knife-edge
+    claim: On an exact level set the covariance moves while epistemic value stays ½ ln 3.
+    tier: bounded
+    release: v0.4.3
+    check: 'a40a156'
+  - cell: B4 · behavioural dissociation
+    claim: Only the state-dependent agent reads the cue, learns the context and crosses. Its check asserts every such action, since v0.4.3.
+    tier: bounded
+    release: v0.4.3
+  - cell: B5 · no-flattening witness
+    claim: Flattening is refused under state-dependent R with a mean-shifting coupling, before any data.
+    tier: bounded
+    release: v0.4.2
+---
+
+import Callout from '../../components/Callout.astro';
+
+## How D3 was measured
+
+[`38df72d`](https://github.com/inferogenesis/cpomdp/commit/38df72d) registered a
+statistic between two fixed constant policies, a reach and a walk, with its sign
+convention, its horizon-1 anchors and four falsifiers. That registered pair found no
+crossover.
+
+The exhaustive search landed later the same day, at
+[`b077372`](https://github.com/inferogenesis/cpomdp/commit/b077372). Its result is
+measured, not pre-registered. The open-loop exhaustive argmin flips from reach to walk at
+H* = 7 on the action set `{0, ±1, ±2}`. That 7 is an upper bound. On any action set
+containing −3, H* = 6.
+
+D3's fourth falsifier was registered at
+[`86d1f22`](https://github.com/inferogenesis/cpomdp/commit/86d1f22) before any of its
+cells ran. It passed on both axes, as the table shows.
+
+<Callout kind="roadmap">
+  Planned and not yet registered as gates.
+
+  - E2 · against a reward-plus-information-bonus rival agent.
+  - F2 · scoring a real organism.
+  - F3 · *E. coli* as a structural instance.
+  - Paper 2, which pins cpomdp v0.5 and waits on GATE-D4.
+
+</Callout>

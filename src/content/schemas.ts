@@ -86,6 +86,8 @@ export const writingSchema = z
     path: ['updated'],
   });
 
+const tier = z.enum(['exact', 'bounded', 'computed']);
+
 // Fixed refs only, as warrantlib's Provenance takes them: a commit SHA, a URL or a DOI.
 const ref = z
   .string()
@@ -101,7 +103,8 @@ const gate = z
     outcome: z.enum(['PASS', 'FAIL', 'VOID', 'pending']),
     // A VOID says why it went unmeasured, as the ledger writes "VOID (budget)".
     qualifier: z.string().optional(),
-    tier: z.enum(['exact', 'bounded', 'computed']),
+    // A registered cell can span two tiers, as the ledger writes EXACT/BOUNDED.
+    tier: z.union([tier, z.array(tier).min(2)]),
     warrant: z.enum(['PROVED', 'CERTIFIED', 'CORROBORATED']).optional(),
     registered: ref,
     measured: ref.optional(),
@@ -119,14 +122,45 @@ const gate = z
     path: ['measured'],
   });
 
-export const programmeSchema = z.object({
-  title: z.string(),
-  question: z.string(),
-  scope: z.string(),
-  status: z.enum(['active', 'planned', 'closed']),
-  papers: z.array(z.string()).default([]),
-  gates: z.object({ asOf: z.coerce.date(), rows: z.array(gate).min(1) }).optional(),
-});
+export const programmeSchema = z
+  .object({
+    title: z.string(),
+    question: z.string(),
+    scope: z.string(),
+    status: z.enum(['active', 'planned', 'closed']),
+    // Commit refs in the gates table resolve against this repository.
+    repository: z
+      .string()
+      .regex(/^[\w.-]+\/[\w.-]+$/, 'owner/name')
+      .optional(),
+    // Rendered to MathML at build time, directly under the scope.
+    equation: z.object({ tex: z.string().min(1), label: z.string().min(1) }).optional(),
+    // The layout states warrantlib's own rules, so no other project fits this field yet.
+    certifiedWith: z.literal('warrantlib').optional(),
+    papers: z.array(z.string()).default([]),
+    gates: z.object({ asOf: z.coerce.date(), rows: z.array(gate).min(1) }).optional(),
+    // Cells checked at a release and never pre-registered. They sit apart from the gates.
+    verified: z
+      .array(
+        z.object({
+          cell: z.string(),
+          claim: z.string(),
+          tier,
+          release: z.string().regex(/^v\d+\.\d+\.\d+$/, 'a version tag such as v0.4.3'),
+          check: ref.optional(),
+        }),
+      )
+      .default([]),
+  })
+  .strict()
+  .refine((programme) => !programme.gates || programme.repository, {
+    message: 'A gates table needs the repository its commit refs belong to.',
+    path: ['repository'],
+  });
+
+export type Gate = z.infer<typeof gate>;
+export type Programme = z.infer<typeof programmeSchema>;
+export type VerifiedCell = Programme['verified'][number];
 
 export const pageSchema = z.object({
   title: z.string(),
