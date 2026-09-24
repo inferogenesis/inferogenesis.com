@@ -224,8 +224,8 @@ Gate: the workshop deck's final slide links to inferogenesis.com and every link 
 
 ### P3. Programmes and data (after the symposium)
 
-- [ ] Programme layout with hand-written gates table and "as of" date
-- [ ] p* programme page
+- [x] Programme layout with hand-written gates table and "as of" date
+- [x] p* programme page
 - [ ] SN programme page, every item inside the roadmap callout
 - [x] Research list with arXiv:2607.20306 and its Zenodo artefacts
 - [x] Release-tag resolution from the authenticated GitHub API, with cached fallback

@@ -181,6 +181,7 @@ const programme = {
   question: 'Which claims about active inference can be certified?',
   scope: 'Linear-Gaussian agents with state-dependent noise.',
   status: 'active',
+  repository: 'inferogenesis/cpomdp',
   gates: { asOf: '2026-09-23', rows: [gate] },
 };
 
@@ -189,8 +190,73 @@ test.describe('programme schema', () => {
     expect(programmeSchema.safeParse(programme).success).toBe(true);
   });
 
+  test('rejects gates whose commit refs name no repository', () => {
+    expect(
+      programmeSchema.safeParse({ ...programme, repository: undefined }).success,
+    ).toBe(false);
+  });
+
+  test('accepts a registered gate that spans two tiers', () => {
+    const row = {
+      ...gate,
+      outcome: 'pending',
+      warrant: undefined,
+      measured: undefined,
+      tier: ['exact', 'bounded'],
+    };
+    const entry = { ...programme, gates: { asOf: '2026-09-23', rows: [row] } };
+    expect(programmeSchema.safeParse(entry).success).toBe(true);
+  });
+
+  test('rejects a tier list of one, which should be a single tier', () => {
+    const row = { ...gate, tier: ['exact'] };
+    const entry = { ...programme, gates: { asOf: '2026-09-23', rows: [row] } };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('accepts cells verified at a release, each with its version', () => {
+    const verified = [
+      {
+        cell: 'B3',
+        claim: 'A claim.',
+        tier: 'bounded',
+        release: 'v0.4.3',
+        check: 'a40a156',
+      },
+    ];
+    expect(programmeSchema.safeParse({ ...programme, verified }).success).toBe(true);
+  });
+
+  test('rejects a verified cell whose release is not a version tag', () => {
+    const verified = [
+      { cell: 'B3', claim: 'A claim.', tier: 'bounded', release: '0.4.3' },
+    ];
+    expect(programmeSchema.safeParse({ ...programme, verified }).success).toBe(false);
+  });
+
+  test('accepts a displayed equation with its accessible label', () => {
+    const equation = { tex: 'a = b', label: 'The decomposition under test' };
+    expect(programmeSchema.safeParse({ ...programme, equation }).success).toBe(true);
+  });
+
+  test('rejects an equation without a label for assistive technology', () => {
+    const equation = { tex: 'a = b' };
+    expect(programmeSchema.safeParse({ ...programme, equation }).success).toBe(false);
+  });
+
+  test('accepts the project whose vocabulary the checks report in', () => {
+    expect(
+      programmeSchema.safeParse({ ...programme, certifiedWith: 'warrantlib' }).success,
+    ).toBe(true);
+  });
+
   test('accepts a planned programme with no gates yet', () => {
-    const entry = { ...programme, status: 'planned', gates: undefined };
+    const entry = {
+      ...programme,
+      status: 'planned',
+      gates: undefined,
+      repository: undefined,
+    };
     expect(programmeSchema.safeParse(entry).success).toBe(true);
   });
 

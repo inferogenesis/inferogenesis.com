@@ -1,0 +1,96 @@
+---
+import type { Gate } from '../../content/schemas';
+import { refUrl } from '../../lib/refs';
+import StatusGlyph from '../StatusGlyph.astro';
+
+interface Props {
+  asOf: Date;
+  rows: Gate[];
+  repository: string;
+}
+
+const { asOf, rows, repository } = Astro.props;
+const glyph = { PASS: 'pass', FAIL: 'fail', VOID: 'void', pending: 'pending' } as const;
+const label = { PASS: 'PASS', FAIL: 'FAIL', VOID: 'VOID', pending: 'Pending' } as const;
+const asOfDate = asOf.toISOString().slice(0, 10);
+const tierText = (tier: Gate['tier']) =>
+  Array.isArray(tier) ? tier.join(' / ') : tier;
+---
+
+<div class="gates-scroll" role="region" aria-label="Gates" tabindex="0">
+  <table class="gates">
+    <caption>
+      {'As of '}
+      <time datetime={asOfDate}>{asOfDate}</time>
+      {`. Commits are in ${repository}.`}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Gate</th>
+        <th scope="col">Claim</th>
+        <th scope="col">Outcome</th>
+        <th scope="col">Tier and warrant</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th scope="row">{row.cell}</th>
+          <td class="claim">
+            {row.claim}
+            <span class="refs">
+              {'Registered '}
+              <a href={refUrl(row.registered, repository)}>{row.registered}</a>
+              {row.measured && (
+                <>
+                  {', measured '}
+                  <a href={refUrl(row.measured, repository)}>{row.measured}</a>
+                </>
+              )}
+            </span>
+          </td>
+          <td class="outcome" data-outcome={row.outcome}>
+            <StatusGlyph state={glyph[row.outcome]} label={label[row.outcome]} />{' '}
+            {label[row.outcome]}
+            {row.qualifier && <span class="qualifier">({row.qualifier})</span>}
+          </td>
+          <td class="standing">
+            <span class="tier">{tierText(row.tier)}</span>
+            <span class="warrant">{row.warrant ?? ''}</span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .gates-scroll {
+    overflow-x: auto;
+  }
+  caption {
+    padding-bottom: 0.5rem;
+    color: var(--text-muted);
+    text-align: left;
+  }
+  th[scope='row'] {
+    width: 11rem;
+    font-weight: 500;
+  }
+  .claim {
+    min-width: 16rem;
+  }
+  .refs,
+  .qualifier,
+  .warrant {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .refs {
+    margin-top: 0.25rem;
+  }
+  .outcome {
+    white-space: nowrap;
+  }
+</style>

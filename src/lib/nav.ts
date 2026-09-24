@@ -7,6 +7,7 @@ export interface NavItem {
 // fails the build on any link to a page that does not exist.
 export const primaryNav: NavItem[] = [
   { label: 'Projects', href: '/projects/' },
+  { label: 'Programmes', href: '/programmes/' },
   { label: 'Research', href: '/research/' },
 ];
 
