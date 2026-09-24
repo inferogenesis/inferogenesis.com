@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 
-const source = 'public/favicon.svg';
+const source = 'src/assets/brand/inferogenesis-avatar.svg';
 const targets = [
   ['public/apple-touch-icon.png', 180],
   ['public/icon-192.png', 192],
