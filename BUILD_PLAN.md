@@ -228,11 +228,11 @@ Gate: the workshop deck's final slide links to inferogenesis.com and every link 
 - [ ] p* programme page
 - [ ] SN programme page, every item inside the roadmap callout
 - [ ] Research list with arXiv:2607.20306 and its Zenodo artefacts
-- [ ] Release-tag resolution from the authenticated GitHub API, with cached fallback
+- [x] Release-tag resolution from the authenticated GitHub API, with cached fallback
 - [ ] Snippet, `CITATION.cff` and release notes fetched at that tag
-- [ ] PyPI JSON for the Python version range
+- [x] PyPI JSON for the Python version range
 - [ ] DataCite fetch for research entries
-- [ ] Nightly scheduled rebuild
+- [x] Nightly scheduled rebuild
 - [ ] Landing releases strip and posts strip
 - [ ] JSON-LD for all four content types
 - [ ] OG image generation

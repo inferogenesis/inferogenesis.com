@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Off the hour, because GitHub delays scheduled runs that start on it.
+  schedule:
+    - cron: '17 4 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
