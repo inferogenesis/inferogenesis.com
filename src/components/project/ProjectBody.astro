@@ -6,12 +6,7 @@ import InstallBlock from './InstallBlock.astro';
 import ProjectHeader from './ProjectHeader.astro';
 import Releases from './Releases.astro';
 import Snippet from './Snippet.astro';
-
-interface Release {
-  tag: string;
-  date: string;
-  url: string;
-}
+import type { Release } from '../../lib/releases';
 
 interface Props {
   entry: CollectionEntry<'projects'>;

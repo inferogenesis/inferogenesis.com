@@ -1,9 +1,5 @@
 ---
-interface Release {
-  tag: string;
-  date: string;
-  url: string;
-}
+import type { Release } from '../../lib/releases';
 
 interface Props {
   releases: Release[];
@@ -15,8 +11,8 @@ const { releases } = Astro.props;
 <ul class="releases">
   {releases.map((release) => (
     <li>
-      <a href={release.url}>{release.tag}</a>
-      <time datetime={release.date}>{release.date}</time>
+      <a href={release.url}>{release.releaseTag ?? release.version}</a>
+      <time datetime={release.published}>{release.published}</time>
     </li>
   ))}
 </ul>

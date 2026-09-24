@@ -131,3 +131,40 @@ export const pageSchema = z.object({
   title: z.string(),
   description: z.string().min(1),
 });
+
+const release = z.object({
+  version: z.string(),
+  releaseTag: z.string().optional(),
+  published: z.iso.date(),
+  url: z.url(),
+});
+
+const newestFirst = (releases: { published: string }[]) =>
+  releases.every(
+    (entry, index) => index === 0 || releases[index - 1].published >= entry.published,
+  );
+
+// Where a project's release list came from, and when it was read. A GitHub release always
+// has its tag. A PyPI-only project, such as warrantlib today, lists versions.
+export const releaseSnapshotSchema = z
+  .discriminatedUnion('source', [
+    z.object({
+      source: z.literal('github-releases'),
+      repository: z.string().regex(/^[\w.-]+\/[\w.-]+$/, 'owner/name'),
+      retrieved: z.iso.date(),
+      releases: z.array(release.extend({ releaseTag: z.string() })).min(1),
+    }),
+    z.object({
+      source: z.literal('pypi'),
+      package: z.string(),
+      retrieved: z.iso.date(),
+      releases: z.array(release).min(1),
+    }),
+  ])
+  .refine((snapshot) => newestFirst(snapshot.releases), {
+    message: 'Releases are listed newest first.',
+    path: ['releases'],
+  });
+
+export type ReleaseSnapshot = z.infer<typeof releaseSnapshotSchema>;
+export type Release = ReleaseSnapshot['releases'][number];
