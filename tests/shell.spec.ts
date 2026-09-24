@@ -9,6 +9,8 @@ const pages = [
   '/projects/warrantlib/',
   '/about/',
   '/support/',
+  '/research/',
+  '/research/state-dependent-observation-noise/',
 ];
 const schemes = ['dark', 'light'] as const;
 const wcag = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];

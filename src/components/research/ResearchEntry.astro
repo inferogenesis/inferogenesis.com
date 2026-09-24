@@ -1,0 +1,113 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { arxivId, type ResearchRecord } from '../../lib/datacite';
+
+interface Props {
+  entry: CollectionEntry<'research'>;
+  record: ResearchRecord;
+  // On the list the title links to the entry page. On the entry page it is the heading.
+  standalone?: boolean;
+}
+
+const { entry, record, standalone = false } = Astro.props;
+const { artefacts } = entry.data;
+const arxiv = arxivId(record.doi);
+const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as const;
+const Title = standalone ? 'h1' : 'h2';
+const Section = standalone ? 'h2' : 'h3';
+---
+
+<article class="research-entry" id={standalone ? undefined : entry.id}>
+  <Title>
+    {standalone ? record.title : <a href={`/research/${entry.id}/`}>{record.title}</a>}
+  </Title>
+  <p class="meta">
+    <span class="kind">{kinds[record.kind]}</span>
+    <span>{record.authors.join(', ')}</span>
+    <time datetime={record.published}>{record.published}</time>
+    {record.kind !== 'preprint' && <span>{record.publisher}</span>}
+  </p>
+  <dl class="identifiers">
+    <div>
+      <dt>DOI</dt>
+      <dd>
+        <a href={`https://doi.org/${record.doi}`}>{record.doi}</a>
+      </dd>
+    </div>
+    {arxiv && (
+      <div>
+        <dt>arXiv</dt>
+        <dd>
+          <a href={`https://arxiv.org/abs/${arxiv}`}>arXiv:{arxiv}</a>
+        </dd>
+      </div>
+    )}
+  </dl>
+  <Section id={standalone ? 'abstract' : undefined}>Abstract</Section>
+  <p class="abstract">{record.abstract}</p>
+  <p class="abstract-attribution">
+    Abstract by {record.authors.join(', ')}, under{' '}
+    <a href={record.licence.url}>{record.licence.name}</a>.
+  </p>
+  {artefacts.length > 0 && (
+    <>
+      <Section id={standalone ? 'artefacts' : undefined}>
+        Reproduction artefacts
+      </Section>
+      <ul>
+        {artefacts.map((artefact) => (
+          <li>
+            <a href={artefact.url}>{artefact.label}</a>
+            {artefact.doi && <span class="artefact-doi">{artefact.doi}</span>}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</article>
+
+<style>
+  .research-entry {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  h2 {
+    margin-bottom: 0.25rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0;
+    color: var(--text-muted);
+  }
+  .kind {
+    padding: 0 0.6rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 999px;
+    font-size: 0.875rem;
+  }
+  .identifiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 2rem;
+  }
+  .identifiers div {
+    display: flex;
+    gap: 0.5rem;
+  }
+  dt {
+    color: var(--text-muted);
+  }
+  dd {
+    margin: 0;
+  }
+  .abstract-attribution,
+  .artefact-doi {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .artefact-doi {
+    margin-left: 0.75rem;
+  }
+</style>

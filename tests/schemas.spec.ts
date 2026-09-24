@@ -3,41 +3,29 @@ import {
   pageSchema,
   programmeSchema,
   projectSchema,
+  researchRecordSchema,
   researchSchema,
   writingSchema,
 } from '../src/content/schemas';
 
 const research = {
-  title: 'State-dependent observation noise reintroduces epistemic value',
-  kind: 'preprint',
-  authors: ['Corva'],
-  published: '2026-07-24',
-  arxiv: '2607.20306',
-  abstract: 'An abstract.',
+  doi: '10.48550/arXiv.2607.20306',
+  artefacts: [
+    { label: 'cpomdp v0.4.2', url: 'https://doi.org/10.5281/zenodo.21429863' },
+  ],
 };
 
-test.describe('research schema', () => {
-  test('accepts a preprint identified by arXiv alone', () => {
+test.describe('research entry schema', () => {
+  test('accepts a DOI with its reproduction artefacts', () => {
     expect(researchSchema.safeParse(research).success).toBe(true);
   });
 
-  test('accepts a DOI with reproduction artefacts', () => {
-    const entry = {
-      ...research,
-      kind: 'dataset',
-      arxiv: undefined,
-      doi: '10.5281/zenodo.21334562',
-      artefacts: [
-        { label: 'Figures and scripts', url: 'https://zenodo.org/records/1' },
-      ],
-    };
-    expect(researchSchema.safeParse(entry).success).toBe(true);
+  test('accepts a DOI alone and defaults to no artefacts', () => {
+    expect(researchSchema.parse({ doi: research.doi }).artefacts).toEqual([]);
   });
 
-  test('rejects an entry with neither a DOI nor an arXiv ID', () => {
-    expect(researchSchema.safeParse({ ...research, arxiv: undefined }).success).toBe(
-      false,
-    );
+  test('rejects an entry without a DOI', () => {
+    expect(researchSchema.safeParse({ artefacts: [] }).success).toBe(false);
   });
 
   test('rejects a malformed DOI', () => {
@@ -46,14 +34,64 @@ test.describe('research schema', () => {
     ).toBe(false);
   });
 
-  test('rejects a malformed arXiv ID', () => {
+  for (const field of [
+    'title',
+    'authors',
+    'published',
+    'abstract',
+    'licence',
+    'kind',
+    'arxiv',
+  ]) {
+    test(`rejects a typed ${field}, which comes from DataCite`, () => {
+      expect(researchSchema.safeParse({ ...research, [field]: 'typed' }).success).toBe(
+        false,
+      );
+    });
+  }
+});
+
+const record = {
+  doi: '10.48550/arXiv.2607.20306',
+  title: 'State-Dependent Observation Noise Reintroduces Epistemic Value',
+  kind: 'preprint',
+  authors: ['Daniel Corva'],
+  published: '2026-07-22',
+  publisher: 'arXiv',
+  abstract: 'An abstract.',
+  licence: {
+    name: 'CC BY 4.0',
+    url: 'https://creativecommons.org/licenses/by/4.0/legalcode',
+  },
+  retrieved: '2026-09-24',
+};
+
+test.describe('research record schema', () => {
+  test('accepts a complete DataCite record', () => {
+    expect(researchRecordSchema.safeParse(record).success).toBe(true);
+  });
+
+  test('rejects a record that quotes an abstract without its licence', () => {
     expect(
-      researchSchema.safeParse({ ...research, arxiv: 'arXiv:2607.20306' }).success,
+      researchRecordSchema.safeParse({ ...record, licence: undefined }).success,
     ).toBe(false);
   });
 
-  test('rejects an entry without an abstract', () => {
-    expect(researchSchema.safeParse({ ...research, abstract: '' }).success).toBe(false);
+  test('rejects licence terms without a link to them', () => {
+    const entry = { ...record, licence: { name: 'CC BY 4.0' } };
+    expect(researchRecordSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a record without an abstract', () => {
+    expect(researchRecordSchema.safeParse({ ...record, abstract: '' }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects a date that is not ISO 8601', () => {
+    expect(
+      researchRecordSchema.safeParse({ ...record, published: '2026-07' }).success,
+    ).toBe(false);
   });
 });
 

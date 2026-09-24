@@ -16,9 +16,17 @@ interface Props {
   headings?: MarkdownHeading[];
   crumbs?: { label: string; href?: string }[];
   noindex?: boolean;
+  structuredData?: object;
 }
 
-const { title, description, headings = [], crumbs = [], noindex = false } = Astro.props;
+const {
+  title,
+  description,
+  headings = [],
+  crumbs = [],
+  noindex = false,
+  structuredData,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -28,6 +36,7 @@ const { title, description, headings = [], crumbs = [], noindex = false } = Astr
       title={`${title} | Inferogenesis`}
       description={description}
       noindex={noindex}
+      structuredData={structuredData}
     />
   </head>
   <body>

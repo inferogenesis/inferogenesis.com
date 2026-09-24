@@ -46,30 +46,31 @@ export const projectSchema = z
 const doi = z
   .string()
   .regex(/^10\.\d{4,9}\/\S+$/, 'a bare DOI such as 10.5281/zenodo.1');
-const arxivId = z
-  .string()
-  .regex(/^\d{4}\.\d{4,5}(v\d+)?$/, 'a bare arXiv ID such as 2607.20306');
-
+// A research entry names its DOI and the artefacts that reproduce it. Everything DataCite
+// holds comes from DataCite. Strict, so a typed title or abstract fails the build.
 export const researchSchema = z
   .object({
-    title: z.string(),
-    kind: z.enum(['paper', 'preprint', 'dataset']),
-    authors: z.array(z.string()).min(1),
-    published: z.coerce.date(),
-    doi: doi.optional(),
-    arxiv: arxivId.optional(),
-    venue: z.string().optional(),
-    abstract: z.string().min(1),
-    // Terms for the abstract and any quoted material, which belong to the authors.
-    licence: z.string().optional(),
+    doi,
     artefacts: z
       .array(z.object({ label: z.string(), url: z.url(), doi: doi.optional() }))
       .default([]),
   })
-  .refine((entry) => entry.doi || entry.arxiv, {
-    message: 'A research entry needs a DOI or an arXiv ID.',
-    path: ['doi'],
-  });
+  .strict();
+
+export const researchRecordSchema = z.object({
+  doi,
+  title: z.string().min(1),
+  kind: z.enum(['paper', 'preprint', 'dataset']),
+  authors: z.array(z.string()).min(1),
+  published: z.iso.date(),
+  publisher: z.string(),
+  abstract: z.string().min(1),
+  // The abstract is quoted, so its terms and their source are required.
+  licence: z.object({ name: z.string(), url: z.url() }),
+  retrieved: z.iso.date(),
+});
+
+export type ResearchRecord = z.infer<typeof researchRecordSchema>;
 
 export const writingSchema = z
   .object({

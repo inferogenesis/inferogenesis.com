@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import { researchRecord } from '../../lib/datacite';
+import ResearchEntry from '../../components/research/ResearchEntry.astro';
+import Base from '../../layouts/Base.astro';
+
+const entries = await Promise.all(
+  (await getCollection('research')).map(async (entry) => ({
+    entry,
+    record: await researchRecord(entry.id, entry.data.doi),
+  })),
+);
+entries.sort((a, b) => b.record.published.localeCompare(a.record.published));
+const headings = entries.map(({ entry, record }) => ({
+  depth: 2,
+  slug: entry.id,
+  text: record.title,
+}));
+---
+
+<Base
+  title="Research"
+  description="Papers, preprints and datasets from Inferogenesis, each with its DOI and the artefacts that reproduce it."
+  headings={headings}
+  crumbs={[{ label: 'Research' }]}
+>
+  <h1>Research</h1>
+  {entries.map(({ entry, record }) => (
+    <ResearchEntry entry={entry} record={record} />
+  ))}
+</Base>
