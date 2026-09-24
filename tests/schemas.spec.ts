@@ -87,11 +87,10 @@ const project = {
   name: 'warrantlib',
   description: 'A vocabulary for how well a claim is warranted.',
   status: 'active',
-  version: '0.3.0',
-  released: '2026-08-26',
   licence: 'MIT',
   repo: 'https://github.com/inferogenesis/cpomdp/tree/main/packages/warrantlib',
   docs: 'https://cpomdp.inferogenesis.com/api/warrant/',
+  pypi: 'warrantlib',
   install: 'pip install warrantlib',
   authors: ['Inferogenesis'],
   snippet: { source: 'a fixture', code: 'import warrantlib' },
@@ -103,8 +102,19 @@ test.describe('project schema', () => {
     const parsed = projectSchema.parse(project);
     expect(parsed.backends).toEqual([]);
     expect(parsed.capabilities[0].backends).toEqual({});
-    expect(parsed.citationFile).toBeUndefined();
+    expect(parsed.hasCitationFile).toBe(false);
   });
+
+  for (const [field, value] of [
+    ['version', '0.3.0'],
+    ['released', '2026-08-26'],
+    ['python', '>=3.11'],
+  ]) {
+    test(`rejects a project that types its own ${field}, which comes from its release data`, () => {
+      const entry = { ...project, [field]: value };
+      expect(projectSchema.safeParse(entry).success).toBe(false);
+    });
+  }
 
   test('rejects a capability marked for a backend the project does not declare', () => {
     const entry = {

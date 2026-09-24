@@ -7,15 +7,13 @@ export const projectSchema = z
     name: z.string(),
     description: z.string(),
     status: z.enum(['active', 'maintenance', 'archived', 'planned']),
-    version: z.string(),
-    released: z.coerce.date(),
     licence: z.string(),
     doi: z.string().optional(),
     repo: z.url(),
     docs: z.url(),
-    citationFile: z.url().optional(),
+    // The URL is built from the latest release tag, so it never names a stale version.
+    hasCitationFile: z.boolean().default(false),
     pypi: z.string().optional(),
-    python: z.string().optional(),
     install: z.string(),
     authors: z.array(z.string()).min(1),
     snippet: z.object({ source: z.string(), code: z.string() }),
@@ -30,6 +28,8 @@ export const projectSchema = z
       )
       .min(1),
   })
+  // Version and release date come from the release data. Strict, so typing either fails.
+  .strict()
   .refine(
     (project) =>
       project.capabilities.every((row) =>
@@ -131,3 +131,50 @@ export const pageSchema = z.object({
   title: z.string(),
   description: z.string().min(1),
 });
+
+const release = z.object({
+  version: z.string(),
+  releaseTag: z.string().optional(),
+  published: z.iso.date(),
+  url: z.url(),
+});
+
+const newestFirst = (releases: { published: string }[]) =>
+  releases.every(
+    (entry, index) => index === 0 || releases[index - 1].published >= entry.published,
+  );
+
+// Where a project's release list came from, and when it was read. A GitHub release always
+// has its tag. A PyPI-only project, such as warrantlib today, lists versions.
+export const releaseSnapshotSchema = z
+  .discriminatedUnion('source', [
+    z.object({
+      source: z.literal('github-releases'),
+      repository: z.string().regex(/^[\w.-]+\/[\w.-]+$/, 'owner/name'),
+      retrieved: z.iso.date(),
+      releases: z.array(release.extend({ releaseTag: z.string() })).min(1),
+    }),
+    z.object({
+      source: z.literal('pypi'),
+      package: z.string(),
+      retrieved: z.iso.date(),
+      releases: z.array(release).min(1),
+    }),
+  ])
+  .refine((snapshot) => newestFirst(snapshot.releases), {
+    message: 'Releases are listed newest first.',
+    path: ['releases'],
+  });
+
+export type ReleaseSnapshot = z.infer<typeof releaseSnapshotSchema>;
+export type Release = ReleaseSnapshot['releases'][number];
+
+// The Python range PyPI declares for one released version.
+export const pythonRangeSchema = z.object({
+  package: z.string(),
+  version: z.string(),
+  requiresPython: z.string().nullable(),
+  retrieved: z.iso.date(),
+});
+
+export type PythonRange = z.infer<typeof pythonRangeSchema>;

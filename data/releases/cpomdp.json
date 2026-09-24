@@ -1,27 +1,37 @@
-[
-  {
-    "tag": "v0.4.4",
-    "date": "2026-08-04",
-    "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.4"
-  },
-  {
-    "tag": "v0.4.3",
-    "date": "2026-07-28",
-    "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.3"
-  },
-  {
-    "tag": "v0.4.2",
-    "date": "2026-07-18",
-    "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.2"
-  },
-  {
-    "tag": "v0.4.1",
-    "date": "2026-07-13",
-    "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.1"
-  },
-  {
-    "tag": "v0.4.0",
-    "date": "2026-07-06",
-    "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.0"
-  }
-]
+{
+  "source": "github-releases",
+  "repository": "inferogenesis/cpomdp",
+  "retrieved": "2026-09-24",
+  "releases": [
+    {
+      "releaseTag": "v0.4.4",
+      "version": "0.4.4",
+      "published": "2026-08-04",
+      "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.4"
+    },
+    {
+      "releaseTag": "v0.4.3",
+      "version": "0.4.3",
+      "published": "2026-07-28",
+      "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.3"
+    },
+    {
+      "releaseTag": "v0.4.2",
+      "version": "0.4.2",
+      "published": "2026-07-18",
+      "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.2"
+    },
+    {
+      "releaseTag": "v0.4.1",
+      "version": "0.4.1",
+      "published": "2026-07-13",
+      "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.1"
+    },
+    {
+      "releaseTag": "v0.4.0",
+      "version": "0.4.0",
+      "published": "2026-07-06",
+      "url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.0"
+    }
+  ]
+}

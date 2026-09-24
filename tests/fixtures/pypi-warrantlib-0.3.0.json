@@ -1,0 +1,7 @@
+{
+  "info": {
+    "name": "warrantlib",
+    "version": "0.3.0",
+    "requires_python": ">=3.11"
+  }
+}

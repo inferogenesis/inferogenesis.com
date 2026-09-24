@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('a library without backends shows only the feature and version columns', async ({
   page,
@@ -16,13 +16,35 @@ test('a project without a citation file offers BibTeX and no CFF link', async ({
   await expect(page.getByRole('link', { name: /CITATION\.cff/ })).toHaveCount(0);
 });
 
-test('cpomdp links its CITATION.cff at the pinned tag', async ({ page }) => {
+async function versionBadge(page: Page) {
+  return (
+    await page
+      .locator('.project-header .meta div', { hasText: 'Version' })
+      .locator('dd')
+      .innerText()
+  ).trim();
+}
+
+for (const id of ['cpomdp', 'warrantlib']) {
+  test(`${id}'s version badge, first release and BibTeX agree`, async ({ page }) => {
+    await page.goto(`/projects/${id}/`);
+    const version = await versionBadge(page);
+    const firstRelease = (
+      await page.locator('ul.releases li a').first().innerText()
+    ).trim();
+    expect(firstRelease.replace(/^v/, '')).toBe(version);
+    await expect(page.locator('pre.bibtex')).toContainText(`version = {${version}}`);
+  });
+}
+
+test("cpomdp links its CITATION.cff at the latest release's tag", async ({ page }) => {
   await page.goto('/projects/cpomdp/');
+  const tag = (await page.locator('ul.releases li a').first().innerText()).trim();
   await expect(
-    page.getByRole('link', { name: 'CITATION.cff at v0.4.4' }),
+    page.getByRole('link', { name: `CITATION.cff at ${tag}` }),
   ).toHaveAttribute(
     'href',
-    'https://github.com/inferogenesis/cpomdp/blob/v0.4.4/CITATION.cff',
+    `https://github.com/inferogenesis/cpomdp/blob/${tag}/CITATION.cff`,
   );
 });
 

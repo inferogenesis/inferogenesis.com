@@ -3,6 +3,8 @@ import { getCollection, render } from 'astro:content';
 import ProjectBody from '../../components/project/ProjectBody.astro';
 import Base from '../../layouts/Base.astro';
 import { lastModified } from '../../lib/lastModified';
+import { resolvePythonRange } from '../../lib/pypi';
+import { citationFileUrl, latestReleases, projectReleases } from '../../lib/releases';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -12,10 +14,13 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const releaseFiles = import.meta.glob<{
-  default: { tag: string; date: string; url: string }[];
-}>('../../../data/releases/*.json', { eager: true });
-const releases = releaseFiles[`../../../data/releases/${entry.id}.json`]?.default ?? [];
+const snapshot = await projectReleases(entry.id);
+const releases = latestReleases(snapshot);
+const citationFile = entry.data.hasCitationFile ? citationFileUrl(snapshot) : undefined;
+const pythonRange = entry.data.pypi
+  ? (await resolvePythonRange(entry.id, entry.data.pypi, releases[0].version))
+      .requiresPython
+  : null;
 
 const sourcePath = `src/content/projects/${entry.id}.mdx`;
 const fixedHeadings = [
@@ -37,6 +42,8 @@ const fixedHeadings = [
   <ProjectBody
     entry={entry}
     releases={releases}
+    citationFile={citationFile}
+    pythonRange={pythonRange}
     lastModified={lastModified(sourcePath)}
     editUrl={`https://github.com/inferogenesis/inferogenesis.com/edit/main/${sourcePath}`}
     issueUrl="https://github.com/inferogenesis/inferogenesis.com/issues/new/choose"

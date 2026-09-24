@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { projectReleases } from '../../lib/releases';
 import StatusBadge from './StatusBadge.astro';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const project = entry.data;
+const [latest] = (await projectReleases(entry.id)).releases;
 ---
 
 <article class="project-card">
@@ -17,7 +19,7 @@ const project = entry.data;
   <p>{project.description}</p>
   <p class="meta">
     <StatusBadge status={project.status} />
-    <span>{project.version}</span>
+    <span class="version">{latest.version}</span>
     <span>{project.licence}</span>
   </p>
 </article>

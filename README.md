@@ -30,6 +30,13 @@ pnpm dev
 
 `fnm env --use-on-cd` in the shell profile switches Node on entering the repo.
 
+A local build reads release lists from the snapshots in `data/releases/`. With a token it
+reads them live from GitHub, as CI does:
+
+```sh
+GITHUB_TOKEN="$(gh auth token)" pnpm build
+```
+
 The checks CI runs, in order:
 
 ```sh

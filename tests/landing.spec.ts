@@ -19,7 +19,7 @@ test('landing page uses the site header and has no sidebar or breadcrumbs', asyn
 });
 
 for (const path of ['/', '/projects/']) {
-  test(`${path} lists every project with its version and a link to its page`, async ({
+  test(`${path} lists every project, with the version its page shows, and a link to it`, async ({
     page,
   }) => {
     await page.goto(path);
@@ -33,8 +33,18 @@ for (const path of ['/', '/projects/']) {
       'href',
       '/projects/warrantlib/',
     );
-    await expect(cards.filter({ hasText: 'cpomdp' })).toContainText('0.4.4');
-    await expect(cards.filter({ hasText: 'warrantlib' })).toContainText('0.3.0');
+    for (const id of ['cpomdp', 'warrantlib']) {
+      const cardVersion = (
+        await cards.filter({ hasText: id }).locator('.version').innerText()
+      ).trim();
+      const projectPage = await page.context().newPage();
+      await projectPage.goto(`/projects/${id}/`);
+      const badge = projectPage
+        .locator('.project-header .meta div', { hasText: 'Version' })
+        .locator('dd');
+      await expect(badge).toHaveText(cardVersion);
+      await projectPage.close();
+    }
   });
 }
 

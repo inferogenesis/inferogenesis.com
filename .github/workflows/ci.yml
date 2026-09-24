@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Off the hour, because GitHub delays scheduled runs that start on it.
+  schedule:
+    - cron: '17 4 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -44,6 +47,8 @@ jobs:
       - run: pnpm format:check
       - run: pnpm check
       - run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm bundle-check
       - run: pnpm link-check
       - uses: treosh/lighthouse-ci-action@v12
