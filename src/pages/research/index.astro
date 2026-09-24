@@ -1,15 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
+import { researchRecord } from '../../lib/datacite';
 import ResearchEntry from '../../components/research/ResearchEntry.astro';
 import Base from '../../layouts/Base.astro';
 
-const entries = (await getCollection('research')).sort(
-  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+const entries = await Promise.all(
+  (await getCollection('research')).map(async (entry) => ({
+    entry,
+    record: await researchRecord(entry.id, entry.data.doi),
+  })),
 );
-const headings = entries.map((entry) => ({
+entries.sort((a, b) => b.record.published.localeCompare(a.record.published));
+const headings = entries.map(({ entry, record }) => ({
   depth: 2,
   slug: entry.id,
-  text: entry.data.title,
+  text: record.title,
 }));
 ---
 
@@ -20,7 +25,7 @@ const headings = entries.map((entry) => ({
   crumbs={[{ label: 'Research' }]}
 >
   <h1>Research</h1>
-  {entries.map((entry) => (
-    <ResearchEntry entry={entry} />
+  {entries.map(({ entry, record }) => (
+    <ResearchEntry entry={entry} record={record} />
   ))}
 </Base>

@@ -1,53 +1,53 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { arxivId, type ResearchRecord } from '../../lib/datacite';
 
 interface Props {
   entry: CollectionEntry<'research'>;
+  record: ResearchRecord;
 }
 
-const { entry } = Astro.props;
-const research = entry.data;
+const { entry, record } = Astro.props;
+const { artefacts } = entry.data;
+const arxiv = arxivId(record.doi);
 const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as const;
-const published = research.published.toISOString().slice(0, 10);
 ---
 
 <article class="research-entry" id={entry.id}>
-  <h2>{research.title}</h2>
+  <h2>{record.title}</h2>
   <p class="meta">
-    <span class="kind">{kinds[research.kind]}</span>
-    <span>{research.authors.join(', ')}</span>
-    <time datetime={published}>{published}</time>
-    {research.venue && <span>{research.venue}</span>}
+    <span class="kind">{kinds[record.kind]}</span>
+    <span>{record.authors.join(', ')}</span>
+    <time datetime={record.published}>{record.published}</time>
+    {record.kind !== 'preprint' && <span>{record.publisher}</span>}
   </p>
   <dl class="identifiers">
-    {research.doi && (
-      <div>
-        <dt>DOI</dt>
-        <dd>
-          <a href={`https://doi.org/${research.doi}`}>{research.doi}</a>
-        </dd>
-      </div>
-    )}
-    {research.arxiv && (
+    <div>
+      <dt>DOI</dt>
+      <dd>
+        <a href={`https://doi.org/${record.doi}`}>{record.doi}</a>
+      </dd>
+    </div>
+    {arxiv && (
       <div>
         <dt>arXiv</dt>
         <dd>
-          <a href={`https://arxiv.org/abs/${research.arxiv}`}>arXiv:{research.arxiv}</a>
+          <a href={`https://arxiv.org/abs/${arxiv}`}>arXiv:{arxiv}</a>
         </dd>
       </div>
     )}
   </dl>
   <h3>Abstract</h3>
-  <p class="abstract">{research.abstract}</p>
+  <p class="abstract">{record.abstract}</p>
   <p class="abstract-attribution">
-    Abstract by {research.authors.join(', ')}, under{' '}
-    <a href={research.licence.url}>{research.licence.name}</a>.
+    Abstract by {record.authors.join(', ')}, under{' '}
+    <a href={record.licence.url}>{record.licence.name}</a>.
   </p>
-  {research.artefacts.length > 0 && (
+  {artefacts.length > 0 && (
     <>
       <h3>Reproduction artefacts</h3>
       <ul>
-        {research.artefacts.map((artefact) => (
+        {artefacts.map((artefact) => (
           <li>
             <a href={artefact.url}>{artefact.label}</a>
             {artefact.doi && <span class="artefact-doi">{artefact.doi}</span>}
