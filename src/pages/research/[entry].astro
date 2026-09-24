@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import ResearchEntry from '../../components/research/ResearchEntry.astro';
+import Base from '../../layouts/Base.astro';
+import { researchRecord } from '../../lib/datacite';
+import { scholarlyWork } from '../../lib/structuredData';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('research');
+  return entries.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const record = await researchRecord(entry.id, entry.data.doi);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const headings = [
+  { depth: 2, slug: 'abstract', text: 'Abstract' },
+  ...(entry.data.artefacts.length > 0
+    ? [{ depth: 2, slug: 'artefacts', text: 'Reproduction artefacts' }]
+    : []),
+];
+---
+
+<Base
+  title={record.title}
+  description={`${record.authors.join(', ')}, ${record.published}. DOI ${record.doi}.`}
+  headings={headings}
+  crumbs={[{ label: 'Research', href: '/research/' }, { label: record.title }]}
+  structuredData={scholarlyWork(record, entry.data.artefacts, pageUrl)}
+>
+  <ResearchEntry entry={entry} record={record} standalone />
+</Base>

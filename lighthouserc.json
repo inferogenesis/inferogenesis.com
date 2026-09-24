@@ -5,7 +5,8 @@
       "url": [
         "http://localhost/",
         "http://localhost/projects/cpomdp/",
-        "http://localhost/projects/warrantlib/"
+        "http://localhost/projects/warrantlib/",
+        "http://localhost/research/state-dependent-observation-noise/"
       ],
       "numberOfRuns": 2
     },

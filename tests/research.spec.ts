@@ -49,3 +49,53 @@ test('a quoted abstract says whose it is and under what terms', async ({ page })
     /creativecommons\.org\/licenses\/by\/4\.0/,
   );
 });
+
+const entryPath = '/research/state-dependent-observation-noise/';
+
+test('each list entry links its title to the entry page', async ({ page }) => {
+  await page.goto('/research/');
+  await expect(
+    page
+      .locator('.research-entry')
+      .first()
+      .getByRole('heading', { level: 2 })
+      .getByRole('link'),
+  ).toHaveAttribute('href', entryPath);
+});
+
+test('an entry page has the title as its heading, under a Research breadcrumb', async ({
+  page,
+}) => {
+  await page.goto(entryPath);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'State-Dependent Observation Noise',
+  );
+  const crumbs = page.getByRole('navigation', { name: 'Breadcrumb' });
+  await expect(crumbs.getByRole('link', { name: 'Research' })).toHaveAttribute(
+    'href',
+    '/research/',
+  );
+});
+
+test("an entry page's structured data matches what the page shows", async ({
+  page,
+}) => {
+  await page.goto(entryPath);
+  const data = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
+  );
+  expect(data['@type']).toBe('ScholarlyArticle');
+  expect(data.name).toBe(
+    (await page.getByRole('heading', { level: 1 }).innerText()).trim(),
+  );
+  expect(data.datePublished).toBe(
+    await page.locator('.research-entry time').getAttribute('datetime'),
+  );
+  expect(data.author.map((author: { name: string }) => author.name)).toEqual([
+    'Daniel Corva',
+  ]);
+  expect(data.license).toBe(
+    await page.locator('.abstract-attribution a').getAttribute('href'),
+  );
+  expect(data.url).toBe(`https://inferogenesis.com${entryPath}`);
+});

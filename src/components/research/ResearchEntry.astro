@@ -5,16 +5,22 @@ import { arxivId, type ResearchRecord } from '../../lib/datacite';
 interface Props {
   entry: CollectionEntry<'research'>;
   record: ResearchRecord;
+  // On the list the title links to the entry page. On the entry page it is the heading.
+  standalone?: boolean;
 }
 
-const { entry, record } = Astro.props;
+const { entry, record, standalone = false } = Astro.props;
 const { artefacts } = entry.data;
 const arxiv = arxivId(record.doi);
 const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as const;
+const Title = standalone ? 'h1' : 'h2';
+const Section = standalone ? 'h2' : 'h3';
 ---
 
-<article class="research-entry" id={entry.id}>
-  <h2>{record.title}</h2>
+<article class="research-entry" id={standalone ? undefined : entry.id}>
+  <Title>
+    {standalone ? record.title : <a href={`/research/${entry.id}/`}>{record.title}</a>}
+  </Title>
   <p class="meta">
     <span class="kind">{kinds[record.kind]}</span>
     <span>{record.authors.join(', ')}</span>
@@ -37,7 +43,7 @@ const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as co
       </div>
     )}
   </dl>
-  <h3>Abstract</h3>
+  <Section id={standalone ? 'abstract' : undefined}>Abstract</Section>
   <p class="abstract">{record.abstract}</p>
   <p class="abstract-attribution">
     Abstract by {record.authors.join(', ')}, under{' '}
@@ -45,7 +51,9 @@ const kinds = { paper: 'Paper', preprint: 'Preprint', dataset: 'Dataset' } as co
   </p>
   {artefacts.length > 0 && (
     <>
-      <h3>Reproduction artefacts</h3>
+      <Section id={standalone ? 'artefacts' : undefined}>
+        Reproduction artefacts
+      </Section>
       <ul>
         {artefacts.map((artefact) => (
           <li>
