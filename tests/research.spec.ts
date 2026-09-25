@@ -81,9 +81,10 @@ test("an entry page's structured data matches what the page shows", async ({
   page,
 }) => {
   await page.goto(entryPath);
-  const data = JSON.parse(
-    (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
-  );
+  const blocks = await page
+    .locator('script[type="application/ld+json"]')
+    .evaluateAll((nodes) => nodes.map((node) => JSON.parse(node.textContent ?? '{}')));
+  const data = blocks.find((block) => block['@type'] === 'ScholarlyArticle');
   expect(data['@type']).toBe('ScholarlyArticle');
   expect(data.name).toBe(
     (await page.getByRole('heading', { level: 1 }).innerText()).trim(),

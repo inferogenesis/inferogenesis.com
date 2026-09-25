@@ -6,7 +6,8 @@
         "http://localhost/",
         "http://localhost/projects/cpomdp/",
         "http://localhost/projects/warrantlib/",
-        "http://localhost/research/state-dependent-observation-noise/"
+        "http://localhost/research/state-dependent-observation-noise/",
+        "http://localhost/programmes/p-star/"
       ],
       "numberOfRuns": 2
     },

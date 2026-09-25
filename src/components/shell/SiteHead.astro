@@ -1,6 +1,6 @@
 ---
 import { ogImagePath } from '../../lib/og';
-import { serialiseStructuredData } from '../../lib/structuredData';
+import { organisation, serialiseStructuredData } from '../../lib/structuredData';
 
 interface Props {
   title: string;
@@ -53,6 +53,10 @@ const fonts = [
 <meta property="og:image:height" content="640" />
 <meta property="og:image:alt" content={imageAlt} />
 <meta name="twitter:card" content="summary_large_image" />
+<script
+  type="application/ld+json"
+  set:html={serialiseStructuredData(organisation(Astro.site?.href ?? ''))}
+></script>
 {structuredData && (
   <script
     type="application/ld+json"

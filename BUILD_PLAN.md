@@ -231,11 +231,11 @@ Gate: the workshop deck's final slide links to inferogenesis.com and every link 
 - [x] Release-tag resolution from the authenticated GitHub API, with cached fallback
 - [ ] Snippet, `CITATION.cff` and release notes fetched at that tag
 - [x] PyPI JSON for the Python version range
-- [ ] DataCite fetch for research entries
+- [x] DataCite fetch for research entries
 - [x] Nightly scheduled rebuild
 - [ ] Landing releases strip and posts strip
 - [ ] JSON-LD for all four content types
-- [ ] OG image generation
+- [x] OG image generation
 
 Gate: cutting a cpomdp release updates the apex within 24 hours with no commit to the site repo, and the snippet on the page runs against that release.
 
