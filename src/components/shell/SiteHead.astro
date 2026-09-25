@@ -1,14 +1,29 @@
 ---
-import { serialiseStructuredData } from '../../lib/structuredData';
+import { ogImagePath } from '../../lib/og';
+import { organisation, serialiseStructuredData } from '../../lib/structuredData';
 
 interface Props {
   title: string;
   description: string;
   noindex?: boolean;
   structuredData?: object;
+  // The page's own title for sharing, without the site name the tab title carries.
+  socialTitle: string;
 }
 
-const { title, description, noindex = false, structuredData } = Astro.props;
+const {
+  title,
+  description,
+  noindex = false,
+  structuredData,
+  socialTitle,
+} = Astro.props;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = new URL(ogImagePath(Astro.url.pathname), Astro.site).href;
+const imageAlt =
+  Astro.url.pathname === '/'
+    ? 'The Inferogenesis mark and wordmark, with its tagline'
+    : `The Inferogenesis mark and wordmark, above the title ${socialTitle}`;
 const fonts = [
   '/fonts/InterVariable.woff2',
   '/fonts/SpaceGrotesk-Variable.woff2',
@@ -26,8 +41,22 @@ const fonts = [
 ))}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+<link rel="canonical" href={pageUrl} />
 <title>{title}</title>
+<meta property="og:site_name" content="Inferogenesis" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={socialTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={pageUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<script
+  type="application/ld+json"
+  set:html={serialiseStructuredData(organisation(Astro.site?.href ?? ''))}
+></script>
 {structuredData && (
   <script
     type="application/ld+json"

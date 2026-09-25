@@ -5,6 +5,7 @@ import Base from '../../layouts/Base.astro';
 import { lastModified } from '../../lib/lastModified';
 import { resolvePythonRange } from '../../lib/pypi';
 import { citationFileUrl, latestReleases, projectReleases } from '../../lib/releases';
+import { softwareSourceCode } from '../../lib/structuredData';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -22,6 +23,13 @@ const pythonRange = entry.data.pypi
       .requiresPython
   : null;
 
+const software = softwareSourceCode(
+  entry.data,
+  releases[0],
+  pythonRange,
+  new URL(Astro.url.pathname, Astro.site).href,
+);
+
 const sourcePath = `src/content/projects/${entry.id}.mdx`;
 const fixedHeadings = [
   { depth: 2, slug: 'install', text: 'Install' },
@@ -38,6 +46,7 @@ const fixedHeadings = [
   description={entry.data.description}
   headings={fixedHeadings}
   crumbs={[{ label: 'Projects', href: '/projects/' }, { label: entry.data.name }]}
+  structuredData={software}
 >
   <ProjectBody
     entry={entry}
