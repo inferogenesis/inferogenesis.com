@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import pagefind from 'astro-pagefind';
+import shareImages from './src/integrations/shareImages';
 import { copyFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
@@ -32,6 +33,7 @@ export default defineConfig({
     mdx(),
     sitemap({ filter: (page) => !page.includes('/kitchen-sink/') }),
     pagefind(),
+    shareImages(),
     tokens(),
   ],
 });

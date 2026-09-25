@@ -9,7 +9,7 @@ import courierNew from '@capsizecss/metrics/courierNew';
 import roboto from '@capsizecss/metrics/roboto';
 import { fromFile } from '@capsizecss/unpack/fs';
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import prettier from 'prettier';
@@ -55,6 +55,11 @@ const faces = [
     ranges: textRanges,
     fallbacks: [arial, roboto],
     generic: 'system-ui, sans-serif',
+    // Static TTFs for rendering share images at build time. Never served.
+    renderCopies: [
+      'SpaceGrotesk-2.0.0/ttf/static/SpaceGrotesk-Medium.ttf',
+      'SpaceGrotesk-2.0.0/ttf/static/SpaceGrotesk-Bold.ttf',
+    ],
   },
   {
     role: 'code',
@@ -76,7 +81,9 @@ const faces = [
 ];
 
 const fontDir = 'public/fonts';
+const renderDir = 'src/assets/og';
 const work = mkdtempSync(join(tmpdir(), 'fonts-'));
+mkdirSync(renderDir, { recursive: true });
 // A fixed save time, since fontTools stamps instanced fonts with the current one and a
 // rerun would otherwise change bytes it did not change.
 const fonttools = (...args) =>
@@ -127,6 +134,17 @@ try {
       `--output-file=${output}`,
     );
     copyFileSync(join(unpacked, face.licence), join(fontDir, face.licenceOutput));
+    for (const copy of face.renderCopies ?? []) {
+      const name = copy.split('/').pop();
+      fonttools(
+        'pyftsubset',
+        join(unpacked, copy),
+        `--unicodes=${face.ranges}`,
+        '--layout-features=kern,liga',
+        `--output-file=${join(renderDir, name)}`,
+      );
+      copyFileSync(join(unpacked, face.licence), join(renderDir, face.licenceOutput));
+    }
 
     const metrics = { ...(await fromFile(output)), familyName: face.family };
     const { fontFamily, fontFaces } = createFontStack([metrics, ...face.fallbacks]);
