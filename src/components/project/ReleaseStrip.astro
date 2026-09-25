@@ -1,0 +1,54 @@
+---
+import { listProjects } from '../../lib/projects';
+import { projectReleases } from '../../lib/releases';
+
+const latest = await Promise.all(
+  (await listProjects()).map(async (entry) => ({
+    name: entry.data.name,
+    release: (await projectReleases(entry.id)).releases[0],
+  })),
+);
+latest.sort((a, b) => b.release.published.localeCompare(a.release.published));
+---
+
+<ul class="release-strip">
+  {latest.map(({ name, release }) => (
+    <li>
+      <a href={release.url}>
+        {name} <span class="version">{release.version}</span>
+      </a>
+      <time datetime={release.published}>{release.published}</time>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .release-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+  a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .version {
+    font-family: var(--font-code);
+    font-weight: 400;
+  }
+  time {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

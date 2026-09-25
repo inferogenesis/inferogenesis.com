@@ -1,5 +1,6 @@
 ---
 import ProjectGrid from '../components/project/ProjectGrid.astro';
+import ReleaseStrip from '../components/project/ReleaseStrip.astro';
 import Landing from '../layouts/Landing.astro';
 
 const tagline = 'continuous active inference, from the first cell';
@@ -16,6 +17,9 @@ const tagline = 'continuous active inference, from the first cell';
 
   <h2>Projects</h2>
   <ProjectGrid />
+
+  <h2>Latest releases</h2>
+  <ReleaseStrip />
 </Landing>
 
 <style>
@@ -28,6 +32,9 @@ const tagline = 'continuous active inference, from the first cell';
     color: var(--text-muted);
     font-size: 1.125rem;
     font-style: italic;
+  }
+  h2 {
+    margin-top: 2.5rem;
   }
   .intro {
     max-width: 65ch;
