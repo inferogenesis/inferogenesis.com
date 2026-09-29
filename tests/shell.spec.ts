@@ -49,23 +49,67 @@ test('the theme toggle switches the theme and remembers it', async ({ page }) =>
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 
-for (const width of [390, 1280]) {
-  test(`the theme toggle is the first header tool at ${width} px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 800 });
-    await page.goto('/');
-    const header = page.locator('.site-header');
-    const toggle = header.getByRole('button', { name: /Switch to (light|dark) theme/ });
-    const search = header.getByRole('button', { name: 'Search' });
-    const [toggleBox, searchBox] = [
-      await toggle.boundingBox(),
-      await search.boundingBox(),
-    ];
-    expect(toggleBox!.x).toBeLessThan(searchBox!.x);
-    await toggle.focus();
-    await page.keyboard.press('Tab');
-    await expect(search).toBeFocused();
-  });
-}
+test('the theme toggle is the first header tool on a wide viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const header = page.locator('.site-header');
+  const toggle = header.getByRole('button', { name: /Switch to (light|dark) theme/ });
+  const search = header.getByRole('button', { name: 'Search' });
+  const [toggleBox, searchBox] = [
+    await toggle.boundingBox(),
+    await search.boundingBox(),
+  ];
+  expect(toggleBox!.x).toBeLessThan(searchBox!.x);
+  await toggle.focus();
+  await page.keyboard.press('Tab');
+  await expect(search).toBeFocused();
+});
+
+test('on a phone, Search and Menu share the first row with the mark', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const header = page.locator('.site-header');
+  const home = await header.getByRole('link', { name: 'Inferogenesis' }).boundingBox();
+  const search = await header.getByRole('button', { name: 'Search' }).boundingBox();
+  const menu = await header.getByRole('button', { name: 'Menu' }).boundingBox();
+  const middle = (box: typeof home) => box!.y + box!.height / 2;
+  expect(Math.abs(middle(search) - middle(home))).toBeLessThan(4);
+  expect(Math.abs(middle(menu) - middle(home))).toBeLessThan(4);
+  expect(search!.x).toBeLessThan(menu!.x);
+  await expect(
+    header.getByRole('button', { name: /Switch to (light|dark) theme/ }),
+  ).toBeHidden();
+});
+
+test('opening the menu leaves Search where it was', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/projects/cpomdp/');
+  const search = page.locator('.site-header').getByRole('button', { name: 'Search' });
+  const before = await search.boundingBox();
+  await page.getByRole('button', { name: 'Menu' }).click();
+  expect(await search.boundingBox()).toEqual(before);
+});
+
+test('the phone menu carries the theme toggle after the links', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Menu' }).click();
+  const menu = page.locator('#site-menu');
+  const lastLink = await menu.getByRole('link').last().boundingBox();
+  const toggle = menu.getByRole('button', { name: 'Switch to light theme' });
+  await expect(toggle).toBeVisible();
+  expect((await toggle.boundingBox())!.y).toBeGreaterThan(lastLink!.y);
+  await toggle.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(
+    menu.getByRole('button', { name: 'Switch to dark theme' }),
+  ).toBeVisible();
+});
 
 test('the sidebar becomes a drawer on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 900 });

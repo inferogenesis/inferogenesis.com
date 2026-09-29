@@ -62,7 +62,7 @@ test('the landing menu opens the primary navigation alone, since it has no sideb
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Menu' })).toHaveAttribute(
     'aria-controls',
-    'site-nav',
+    'site-menu',
   );
   await expect(page.locator('#site-sidebar')).toHaveCount(0);
 });
