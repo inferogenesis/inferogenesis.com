@@ -1,0 +1,21 @@
+[
+  {
+    "slug": "derive-vfe",
+    "title": "How to derive Variational Free Energy: A Software Engineer's Guide - Part 1",
+    "summary": "A guide on deriving Variational Free Energy following 'A tutorial on the free-energy framework for modelling perception and learning'(Bogacz 2017)",
+    "date": "2026-05-31",
+    "updated": "2026-06-10"
+  },
+  {
+    "slug": "active-inference",
+    "title": "Active Inference: The Predictive Brain",
+    "summary": "A post about Active Inference, the brain as a prediction engine, prediction error, perception vs action, and the free energy principle.",
+    "date": "2026-05-14"
+  },
+  {
+    "slug": "active-inference-part-2",
+    "title": "Active Inference, Part 2: From Survival Equations to the Living Brain",
+    "summary": "A guided tour of Da Costa et al. (2020), 'Active inference on discrete state-spaces: a synthesis' — why survival forces an organism to model the world, the Markov blanket, perception as variational free energy, action as expected free energy, and how the maths maps onto real neurons.",
+    "date": "2026-06-11"
+  }
+]

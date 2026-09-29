@@ -174,9 +174,9 @@ const release = z.object({
   url: z.url(),
 });
 
-const newestFirst = (releases: { published: string }[]) =>
-  releases.every(
-    (entry, index) => index === 0 || releases[index - 1].published >= entry.published,
+const newestFirst = (entries: { published: string }[]) =>
+  entries.every(
+    (entry, index) => index === 0 || entries[index - 1].published >= entry.published,
   );
 
 // Where a project's release list came from, and when it was read. A GitHub release always
@@ -213,3 +213,31 @@ export const pythonRangeSchema = z.object({
 });
 
 export type PythonRange = z.infer<typeof pythonRangeSchema>;
+
+const linkedPost = z
+  .object({
+    title: z.string().min(1),
+    summary: z.string().min(1),
+    published: z.iso.date(),
+    updated: z.iso.date().optional(),
+    url: z.url(),
+  })
+  .refine((post) => !post.updated || post.updated >= post.published, {
+    message: 'An update cannot predate publication.',
+    path: ['updated'],
+  });
+
+// Posts that stay where they were first published and are linked from the writing list.
+export const backCatalogueSchema = z
+  .object({
+    feed: z.url(),
+    retrieved: z.iso.date(),
+    posts: z.array(linkedPost).min(1),
+  })
+  .refine((catalogue) => newestFirst(catalogue.posts), {
+    message: 'Posts are listed newest first.',
+    path: ['posts'],
+  });
+
+export type BackCatalogue = z.infer<typeof backCatalogueSchema>;
+export type LinkedPost = BackCatalogue['posts'][number];
