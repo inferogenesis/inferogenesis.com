@@ -55,10 +55,14 @@ test('the projects index sits under a breadcrumb', async ({ page }) => {
   );
 });
 
-test('landing page offers no menu button, since it has no sidebar to open', async ({
+test('the landing menu opens the primary navigation alone, since it has no sidebar', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto('/');
-  await expect(page.getByRole('button', { name: 'Menu' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Menu' })).toHaveAttribute(
+    'aria-controls',
+    'site-nav',
+  );
+  await expect(page.locator('#site-sidebar')).toHaveCount(0);
 });

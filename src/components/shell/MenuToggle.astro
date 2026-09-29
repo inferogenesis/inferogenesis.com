@@ -1,8 +1,16 @@
+---
+interface Props {
+  controls: string[];
+}
+
+const { controls } = Astro.props;
+---
+
 <button
   type="button"
   class="menu-toggle"
   aria-expanded="false"
-  aria-controls="site-sidebar"
+  aria-controls={controls.join(' ')}
   data-menu-toggle
 >
   Menu
@@ -10,11 +18,21 @@
 
 <script>
   const button = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-  const sidebar = document.getElementById('site-sidebar');
-  button?.addEventListener('click', () => {
-    const open = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', String(!open));
-    sidebar?.toggleAttribute('data-open', !open);
+  const targets = (button?.getAttribute('aria-controls') ?? '')
+    .split(' ')
+    .map((id) => document.getElementById(id));
+  const isOpen = () => button?.getAttribute('aria-expanded') === 'true';
+
+  function setOpen(open: boolean) {
+    button?.setAttribute('aria-expanded', String(open));
+    for (const target of targets) target?.toggleAttribute('data-open', open);
+  }
+
+  button?.addEventListener('click', () => setOpen(!isOpen()));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !isOpen()) return;
+    setOpen(false);
+    button?.focus();
   });
 </script>
 
