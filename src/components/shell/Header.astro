@@ -18,7 +18,8 @@ const path = Astro.url.pathname;
     <Mark />
     <span class="wordmark">Inferogenesis</span>
   </a>
-  <nav aria-label="Primary">
+  <MenuToggle controls={hasSidebar ? ['site-nav', 'site-sidebar'] : ['site-nav']} />
+  <nav id="site-nav" aria-label="Primary">
     <ul>
       {primaryNav.map((item) => (
         <li>
@@ -33,9 +34,8 @@ const path = Astro.url.pathname;
     </ul>
   </nav>
   <div class="tools">
-    <Search />
     <ThemeToggle />
-    {hasSidebar && <MenuToggle />}
+    <Search />
   </div>
 </header>
 
@@ -81,9 +81,32 @@ const path = Astro.url.pathname;
     gap: 0.75rem;
     margin-left: auto;
   }
+  /* The menu button sits before the nav it opens, so focus order matches what shows. */
   @media (max-width: 767px) {
+    .site-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem 1rem;
+    }
     nav {
       display: none;
+      grid-column: 1 / -1;
+    }
+    nav[data-open] {
+      display: block;
+    }
+    nav ul {
+      flex-direction: column;
+      gap: 0;
+    }
+    nav a {
+      display: block;
+      padding: 0.5rem 0;
+    }
+    .tools {
+      grid-column: 1 / -1;
+      justify-self: end;
+      margin-left: 0;
     }
   }
 </style>
