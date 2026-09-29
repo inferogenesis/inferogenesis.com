@@ -196,7 +196,7 @@ Gate: a commit to `main` deploys to the apex over HTTPS in under five minutes.
 - [x] Header: mark, wordmark, top nav, search, theme toggle
 - [x] Sidebar with pill active indicator, drawer below 768 px
 - [x] Breadcrumbs, contents panel, footer meta
-- [ ] Status glyph component, four states, `aria-label` set, 14 px legibility check passed
+- [x] Status glyph component, four states, `aria-label` set, 14 px legibility check passed
 - [x] Callout components: note, warning, roadmap
 - [x] Favicon and apple-touch icons from the supplied avatar SVGs
 - [x] JS baseline measured and budgets written into the bundle check
@@ -245,7 +245,7 @@ Gate: cutting a cpomdp release updates the apex within 24 hours with no commit t
 - [x] D1 resolved: back catalogue migrated from dj-elliott.com or linked canonically
 - [ ] Learn section with one active inference primer
 - [ ] Workshop material ("Build a curious rocket") under `/learn/`
-- [ ] `llms.txt` published
+- [x] `llms.txt` published
 - [ ] Conditional: gates tables rendered from warrantlib `CheckReport` JSON
 - [ ] Lighthouse 95 or above on landing, a project page, a programme page, a post
 
