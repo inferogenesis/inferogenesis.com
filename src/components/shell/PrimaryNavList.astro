@@ -1,0 +1,49 @@
+---
+import { primaryNav } from '../../lib/nav';
+
+interface Props {
+  direction: 'row' | 'column';
+}
+
+const { direction } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<ul class:list={['primary-nav-list', direction]}>
+  {primaryNav.map((item) => (
+    <li>
+      <a
+        href={item.href}
+        aria-current={path.startsWith(item.href) ? 'true' : undefined}
+      >
+        {item.label}
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .primary-nav-list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .row {
+    gap: 1.5rem;
+  }
+  .column {
+    flex-direction: column;
+  }
+  .column a {
+    display: block;
+    padding: 0.5rem 0;
+  }
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  a[aria-current='true'] {
+    color: var(--accent);
+  }
+</style>

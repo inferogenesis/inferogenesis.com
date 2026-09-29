@@ -30,7 +30,7 @@
 
 <script>
   const root = document.documentElement;
-  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
   const prefersLight = window.matchMedia('(prefers-color-scheme: light)');
 
   function current(): 'light' | 'dark' {
@@ -41,19 +41,22 @@
 
   function relabel() {
     const next = current() === 'light' ? 'dark' : 'light';
-    button?.setAttribute('aria-label', `Switch to ${next} theme`);
+    for (const button of buttons)
+      button.setAttribute('aria-label', `Switch to ${next} theme`);
   }
 
-  button?.addEventListener('click', () => {
-    const next = current() === 'light' ? 'dark' : 'light';
-    root.dataset.theme = next;
-    try {
-      localStorage.setItem('theme', next);
-    } catch {
-      // Storage can be blocked. The toggle still works for this page.
-    }
-    relabel();
-  });
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const next = current() === 'light' ? 'dark' : 'light';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Storage can be blocked. The toggle still works for this page.
+      }
+      relabel();
+    });
+  }
   relabel();
 </script>
 

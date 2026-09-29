@@ -1,16 +1,17 @@
 ---
 import Mark from './Mark.astro';
 import MenuToggle from './MenuToggle.astro';
+import PrimaryNavList from './PrimaryNavList.astro';
 import Search from './Search.astro';
 import ThemeToggle from './ThemeToggle.astro';
-import { primaryNav } from '../../lib/nav';
 
 interface Props {
   hasSidebar?: boolean;
 }
 
 const { hasSidebar = true } = Astro.props;
-const path = Astro.url.pathname;
+// The nav and the theme toggle appear twice, in the wide row and in the phone menu, so
+// focus order follows what shows at each width. CSS shows one of each.
 ---
 
 <header class="site-header">
@@ -18,24 +19,24 @@ const path = Astro.url.pathname;
     <Mark />
     <span class="wordmark">Inferogenesis</span>
   </a>
-  <MenuToggle controls={hasSidebar ? ['site-nav', 'site-sidebar'] : ['site-nav']} />
-  <nav id="site-nav" aria-label="Primary">
-    <ul>
-      {primaryNav.map((item) => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={path.startsWith(item.href) ? 'true' : undefined}
-          >
-            {item.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+  <nav class="wide-only" aria-label="Primary">
+    <PrimaryNavList direction="row" />
   </nav>
   <div class="tools">
-    <ThemeToggle />
+    <span class="wide-only">
+      <ThemeToggle />
+    </span>
     <Search />
+    <MenuToggle controls={hasSidebar ? ['site-menu', 'site-sidebar'] : ['site-menu']} />
+  </div>
+  <div class="site-menu" id="site-menu">
+    <nav aria-label="Primary">
+      <PrimaryNavList direction="column" />
+    </nav>
+    <div class="menu-theme">
+      <span>Theme</span>
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
@@ -61,52 +62,39 @@ const path = Astro.url.pathname;
     font-weight: 700;
     font-size: 1.125rem;
   }
-  ul {
-    display: flex;
-    gap: 1.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  nav a {
-    color: var(--text);
-    text-decoration: none;
-  }
-  nav a[aria-current='true'] {
-    color: var(--accent);
-  }
   .tools {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-left: auto;
   }
-  /* The menu button sits before the nav it opens, so focus order matches what shows. */
+  .wide-only {
+    display: inline-flex;
+  }
+  .site-menu {
+    display: none;
+  }
   @media (max-width: 767px) {
     .site-header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.75rem 1rem;
+      gap: 0.5rem 1rem;
     }
-    nav {
+    .wide-only {
       display: none;
-      grid-column: 1 / -1;
-    }
-    nav[data-open] {
-      display: block;
-    }
-    nav ul {
-      flex-direction: column;
-      gap: 0;
-    }
-    nav a {
-      display: block;
-      padding: 0.5rem 0;
     }
     .tools {
-      grid-column: 1 / -1;
-      justify-self: end;
-      margin-left: 0;
+      gap: 0.5rem;
+    }
+    .site-menu[data-open] {
+      display: block;
+      flex-basis: 100%;
+    }
+    .menu-theme {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--text-muted);
     }
   }
 </style>
