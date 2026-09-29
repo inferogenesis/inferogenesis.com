@@ -75,3 +75,30 @@ section 8 baseline the plan expects to measure at P1.
 - The `tokens.css` contract stays ten tokens with no mapping layer.
 - The prose gate learned to skip MDX `import` and `export` lines, which the spike's
   content entry tripped on.
+
+---
+
+## ADR-002. Published writing stays where it is and is linked
+
+**Date:** 2026-09-25
+**Status:** Accepted
+**Phase:** P4 (open decision D1)
+
+### Decision
+
+Posts already published on the personal site at `www.dj-elliott.com` stay there. The
+writing list on this site links each one at its original URL. That URL stays canonical.
+Nothing is copied, moved or redirected. New technical posts are published here, under
+`/writing/`.
+
+### Consequences
+
+- The list takes each post's title, summary and dates from the personal site's
+  `blog/posts.json` at build time. CI reads it live and fails if the fetch fails. A local
+  build reads `data/writing/back-catalogue.json`.
+- No canonical URL changes, so search engines keep the index they have.
+- The feed at `/writing/rss.xml` carries every post, each linked to its original URL.
+- A post the personal site has not listed in its `posts.json` does not appear. A draft
+  there stays off this site.
+- The layout for posts hosted here, with its `BlogPosting` structured data, ships with
+  the first such post.

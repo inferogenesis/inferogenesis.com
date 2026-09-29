@@ -1,0 +1,41 @@
+---
+import PostEntry from '../../components/writing/PostEntry.astro';
+import Base from '../../layouts/Base.astro';
+import { backCatalogue } from '../../lib/backCatalogue';
+
+const { posts } = await backCatalogue();
+const entries = posts.map((post) => ({
+  post,
+  id: new URL(post.url).pathname.split('/').filter(Boolean).at(-1) ?? post.published,
+}));
+const headings = entries.map(({ post, id }) => ({
+  depth: 2,
+  slug: id,
+  text: post.title,
+}));
+---
+
+<Base
+  title="Writing"
+  description="Technical posts on active inference and the software that runs it."
+  headings={headings}
+  crumbs={[{ label: 'Writing' }]}
+>
+  <h1>Writing</h1>
+  <p class="intro">Technical posts on active inference.</p>
+  {entries.map(({ post, id }) => (
+    <PostEntry post={post} id={id} />
+  ))}
+  <p class="feed">
+    <a href="/writing/rss.xml">RSS feed</a>
+  </p>
+</Base>
+
+<style>
+  .intro {
+    max-width: 65ch;
+  }
+  .feed {
+    margin-top: 1.5rem;
+  }
+</style>

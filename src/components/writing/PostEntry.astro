@@ -1,0 +1,53 @@
+---
+import type { LinkedPost } from '../../lib/backCatalogue';
+
+interface Props {
+  post: LinkedPost;
+  id: string;
+}
+
+const { post, id } = Astro.props;
+const host = new URL(post.url).host;
+const elsewhere = host !== Astro.site?.host;
+---
+
+<article class="post-entry">
+  <h2 id={id}>
+    <a href={post.url}>{post.title}</a>
+  </h2>
+  <p class="meta">
+    <time class="published" datetime={post.published}>
+      {post.published}
+    </time>
+    {post.updated && (
+      <span>
+        {'Updated '}
+        <time datetime={post.updated}>{post.updated}</time>
+      </span>
+    )}
+    {elsewhere && <span>{`On ${host}`}</span>}
+  </p>
+  <p>{post.summary}</p>
+</article>
+
+<style>
+  .post-entry {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.25rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin: 0 0 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  p:last-child {
+    margin: 0;
+  }
+</style>

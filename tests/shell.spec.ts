@@ -14,6 +14,7 @@ const pages = [
   '/research/state-dependent-observation-noise/',
   '/programmes/',
   '/programmes/p-star/',
+  '/writing/',
 ];
 const schemes = ['dark', 'light'] as const;
 const wcag = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
