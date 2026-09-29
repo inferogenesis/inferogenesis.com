@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { backCatalogue } from '../lib/backCatalogue';
 import { researchRecord } from '../lib/datacite';
 import { llmsText } from '../lib/llmsText';
 import { listProjects } from '../lib/projects';
@@ -53,6 +54,7 @@ export const GET: APIRoute = async ({ site }) => {
     projects,
     research,
     programmes,
+    writing: (await backCatalogue()).posts,
     pages,
   });
   return new Response(body, {

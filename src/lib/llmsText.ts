@@ -1,4 +1,4 @@
-import type { Release, ResearchRecord } from '../content/schemas';
+import type { LinkedPost, Release, ResearchRecord } from '../content/schemas';
 
 export interface LlmsProject {
   path: string;
@@ -24,6 +24,7 @@ export interface LlmsSite {
   projects: LlmsProject[];
   research: (ResearchRecord & { path: string })[];
   programmes: LlmsLink[];
+  writing: LinkedPost[];
   pages: LlmsLink[];
 }
 
@@ -51,6 +52,14 @@ function researchLine(record: LlmsSite['research'][number], site: string): strin
   ].join(' ');
 }
 
+function postLine(post: LinkedPost): string {
+  const dates = post.updated
+    ? `Published ${post.published}, updated ${post.updated}.`
+    : `Published ${post.published}.`;
+  const summary = oneLine(post.summary).replace(/([^.!?])$/, '$1.');
+  return `- [${oneLine(post.title)}](${post.url}): ${summary} ${dates}`;
+}
+
 const linkLine = (link: LlmsLink, site: string) =>
   `- [${link.title}](${new URL(link.path, site).href}): ${oneLine(link.note)}`;
 
@@ -60,6 +69,7 @@ export function llmsText(input: LlmsSite): string {
     ['Projects', input.projects.map((project) => projectLine(project, input.site))],
     ['Research', input.research.map((record) => researchLine(record, input.site))],
     ['Programmes', input.programmes.map((link) => linkLine(link, input.site))],
+    ['Writing', input.writing.map(postLine)],
     ['Optional', input.pages.map((link) => linkLine(link, input.site))],
   ];
   return [
