@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { readBackCatalogue } from '../src/lib/backCatalogue';
 
 test.describe('llms.txt', () => {
   let text = '';
@@ -34,6 +35,18 @@ test.describe('llms.txt', () => {
     expect(text).toMatch(
       /- \[p\*: certifiable active inference\]\(https:\/\/inferogenesis\.com\/programmes\/p-star\/\): /,
     );
+  });
+
+  test('lists each post under Writing, linked where it lives, before Optional', () => {
+    const writing = text.indexOf('\n## Writing\n');
+    const optional = text.indexOf('\n## Optional\n');
+    expect(writing).toBeGreaterThan(-1);
+    expect(writing).toBeLessThan(optional);
+    const section = text.slice(writing, optional);
+    for (const post of readBackCatalogue().posts) {
+      expect(section).toContain(`- [${post.title}](${post.url}): `);
+      expect(section).toContain(`Published ${post.published}`);
+    }
   });
 
   test('every link to this site resolves to a built page', () => {
