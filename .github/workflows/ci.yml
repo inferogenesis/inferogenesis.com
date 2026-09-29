@@ -20,7 +20,8 @@ permissions:
 jobs:
   lint:
     name: lint (pre-commit)
-    runs-on: ubuntu-latest
+    # ubuntu-latest moves to Ubuntu 26 from 2026-10-19. Move once CI passes there.
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -33,7 +34,7 @@ jobs:
 
   build:
     name: build and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -64,7 +65,7 @@ jobs:
   deploy:
     needs: build
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       pages: write
