@@ -1,0 +1,35 @@
+---
+interface Props {
+  writeUps: { title: string; description: string; href: string }[];
+}
+
+const { writeUps } = Astro.props;
+---
+
+<h2 id="applied">Applied</h2>
+<ul class="applied">
+  {writeUps.map((writeUp) => (
+    <li>
+      <a href={writeUp.href}>{writeUp.title}</a>
+      <p>{writeUp.description}</p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .applied {
+    padding: 0;
+    list-style: none;
+  }
+  .applied li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  .applied a {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+  .applied p {
+    margin: 0.25rem 0 0;
+  }
+</style>

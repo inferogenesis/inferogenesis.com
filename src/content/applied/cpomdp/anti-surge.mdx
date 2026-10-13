@@ -1,0 +1,93 @@
+---
+title: 'Anti-surge control: the flow meter picks the side'
+description: >-
+  An active-inference agent holding a compressor's surge margin drifts toward the flows
+  its meter reads best. A DP meter keeps it off the surge line. A Coriolis meter of the
+  same accuracy settles it past the line.
+published: 2026-10-13
+docs: https://cpomdp.inferogenesis.com/guides/surge_margin/
+computedBy: https://github.com/inferogenesis/cpomdp/blob/main/examples/surge_margin.py
+---
+
+import { Image } from 'astro:assets';
+import figure from './surge_margin.png';
+
+## The result
+
+I gave a cpomdp agent one job. It holds a centrifugal compressor's flow at a 5% margin
+above the surge line, in percent of design flow. Then I changed its flow meter and
+nothing else. Each meter is 0.2% accurate at design flow. Only the shape of its error
+changes.
+
+| Flow meter | First step | Settles at |
+| --- | --- | --- |
+| DP, with its noise frozen at the operating point | +5.03% | +5.00% |
+| Orifice plate or venturi (differential pressure) | +12.30% | +7.14% |
+| Coriolis | −4.98% | −0.38% |
+
+The setpoint is +5%. A negative margin is past the surge line. "Settles at" is cpomdp's
+own `Agent` run in closed loop, with no noise.
+
+<Image
+  src={figure}
+  widths={[720, 1080, 1440]}
+  sizes="(min-width: 1100px) 720px, 100vw"
+  alt="Four panels. Top left, the frozen-noise agent: its epistemic curve is flat, so the minimum of its objective sits on the economic optimum. Top right, the DP meter: its epistemic curve rises away from the surge line and holds the agent off the optimum on the safe side. Bottom left, the Coriolis meter: its epistemic curve rises toward the surge line and the minimum lands past it. Bottom right, where the DP agent aims and settles as its meter worsens, a flat line for the frozen-noise agent at the setpoint, and a single diamond for the Coriolis meter just below the surge line."
+/>
+
+The DP agent stands off on the safe side. The Coriolis agent aims past the surge line on
+its first step. It settles there too.
+
+## Why the meter decides
+
+The agent's objective has an information term. It rewards a reading by how much the
+reading would teach, and quiet readings teach most. So the agent drifts toward the flows
+its own meter reads best.
+
+A DP element reads flow through a square root, and its transmitter error is roughly flat
+in pressure. Its flow noise is worst at low flow, near surge. A Coriolis meter's error is
+a fixed share of the reading, so its noise is lowest at low flow. The sign flips. The term
+that holds the DP agent off surge pulls the Coriolis agent in. The
+[cpomdp docs](https://cpomdp.inferogenesis.com/guides/surge_margin/) derive both noise
+models and a closed-form law for where the agent stands.
+
+## If you run compressors
+
+- **The information term is not a safety factor.** With a DP meter it looks like
+  caution. It is appetite for information, and here it happens to point away from surge.
+- **Surge protection belongs in the setpoint or a hard limit.** Real surge margin prices
+  the cost of being wrong. Curiosity cannot stand in for that.
+- **Coordinates decide whether the term exists.** Many anti-surge controllers work in
+  reduced ΔP coordinates. A linear-Gaussian model with additive control, written there,
+  has constant noise. Its information term vanishes and the agent becomes a plain
+  controller.
+- **The meter's error model is part of the controller.** An active-inference controller
+  needs it. Above all it needs the sign of its slope.
+
+## What this is not
+
+A showcase on an illustrative compressor. It has no surge dynamics and no compressor map,
+and its operating point describes no real machine.
+
+- The DP noise model comes from ISO 5167, which excludes pulsating flow. Surge is
+  pulsating flow. The model describes the meter on the approach to surge.
+- The Coriolis meter has no zero-stability term. A real one has a fixed error near zero
+  flow, which would weaken its pull toward low flow.
+- It is not a controller benchmark. The baseline is the same agent with frozen noise.
+- The setpoint's weight is a policy choice and sets the size of every offset above. The
+  direction is the result.
+
+The application follows Sathish, Khader, Sayma and Shah, who propose active inference
+for anti-surge control in
+[GT2024-124905](https://doi.org/10.1115/GT2024-124905) (ASME Turbo Expo 2024). The
+modelling here is mine.
+
+## Run it
+
+```sh
+git clone https://github.com/inferogenesis/cpomdp
+cd cpomdp
+uv run python examples/surge_margin.py --check
+```
+
+It prints every number above. It also checks eleven claims about them.

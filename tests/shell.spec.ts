@@ -8,6 +8,7 @@ const pages = [
   '/kitchen-sink/',
   '/projects/cpomdp/',
   '/projects/warrantlib/',
+  '/projects/cpomdp/applied/anti-surge/',
   '/about/',
   '/support/',
   '/research/',

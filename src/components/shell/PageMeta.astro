@@ -1,0 +1,35 @@
+---
+import { isoDate } from '../../lib/dates';
+
+interface Props {
+  lastModified?: Date;
+  editUrl: string;
+  issueUrl: string;
+}
+
+const { lastModified, editUrl, issueUrl } = Astro.props;
+---
+
+<footer class="page-meta">
+  {lastModified && (
+    <span>
+      Last modified{' '}
+      <time datetime={lastModified.toISOString()}>{isoDate(lastModified)}</time>
+    </span>
+  )}
+  <a href={editUrl}>Edit on GitHub</a>
+  <a href={issueUrl}>Report an issue</a>
+</footer>
+
+<style>
+  .page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

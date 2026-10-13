@@ -1,4 +1,5 @@
 import { arxivId, type ResearchRecord } from './datacite';
+import { isoDate } from './dates';
 
 interface Artefact {
   label: string;
@@ -94,6 +95,41 @@ export function softwareSourceCode(
       identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: project.doi },
     }),
     sameAs: [...(project.doi ? [`https://doi.org/${project.doi}`] : []), project.docs],
+  };
+}
+
+interface WriteUp {
+  title: string;
+  description: string;
+  published: Date;
+  updated?: Date;
+  docs: string;
+  computedBy: string;
+}
+
+// A project's write-up. It is about the project's code, and it rests on the script that
+// computed its numbers and the docs that hold its method.
+export function techArticle(
+  writeUp: WriteUp,
+  project: { name: string; repo: string },
+  pageUrl: string,
+) {
+  return {
+    '@context': context,
+    '@type': 'TechArticle',
+    headline: writeUp.title,
+    description: writeUp.description,
+    url: pageUrl,
+    datePublished: isoDate(writeUp.published),
+    ...(writeUp.updated && { dateModified: isoDate(writeUp.updated) }),
+    author: { '@type': 'Organization', name: 'Inferogenesis' },
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    about: {
+      '@type': 'SoftwareSourceCode',
+      name: project.name,
+      codeRepository: project.repo,
+    },
+    isBasedOn: [writeUp.computedBy, writeUp.docs],
   };
 }
 

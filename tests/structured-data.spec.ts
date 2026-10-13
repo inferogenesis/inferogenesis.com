@@ -4,6 +4,7 @@ import {
   organisation,
   scholarlyWork,
   softwareSourceCode,
+  techArticle,
 } from '../src/lib/structuredData';
 
 const record = {
@@ -137,6 +138,44 @@ test.describe('organisation and software structured data', () => {
     expect(data).not.toHaveProperty('runtimePlatform');
     expect(data).not.toHaveProperty('programmingLanguage');
     expect(data.sameAs).toEqual(['https://cpomdp.inferogenesis.com/']);
+  });
+});
+
+test.describe('applied write-up structured data', () => {
+  const writeUp = {
+    title: 'Anti-surge control',
+    description: 'One line on what it found.',
+    published: new Date('2026-10-13'),
+    docs: 'https://cpomdp.inferogenesis.com/guides/surge_margin/',
+    computedBy:
+      'https://github.com/inferogenesis/cpomdp/blob/main/examples/surge_margin.py',
+  };
+  const project = { name: 'cpomdp', repo: 'https://github.com/inferogenesis/cpomdp' };
+  const url = 'https://inferogenesis.com/projects/cpomdp/applied/anti-surge/';
+
+  test('describes a write-up as a TechArticle about its project', () => {
+    expect(techArticle(writeUp, project, url)).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: 'Anti-surge control',
+      description: 'One line on what it found.',
+      url,
+      datePublished: '2026-10-13',
+      author: { '@type': 'Organization', name: 'Inferogenesis' },
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      about: {
+        '@type': 'SoftwareSourceCode',
+        name: 'cpomdp',
+        codeRepository: 'https://github.com/inferogenesis/cpomdp',
+      },
+      isBasedOn: [writeUp.computedBy, writeUp.docs],
+    });
+  });
+
+  test('carries an update date only when the write-up has one', () => {
+    expect(techArticle(writeUp, project, url)).not.toHaveProperty('dateModified');
+    const updated = { ...writeUp, updated: new Date('2026-10-20') };
+    expect(techArticle(updated, project, url).dateModified).toBe('2026-10-20');
   });
 });
 
