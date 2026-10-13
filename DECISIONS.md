@@ -102,3 +102,39 @@ Nothing is copied, moved or redirected. New technical posts are published here, 
   there stays off this site.
 - The layout for posts hosted here, with its `BlogPosting` structured data, ships with
   the first such post.
+
+---
+
+## ADR-003. A project's write-up on a real problem lives under that project
+
+**Date:** 2026-10-13
+**Status:** Accepted
+**Phase:** P4
+
+### Decision
+
+A write-up that runs one project on a real problem is a page of that project, at
+`/projects/<project>/applied/<name>/`. It is not a post under `/writing/`. The project
+page lists its write-ups in an **Applied** section, after what the project does and
+before its capability table. A project with none has no such section. The first is the
+cpomdp anti-surge write-up.
+
+### Alternatives
+
+- A post under `/writing/`. ADR-002 sends new technical posts there. A write-up of this
+  kind belongs to one project, and a reader of that project's page should find it.
+- **Industry** as the section name. It implies a deployment or a partner, and it shuts
+  out a write-up on a biological or a robotics problem.
+- **Applications**, the docs' name for the same material. It reads as production use.
+- **Case studies**. It promises a real plant and real data.
+
+### Consequences
+
+- Write-ups live in an `applied` collection, one directory per project, at
+  `src/content/applied/<project>/<name>.mdx`. The directory names the project, so the
+  file path and the URL agree. A directory with no matching project fails the build.
+- The page summarises and links. The project's docs carry the method. The write-up
+  carries the result and what it means for someone who runs the plant.
+- Every number on it is computed by a script in the project's repo. The layout says so
+  above the body and links the script, so no write-up can leave the label out.
+- Its structured data is a `TechArticle` about the project's `SoftwareSourceCode`.
