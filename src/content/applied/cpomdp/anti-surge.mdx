@@ -57,10 +57,10 @@ models and a closed-form law for where the agent stands.
   caution. It is appetite for information, and here it happens to point away from surge.
 - **Surge protection belongs in the setpoint or a hard limit.** Real surge margin prices
   the cost of being wrong. Curiosity cannot stand in for that.
-- **Coordinates decide whether the term exists.** Many anti-surge controllers work in
-  reduced ΔP coordinates. A linear-Gaussian model with additive control, written there,
-  has constant noise. Its information term vanishes and the agent becomes a plain
-  controller.
+- **Coordinates decide whether the term does any work.** Many anti-surge controllers
+  work in reduced ΔP coordinates. A linear-Gaussian model with additive control, written
+  there, has constant noise. Its information term then takes the same value for every
+  action, and the agent becomes a plain controller.
 - **The meter's error model is part of the controller.** An active-inference controller
   needs it. Above all it needs the sign of its slope.
 
