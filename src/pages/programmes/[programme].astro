@@ -1,6 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Callout from '../../components/Callout.astro';
 import DisplayEquation from '../../components/programme/DisplayEquation.astro';
+import Ladder from '../../components/programme/Ladder.astro';
+import RichText from '../../components/programme/RichText.astro';
+import SeamJoinFigure from '../../components/programme/SeamJoinFigure.astro';
+import TargetList from '../../components/programme/TargetList.astro';
+import TermList from '../../components/programme/TermList.astro';
 import GatesTable from '../../components/programme/GatesTable.astro';
 import VerifiedTable from '../../components/programme/VerifiedTable.astro';
 import WarrantlibMethod from '../../components/programme/WarrantlibMethod.astro';
@@ -29,6 +35,11 @@ const papers = await Promise.all(
   }),
 );
 
+const lines = new Map(programme.targets.map((target) => [target.id, target.claim]));
+const definitions = new Map(
+  programme.terms.map((entry) => [entry.term, entry.definition]),
+);
+
 const fixedHeadings = [
   ...(papers.length > 0 ? [{ depth: 2, slug: 'papers', text: 'Papers' }] : []),
   ...(programme.gates
@@ -37,6 +48,13 @@ const fixedHeadings = [
   ...(programme.verified.length > 0
     ? [{ depth: 2, slug: 'verified', text: 'Verified at release' }]
     : []),
+  ...(programme.ladder.length > 0
+    ? [{ depth: 2, slug: 'ladder', text: 'The ladder' }]
+    : []),
+  ...(programme.targets.length > 0
+    ? [{ depth: 2, slug: 'targets', text: 'Targets and predictions' }]
+    : []),
+  ...(programme.terms.length > 0 ? [{ depth: 2, slug: 'terms', text: 'Terms' }] : []),
   ...headings,
 ];
 ---
@@ -48,10 +66,26 @@ const fixedHeadings = [
   crumbs={[{ label: 'Programmes', href: '/programmes/' }, { label: programme.title }]}
 >
   <h1>{programme.title}</h1>
+  {programme.premise && (
+    <Callout kind="note" title={programme.premise.title}>
+      <p class="term-host">
+        <RichText
+          text={programme.premise.text}
+          definitions={definitions}
+          id="premise"
+        />
+      </p>
+    </Callout>
+  )}
   <p class="programme-question">{programme.question}</p>
-  <p class="programme-scope">{programme.scope}</p>
+  <p class="programme-scope term-host">
+    <RichText text={programme.scope} definitions={definitions} id="scope" />
+  </p>
   {programme.equation && (
     <DisplayEquation tex={programme.equation.tex} label={programme.equation.label} />
+  )}
+  {programme.figure === 'seam-join' && (
+    <SeamJoinFigure lines={lines} definitions={definitions} />
   )}
   {programme.certifiedWith === 'warrantlib' && <WarrantlibMethod />}
 
@@ -84,6 +118,31 @@ const fixedHeadings = [
     <>
       <h2 id="verified">Verified at release</h2>
       <VerifiedTable cells={programme.verified} repository={programme.repository} />
+    </>
+  )}
+
+  {programme.ladder.length > 0 && (
+    <>
+      <h2 id="ladder">The ladder</h2>
+      <Ladder rungs={programme.ladder} lines={lines} definitions={definitions} />
+    </>
+  )}
+
+  {programme.targets.length > 0 && (
+    <>
+      <h2 id="targets">Targets and predictions</h2>
+      <TargetList
+        targets={programme.targets}
+        literature={programme.literature}
+        definitions={definitions}
+      />
+    </>
+  )}
+
+  {programme.terms.length > 0 && (
+    <>
+      <h2 id="terms">Terms</h2>
+      <TermList terms={programme.terms} />
     </>
   )}
 

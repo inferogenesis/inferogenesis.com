@@ -14,6 +14,7 @@ const pages = [
   '/research/state-dependent-observation-noise/',
   '/programmes/',
   '/programmes/p-star/',
+  '/programmes/sn/',
   '/writing/',
 ];
 const schemes = ['dark', 'light'] as const;

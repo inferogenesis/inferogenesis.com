@@ -1,0 +1,42 @@
+---
+import type { Term } from '../../content/schemas';
+import { termSlug } from '../../lib/terms';
+
+interface Props {
+  terms: Term[];
+}
+
+const { terms } = Astro.props;
+---
+
+<dl class="terms">
+  {terms.map((entry) => (
+    <div id={`term-${termSlug(entry.term)}`}>
+      <dt>{entry.term}</dt>
+      <dd>{entry.definition}</dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .terms {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+  }
+  .terms div {
+    scroll-margin-top: 1rem;
+  }
+  .terms div:target {
+    outline: 1px solid var(--link);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  dt {
+    font-weight: 600;
+  }
+  dd {
+    margin: 0.15rem 0 0;
+    color: var(--text-muted);
+  }
+</style>

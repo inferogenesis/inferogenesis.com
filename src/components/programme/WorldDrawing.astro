@@ -1,0 +1,27 @@
+---
+import '../../styles/diagram.css';
+import { seamDrawings } from './seamDrawings';
+
+interface Props {
+  drawing: string;
+  id: string;
+}
+
+const { drawing, id } = Astro.props;
+const art = seamDrawings[drawing];
+if (!art) throw new Error(`No world drawing named "${drawing}".`);
+const body = art.body.replaceAll('ID-', `${id}-`);
+---
+
+<svg
+  viewBox={art.viewBox}
+  aria-hidden="true"
+  class="diagram world-drawing"
+  set:html={body}
+/>
+
+<style>
+  .world-drawing {
+    max-width: 360px;
+  }
+</style>

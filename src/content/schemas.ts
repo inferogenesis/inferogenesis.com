@@ -122,6 +122,66 @@ const gate = z
     path: ['measured'],
   });
 
+// A registered target or prediction, named by the ID that traces it to its check.
+const targetId = z
+  .string()
+  .regex(/^(G|T)\d+$|^BN-\d+[a-z]$/, 'an ID such as G4, T10 or BN-3b');
+const literatureId = z.string().regex(/^L\d+$/, 'an L item such as L12');
+
+// [[term]] or [[term|shown text]] marks a term in running text. The page shows its
+// definition on hover and lists every definition under Terms.
+export const termMarkup = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+const markedTerms = (text: string) =>
+  [...text.matchAll(termMarkup)].map((match) => match[1].trim());
+// [label](href) links from running text, to a page on this site or an https address.
+export const linkMarkup = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+const linkTargets = (text: string) =>
+  [...text.replaceAll(termMarkup, '').matchAll(linkMarkup)].map((match) => match[2]);
+
+const ladderWorld = z
+  .object({
+    drawing: z.enum([
+      'gradient',
+      'well-mixed',
+      'diffusion-2d',
+      'direct-channel',
+      'nested',
+      'superposed',
+    ]),
+    label: z.string().min(1),
+    objects: z.array(z.string()).min(1),
+    act: z.string().min(1),
+    read: z.string().min(1),
+    targets: z.array(targetId).default([]),
+  })
+  .strict();
+
+const rung = z
+  .object({
+    rung: z.number().int().min(0),
+    name: z.string().min(1),
+    // Read aloud in place of the drawing, and shown when the drawing cannot be.
+    summary: z.string().min(1),
+    // The part of a rung that ships, with the file at the release that shows it.
+    exists: z
+      .object({
+        what: z.string().min(1),
+        release: z.string().regex(/^v\d+\.\d+\.\d+$/, 'a version tag such as v0.4.0'),
+        url: z.url(),
+      })
+      .strict()
+      .optional(),
+    gates: z.array(targetId).default([]),
+    literature: literatureId.optional(),
+    agent: z.string().min(1),
+    reader: z.string().min(1),
+    readerNote: z.string().optional(),
+    // The reader is the actor itself, drawn as a dashed card.
+    readerIsActor: z.boolean().default(false),
+    worlds: z.array(ladderWorld).min(1),
+  })
+  .strict();
+
 export const programmeSchema = z
   .object({
     title: z.string(),
@@ -135,6 +195,13 @@ export const programmeSchema = z
       .optional(),
     // Rendered to MathML at build time, directly under the scope.
     equation: z.object({ tex: z.string().min(1), label: z.string().min(1) }).optional(),
+    // A drawn figure in the same place, for a programme whose claim is a structure.
+    figure: z.enum(['seam-join']).optional(),
+    // Opens the page, before the question, for what the reader has to know first.
+    premise: z
+      .object({ title: z.string().min(1), text: z.string().min(1) })
+      .strict()
+      .optional(),
     // The layout states warrantlib's own rules, so no other project fits this field yet.
     certifiedWith: z.literal('warrantlib').optional(),
     papers: z.array(z.string()).default([]),
@@ -151,16 +218,122 @@ export const programmeSchema = z
         }),
       )
       .default([]),
+    ladder: z.array(rung).default([]),
+    targets: z
+      .array(z.object({ id: targetId, claim: z.string().min(1) }).strict())
+      .default([]),
+    literature: z
+      .array(
+        z
+          .object({
+            id: literatureId,
+            status: z.enum(['open', 'closed']),
+            source: z.string().optional(),
+          })
+          .strict(),
+      )
+      .default([]),
+    terms: z
+      .array(
+        z.object({ term: z.string().min(1), definition: z.string().min(1) }).strict(),
+      )
+      .default([]),
   })
   .strict()
   .refine((programme) => !programme.gates || programme.repository, {
     message: 'A gates table needs the repository its commit refs belong to.',
     path: ['repository'],
-  });
+  })
+  .refine((programme) => !(programme.equation && programme.figure), {
+    message: 'A programme leads with one flagship, an equation or a figure.',
+    path: ['figure'],
+  })
+  .refine(
+    (programme) =>
+      new Set(programme.targets.map((target) => target.id)).size ===
+      programme.targets.length,
+    { message: 'Each target ID has one line.', path: ['targets'] },
+  )
+  .refine(
+    (programme) => {
+      const lines = new Set(programme.targets.map((target) => target.id));
+      return programme.ladder.every((step) =>
+        [...step.gates, ...step.worlds.flatMap((world) => world.targets)].every((id) =>
+          lines.has(id),
+        ),
+      );
+    },
+    { message: 'Every target a rung names needs its line.', path: ['targets'] },
+  )
+  .refine(
+    (programme) => {
+      const items = new Set(programme.literature.map((item) => item.id));
+      return programme.ladder.every(
+        (step) => !step.literature || items.has(step.literature),
+      );
+    },
+    { message: 'Every literature badge needs its L item.', path: ['literature'] },
+  )
+  .refine(
+    (programme) =>
+      programme.literature.every((item) => item.status === 'open' || item.source),
+    { message: 'A closed L item names its source.', path: ['literature'] },
+  )
+  .refine(
+    (programme) =>
+      programme.ladder.every(
+        (step, index) => index === 0 || programme.ladder[index - 1].rung < step.rung,
+      ),
+    { message: 'Rungs are listed in order.', path: ['ladder'] },
+  )
+  .refine(
+    (programme) =>
+      new Set(programme.terms.map((entry) => entry.term)).size ===
+      programme.terms.length,
+    { message: 'Each term has one definition.', path: ['terms'] },
+  )
+  .refine(
+    (programme) =>
+      markedTerms(programme.question).length === 0 &&
+      linkTargets(programme.question).length === 0,
+    {
+      message:
+        'The question leaves the page as plain text, so it marks no terms or links.',
+      path: ['question'],
+    },
+  )
+  .refine(
+    (programme) =>
+      [programme.premise?.text ?? '', programme.scope]
+        .flatMap(linkTargets)
+        .every((href) => href.startsWith('https://') || /^\/(?!\/)/.test(href)),
+    {
+      message: 'A link goes to a page on this site or an https address.',
+      path: ['premise'],
+    },
+  )
+  .refine(
+    (programme) => {
+      const defined = new Set(programme.terms.map((entry) => entry.term));
+      const texts = [
+        programme.premise?.text ?? '',
+        programme.scope,
+        ...programme.ladder.flatMap((step) => [step.summary, step.readerNote ?? '']),
+        ...programme.targets.map((target) => target.claim),
+      ];
+      return texts.flatMap(markedTerms).every((term) => defined.has(term));
+    },
+    { message: 'Every marked term needs its definition.', path: ['terms'] },
+  );
 
 export type Gate = z.infer<typeof gate>;
 export type Programme = z.infer<typeof programmeSchema>;
 export type VerifiedCell = Programme['verified'][number];
+export type Rung = Programme['ladder'][number];
+export type LadderWorld = Rung['worlds'][number];
+export type Target = Programme['targets'][number];
+export type LiteratureItem = Programme['literature'][number];
+export type Term = Programme['terms'][number];
 
 export const pageSchema = z.object({
   title: z.string(),

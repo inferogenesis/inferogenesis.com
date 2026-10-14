@@ -102,3 +102,42 @@ Nothing is copied, moved or redirected. New technical posts are published here, 
   there stays off this site.
 - The layout for posts hosted here, with its `BlogPosting` structured data, ships with
   the first such post.
+
+---
+
+## ADR-003. The SN programme is Seam Networks, shown before its work runs
+
+**Date:** 2026-09-29
+**Status:** Accepted
+**Phase:** P3 (open decisions D7 and D4)
+
+### Decision
+
+"SN" names Seam Networks. Active inference agents couple only through a shared world, and
+a ladder of six rungs, from one E. coli to neurons in a body, builds every coupling on
+that one join. It is a string of thought experiments of mine, grown out of cpomdp's work
+on the p* programme and its harness, with one maintainer and no work run. The page opens by
+saying so. Its question is whether the structure is worth exploring at all, and whether
+cpomdp can tell.
+
+The page goes public now, as D4's default has it. The ladder and every target sit inside
+roadmap callouts. Only the generic pattern row and the flagship figure sit outside, since
+they define the join and claim no result.
+
+### Consequences
+
+- A programme can lead with a figure in place of an equation. The schema takes one or the
+  other.
+- A programme can open with a premise, a note above its question. Running text can mark
+  terms, shown with a definition on hover, and carry links to this site or to https
+  addresses.
+- The ladder, its targets and its literature items are frontmatter. The schema refuses a
+  tag with no line behind it, and the link check refuses a tag whose line is missing from
+  the page.
+- Target IDs stay on the page, each linked to its one-line claim. The IDs trace a claim to
+  its registered check.
+- A literature badge stays on a rung until its L item closes against the paper. No
+  rationale that cites the literature prints before then.
+- Rung 0 names the part that ships, the chemotaxis network as a factor graph at cpomdp
+  v0.4.0, and marks the rest scoped. The swimming cell and its gradient are not built.
+- The drawings are static SVG in the site's tokens. The page adds no client script.

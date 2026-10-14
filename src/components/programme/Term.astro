@@ -1,0 +1,96 @@
+---
+import { termSlug } from '../../lib/terms';
+
+interface Props {
+  term: string;
+  definition: string;
+  // Unique on the page, since one term can appear many times.
+  tipId: string;
+}
+
+const { term, definition, tipId } = Astro.props;
+---
+
+<span class="term-wrap">
+  <a class="term" href={`#term-${termSlug(term)}`} aria-describedby={tipId}>
+    <slot />
+  </a>
+  <span class="tip" role="tooltip" id={tipId}>
+    <span class="tip-body">{definition}</span>
+  </span>
+</span>
+
+<script>
+  // Hover and focus show a tip. Escape hides it until the pointer or focus leaves.
+  for (const wrap of document.querySelectorAll<HTMLElement>('.term-wrap')) {
+    const reset = () => wrap.removeAttribute('data-dismissed');
+    wrap.addEventListener('mouseleave', reset);
+    wrap.addEventListener('focusout', reset);
+  }
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const wrap of document.querySelectorAll(
+      '.term-wrap:hover, .term-wrap:focus-within',
+    )) {
+      wrap.setAttribute('data-dismissed', '');
+    }
+  });
+</script>
+
+<style>
+  .term-wrap {
+    position: relative;
+  }
+  :global(.term-host) {
+    position: relative;
+  }
+  .term {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-decoration-color: var(--text-muted);
+    text-underline-offset: 0.2em;
+    cursor: help;
+  }
+  .tip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 20;
+    width: max-content;
+    max-width: 16rem;
+    padding-top: 0.35rem;
+    transform: translateX(-50%);
+  }
+  .tip-body {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.45;
+    text-align: left;
+    text-transform: none;
+    white-space: normal;
+  }
+  .term-wrap:is(:hover, :focus-within):not([data-dismissed]) .tip {
+    display: block;
+  }
+  @media (max-width: 40rem) {
+    .term-wrap {
+      position: static;
+    }
+    .tip {
+      right: 0;
+      left: 0;
+      width: auto;
+      max-width: none;
+      transform: none;
+    }
+  }
+</style>

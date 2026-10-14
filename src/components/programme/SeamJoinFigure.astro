@@ -1,0 +1,89 @@
+---
+import '../../styles/diagram.css';
+import { seamDrawings } from './seamDrawings';
+import RichText from './RichText.astro';
+import TargetTag from './TargetTag.astro';
+
+interface Props {
+  lines: Map<string, string>;
+  definitions: Map<string, string>;
+}
+
+const { lines, definitions } = Astro.props;
+
+const seam = seamDrawings.a1;
+const comparison = seamDrawings.a2;
+---
+
+<figure class="seam-join">
+  <figure>
+    <svg
+      viewBox={seam.viewBox}
+      role="img"
+      aria-label="Two agents, each with its own factor graph and expected free energy. Each acts on a shared world state and reads it. No reference runs from one agent to the other. The seam is where each agent meets the world."
+      class="diagram"
+      set:html={seam.body.replaceAll('ID-', 'seam-')}
+    />
+    <figcaption class="term-host">
+      <strong>The seam.</strong>
+      <RichText
+        text="Each [[agent]] acts on the [[world]] state and reads it. The world advances once per [[tick]]. Nothing runs from agent to agent directly, so the [[seam]] is the only place they couple."
+        definitions={definitions}
+        id="seam-caption"
+      />
+    </figcaption>
+  </figure>
+  <figure>
+    <svg
+      viewBox={comparison.viewBox}
+      role="img"
+      aria-label="The comparison join. The two agents share a latent variable through an equality node. Both expected free energies sit on one factor graph and the world is bypassed. It is a registered comparison with no result yet."
+      class="diagram"
+      set:html={comparison.body.replaceAll('ID-', 'comparison-')}
+    />
+    <figcaption class="term-host">
+      <strong>The comparison join.</strong>
+      <RichText
+        text="A [[shared latent]] joins the two graphs at an [[equality node]], so one graph carries both [[expected free energy|expected free energies]]."
+        definitions={definitions}
+        id="comparison-caption"
+      />{' '}
+      <TargetTag kind="target" id="T3" line={lines.get('T3')} />{' '}
+      <RichText
+        text="predicts that two sets of [[preferences]] there do not define one variational problem."
+        definitions={definitions}
+        id="comparison-prediction"
+      />{' '}
+      <TargetTag kind="target" id="BN-1c" line={lines.get('BN-1c')} /> tests it and has
+      not run.
+    </figcaption>
+  </figure>
+</figure>
+
+<style>
+  .seam-join {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .seam-join > figure {
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+  .seam-join :global(svg) {
+    max-width: 26rem;
+    margin: 0 auto;
+  }
+  figcaption {
+    margin-top: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  figcaption strong {
+    color: var(--text);
+  }
+</style>

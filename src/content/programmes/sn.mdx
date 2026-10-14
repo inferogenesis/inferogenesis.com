@@ -1,0 +1,201 @@
+---
+title: Seam Networks
+premise:
+  title: A string of thought experiments
+  text: >-
+    Seam Networks is a string of thought experiments of mine. They grew out of cpomdp's
+    work on the [p* programme](/programmes/p-star/) and its
+    [harness](https://github.com/inferogenesis/cpomdp/blob/3cb17dc/src/cpomdp/harness.py),
+    which keeps a [[world]] and its [[agent|agents]] as separate objects with no reference
+    between them. Nothing here has run. The first question is whether the structure is
+    worth exploring at all, and whether cpomdp can tell.
+question: 'Active inference agents that meet only through a shared world: does that structure make sense to explore, and can cpomdp determine whether it does?'
+scope: >-
+  Every [[agent]] is the same kind of object, with its own [[factor graph]] and its own
+  [[expected free energy]]. Its model changes by rung. Agents meet only through a
+  [[world]] that advances once per [[tick]]. That join, the [[seam]], is the only one the
+  ladder uses. It is a construction. Two narrower questions test it. What does the join
+  keep that a [[shared latent]] does not? When the world between two cells changes, does
+  the receiving cell's model have to change? The registered targets below make both
+  precise. The ladder is ordered by [[inference dimensionality]]. It is not a phylogeny. A
+  [[Pearl blanket|Markov blanket]] here is Pearl's, read off a stated graph. No result will
+  claim a [[Friston blanket]].
+status: planned
+figure: seam-join
+ladder:
+  - rung: 0
+    name: E. coli chemotaxis
+    summary: An E. coli swims, which moves it through an attractant gradient. The same cell senses the attractant where it now is. No second cell takes part.
+    exists:
+      what: agent model
+      release: v0.4.0
+      url: https://github.com/inferogenesis/cpomdp/blob/v0.4.0/examples/ffg/chemotaxis_figure.py
+    agent: E. coli
+    reader: the same cell
+    readerIsActor: true
+    worlds:
+      - drawing: gradient
+        label: attractant gradient
+        objects: [Gradient]
+        act: swims (run and tumble)
+        read: senses attractant (receptor, CheA)
+  - rung: 1
+    name: E. coli quorum sensing
+    summary: An E. coli secretes AI-2 through LuxS into a shared medium. A neighbour takes it up through Lsr. The neighbour secretes too, so the exchange is symmetric.
+    gates: [G1, G2, G3]
+    literature: L10
+    agent: E. coli
+    reader: a neighbour
+    readerNote: also secretes
+    worlds:
+      - drawing: well-mixed
+        label: shared medium
+        objects: [WellMixed, DiffusionField1D]
+        act: secretes AI-2 (LuxS)
+        read: takes up AI-2 (Lsr)
+  - rung: 2
+    name: Sponge neuroid cells
+    summary: A neuroid cell of Spongilla lacustris secretes into the extracellular space. A receiving cell reads the field at its own position. No synapse takes part. Neuroid cells model a pre-neural stage and are not neuron progenitors.
+    gates: [G3]
+    literature: L1
+    agent: neuroid cell
+    reader: a receiving cell
+    worlds:
+      - drawing: diffusion-2d
+        label: extracellular space
+        objects: [DiffusionField2D]
+        act: secretes
+        read: reads the field where it sits
+  - rung: 3
+    name: Neurons
+    summary: Two setups for the same two cells, each its own run. A presynaptic neuron releases transmitter into a synaptic cleft and the postsynaptic neuron reads it by receptor binding. In the BN-3b arm the same cell releases into an extracellular field and the same receiver reads the field where it sits. Only the [[world object]] differs.
+    gates: [G4]
+    agent: presynaptic neuron
+    reader: postsynaptic neuron
+    readerNote: one synapse or a reciprocal pair is open
+    worlds:
+      - drawing: direct-channel
+        label: synaptic cleft
+        objects: [DirectChannel]
+        act: releases transmitter
+        read: receptor binding
+      - drawing: diffusion-2d
+        label: extracellular field
+        objects: [DiffusionField2D]
+        act: releases into the field
+        read: reads the field where it sits
+        targets: [BN-3b]
+  - rung: 4
+    name: Worlds in worlds
+    summary: The cells sit in a region nested inside a larger world. A cell secretes into the region's medium, which mixes the cells' actions and carries their mean. The enclosing world sees the region only through its [[flux interface]]. Means cross the interface and covariances do not. A [[coordinator]] is an optional agent one level up. It reads what crosses the interface and writes a [[slow field]] back into the region. Without one, no [[expected free energy]] sits above the cells.
+    gates: [G5]
+    agent: a cell in the region
+    reader: the coordinator
+    readerNote: optional, also writes the slow field
+    worlds:
+      - drawing: nested
+        label: region in an enclosing world
+        objects: [Nested]
+        act: secretes into the region
+        read: reads the flux interface
+        targets: [T7]
+  - rung: 5
+    name: Neuron population in a body
+    summary: Every cell sits in three channels at once, drawn as three layers over the same cells. Synapses carry release along the graph's edges. [[spillover|Spillover]] reaches cells near a graph leaf, joined or not. The [[endocrine broadcast]] reaches every cell. A [[graph cut]] and a [[field region]] draw boundaries around the same cells, and BN-5a predicts they disagree on who is inside. Where the coordinator sits relative to a region is a further arm.
+    gates: [G6]
+    literature: L12
+    agent: a neuron
+    reader: another cell
+    readerNote: also releases
+    worlds:
+      - drawing: superposed
+        label: three channels at once
+        objects: [Superposed]
+        act: releases at its terminals
+        read: reads what reaches it
+        targets: [BN-5a, T10, BN-5b, T9]
+targets:
+  - id: G1
+    claim: S1, S2, WellMixed and V1 exist. Passes when BN-1a matches the distributed Kalman closed form within declared tolerance.
+  - id: G2
+    claim: Passes when T1 prints with an executable witness and T3 prints with a counterexample. BN-1c runs here.
+  - id: G3
+    claim: Lands the diffusion worlds, the clock ADR and T6, then runs BN-1d and BN-2a.
+  - id: G4
+    claim: Lands DirectChannel and the partner model, closes L4, then runs BN-3a to BN-3c.
+  - id: G5
+    claim: Passes on BN-4a PASS and T8 printed with its zero case.
+  - id: G6
+    claim: Passes when T10 closes and BN-5a has run. If T10 cannot close, every graph-world blanket result is VOID NoNull.
+  - id: BN-1c
+    claim: Two cells sharing an [[equality node]], with identical preferences and no arbitration, reach different fixed points under two update orders.
+  - id: BN-3b
+    claim: The same two cells on DirectChannel and on DiffusionField2D give the same qualitative ordering of synchrony and [[inference gap]], with a slower rise under the field.
+  - id: BN-5a
+    claim: The [[CI test]] passes at the graph's topological cut and at the field's spatial cut. The two cuts disagree on membership.
+  - id: BN-5b
+    claim: The boundary CI holds with the coordinator inside the region or in a sibling. The agency degree is larger for sibling placement at every coupling strength tested.
+  - id: T3
+    claim: Two cells sharing an [[equality node]] with two preference vectors do not define one variational problem. Without identical preferences or declared arbitration, the fixed point depends on update order.
+  - id: T7
+    claim: For [[LG]] cells with linear policies, the region's medium carries an affine function of the posterior means. The mean error is bounded. Covariances do not cross the interface.
+  - id: T9
+    claim: With the coordinator in a sibling region, the boundary CI still holds. The agency degree there exceeds the in-region value, monotone in coupling strength.
+  - id: T10
+    claim: A graph cut is reported only if its CI statistic beats a null of random cuts matched on size and crossing-edge count.
+literature:
+  - id: L1
+    status: open
+    source: Musser et al. 2021, Science 374:717
+  - id: L10
+    status: open
+  - id: L12
+    status: open
+terms:
+  - term: "agent"
+    definition: "A cell modelled as an active inference agent. It has its own factor graph and chooses its actions by its own expected free energy. Every agent is the same kind of object. Its model changes by rung."
+  - term: "world"
+    definition: "Everything outside the agents. It holds state, takes each agent's action, advances once per tick and hands each agent its observation."
+  - term: "tick"
+    definition: "One step of the shared clock. The world advances once per tick."
+  - term: "seam"
+    definition: "Where an agent meets the world. Actions leave across it and observations arrive across it. No reference runs from one agent to another, so every coupling passes through the world."
+  - term: "world object"
+    definition: "The code that plays the world at one rung, such as a well-mixed medium or a synaptic cleft. The names in code font are planned. None ships yet."
+  - term: "factor graph"
+    definition: "A drawing of a probabilistic model as nodes and edges. Each agent's model is one, and its inference runs as messages passed along the edges."
+  - term: "expected free energy"
+    definition: "The score an active inference agent minimises when it picks an action. It weighs reaching the observations it prefers against resolving its uncertainty about the world."
+  - term: "preferences"
+    definition: "The observations an agent would rather see. They sit inside its expected free energy, so two agents with their own preferences have two separate scores."
+  - term: "shared latent"
+    definition: "A hidden variable that sits in two agents' factor graphs at once. It couples them without going through the world."
+  - term: "equality node"
+    definition: "A factor-graph node that forces the variables on its edges to be equal. Two graphs joined at one become a single graph."
+  - term: "inference dimensionality"
+    definition: "How much an agent has to infer, counted in the hidden variables and channels its model tracks. The ladder climbs by it."
+  - term: "Pearl blanket"
+    definition: "A Markov blanket in Pearl's sense. It is the set of variables that screens one part of a stated graph from the rest, and it is a fact about that graph."
+  - term: "Friston blanket"
+    definition: "A stronger reading from the free energy principle, in which a blanket is a physical boundary whose inside models the outside. No result here claims one."
+  - term: "flux interface"
+    definition: "The boundary of a nested region. The enclosing world sees the region only through what crosses it."
+  - term: "coordinator"
+    definition: "An optional agent one level above a region's cells. It reads what crosses the region's flux interface and writes a slow field back into the region. It has its own factor graph and its own expected free energy. Without one, no agent acts at the region's level."
+  - term: "slow field"
+    definition: "A signal the coordinator writes into a region's medium. It changes slowly next to the cells' own signals, and every cell in the region reads it."
+  - term: "spillover"
+    definition: "In the three-channel world, release at the end of a graph leaf that also reaches nearby cells, whether or not an edge joins them."
+  - term: "endocrine broadcast"
+    definition: "In the three-channel world, a signal that reaches every cell, wherever it sits in the graph."
+  - term: "graph cut"
+    definition: "A boundary drawn through the synapse graph. It splits the cells by the edges between them."
+  - term: "field region"
+    definition: "A boundary drawn in space. It holds the cells that sit inside it in the field."
+  - term: "CI test"
+    definition: "A conditional-independence test. It checks whether a proposed boundary screens its inside from its outside, which a Markov blanket has to do."
+  - term: "inference gap"
+    definition: "How far an agent's belief sits from the exact posterior, measured as a KL divergence. It is one term of the p* decomposition."
+  - term: "LG"
+    definition: "Linear-Gaussian. Dynamics and observations are linear and the noise is Gaussian. The cells here are LG as a declared approximation."
+---

@@ -1,0 +1,37 @@
+---
+import { termParts } from '../../lib/terms';
+import Term from './Term.astro';
+
+interface Props {
+  text: string;
+  definitions: Map<string, string>;
+  // Prefix for the tip IDs, unique among the page's pieces of running text.
+  id: string;
+}
+
+const { text, definitions, id } = Astro.props;
+const parts = termParts(text);
+for (const part of parts) {
+  if (typeof part !== 'string' && 'term' in part && !definitions.has(part.term)) {
+    throw new Error(
+      `The term "${part.term}" is marked in "${id}" and has no definition.`,
+    );
+  }
+}
+---
+
+{parts.map((part, index) =>
+  typeof part === 'string' ? (
+    part
+  ) : 'term' in part ? (
+    <Term
+      term={part.term}
+      definition={definitions.get(part.term) as string}
+      tipId={`tip-${id}-${index}`}
+    >
+      {part.shown}
+    </Term>
+  ) : (
+    <a href={part.href}>{part.label}</a>
+  ),
+)}

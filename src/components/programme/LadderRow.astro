@@ -1,0 +1,284 @@
+---
+import type { Rung } from '../../content/schemas';
+import { plainText } from '../../lib/terms';
+import AgentCard from './AgentCard.astro';
+import RichText from './RichText.astro';
+import TargetTag from './TargetTag.astro';
+import WorldDrawing from './WorldDrawing.astro';
+
+interface Props {
+  // No rung draws the pattern every rung fills in.
+  rung?: Rung;
+  lines: Map<string, string>;
+  definitions: Map<string, string>;
+}
+
+const { rung, lines, definitions } = Astro.props;
+const pattern = {
+  name: 'The pattern every rung fills in',
+  summary:
+    'An [[agent]] acts on a [[world]]. An agent reads it, the actor included. The world advances once per [[tick]].',
+  agent: 'any agent',
+  reader: 'any agent',
+  readerNote: 'the actor included',
+  readerIsActor: false,
+  worlds: [
+    {
+      drawing: 'pattern',
+      label: 'any world object',
+      objects: [] as string[],
+      act: 'acts',
+      read: 'reads',
+      targets: [] as string[],
+    },
+  ],
+};
+const row = rung ?? pattern;
+const targets = rung
+  ? [...rung.gates, ...rung.worlds.flatMap((world) => world.targets)]
+  : [];
+const span = `grid-row: 1 / span ${row.worlds.length}`;
+---
+
+<li class:list={['ladder-row', { pattern: !rung }]} data-rung={rung?.rung}>
+  <div class="row-head">
+    <span class="eyebrow">{rung ? `Rung ${rung.rung}` : 'Pattern'}</span>
+    <strong>{row.name}</strong>
+    {rung && (
+      <span class="tags">
+        {rung.exists ? (
+          <TargetTag kind="exists" href={rung.exists.url}>
+            {`${rung.exists.what} exists, cpomdp ${rung.exists.release}`}
+          </TargetTag>
+        ) : null}
+        <TargetTag kind="scoped">{rung.exists ? 'rest scoped' : 'scoped'}</TargetTag>
+        {targets.map((id) => (
+          <TargetTag kind="target" id={id} line={lines.get(id)} />
+        ))}
+        {rung.literature && (
+          <TargetTag kind="literature" id={rung.literature}>
+            {`wording provisional, ${rung.literature}`}
+          </TargetTag>
+        )}
+      </span>
+    )}
+  </div>
+  <p class="summary term-host">
+    <RichText
+      text={row.summary}
+      definitions={definitions}
+      id={`rung-${rung?.rung ?? 'pattern'}-summary`}
+    />
+  </p>
+  <div class="flow" aria-hidden="true">
+    <div class="part agent actor" style={span}>
+      <span class="role">agent</span>
+      <AgentCard />
+      <span class="instance">{row.agent}</span>
+    </div>
+    {row.worlds.map((world, index) => (
+      <>
+        <div class="link act" style={`grid-row: ${index + 1}`}>
+          <span class="verb">{world.act}</span>
+          <i class="line" />
+        </div>
+        <div class="part world" style={`grid-row: ${index + 1}`}>
+          <span class="role">world</span>
+          <WorldDrawing
+            drawing={world.drawing}
+            id={`rung-${rung?.rung ?? 'pattern'}-${index}`}
+          />
+          <span class="instance">
+            {world.label}
+            {world.objects.map((object, position) => (
+              <>
+                {position === 0 ? ' · ' : ', then '}
+                <code>{object}</code>
+              </>
+            ))}
+            {world.targets.length > 0 && ` · ${world.targets.join(', ')}`}
+          </span>
+        </div>
+        <div class="link read" style={`grid-row: ${index + 1}`}>
+          <span class="verb">{world.read}</span>
+          <i class="line" />
+        </div>
+      </>
+    ))}
+    <div class="part agent reader" style={span}>
+      <span class="role">agent</span>
+      <AgentCard sameAgent={row.readerIsActor} />
+      <span class="instance">{row.reader}</span>
+      {row.readerNote && <span class="note">{plainText(row.readerNote)}</span>}
+    </div>
+  </div>
+</li>
+
+<style>
+  .ladder-row {
+    padding: 1rem 0 1.25rem;
+    border-top: 1px solid var(--text-muted);
+    list-style: none;
+  }
+  .ladder-row:first-child,
+  .pattern {
+    border-top: 0;
+  }
+  .row-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+  }
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .row-head strong {
+    font-family: var(--font-heading);
+    font-weight: 500;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .summary {
+    margin: 0.4rem 0 0.9rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .flow {
+    display: grid;
+    grid-template-columns:
+      4.5rem minmax(4.75rem, 1fr) minmax(0, 22.5rem) minmax(4.75rem, 1fr)
+      4.5rem;
+    align-items: end;
+    gap: 1rem 0.4rem;
+  }
+  .actor {
+    grid-column: 1;
+    align-self: center;
+  }
+  .act {
+    grid-column: 2;
+  }
+  .world {
+    grid-column: 3;
+  }
+  .read {
+    grid-column: 4;
+  }
+  .reader {
+    grid-column: 5;
+    align-self: center;
+  }
+  .part {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+  }
+  .role {
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .instance,
+  .note {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+  .note {
+    color: var(--text-muted);
+  }
+  .instance code {
+    font-size: 0.7rem;
+  }
+  .link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-bottom: 3.25rem;
+  }
+  .verb {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    text-align: center;
+  }
+  .line {
+    position: relative;
+    display: block;
+    margin-right: 9px;
+    border-top: 1.5px solid var(--text);
+  }
+  .read .line {
+    border-top-style: dashed;
+  }
+  .line::after {
+    content: '';
+    position: absolute;
+    top: -6.25px;
+    right: -9px;
+    border-top: 5.5px solid transparent;
+    border-bottom: 5.5px solid transparent;
+    border-left: 9px solid var(--text);
+  }
+  @container ladder (max-width: 34rem) {
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+    }
+    .actor,
+    .act,
+    .world,
+    .read,
+    .reader {
+      grid-column: 1;
+      grid-row: auto !important;
+    }
+    .link {
+      display: grid;
+      grid-template-columns: 1.5rem auto;
+      align-items: center;
+      gap: 0.6rem;
+      width: 100%;
+      max-width: 16rem;
+      padding: 0.25rem 0;
+    }
+    .line {
+      grid-row: 1;
+      grid-column: 1;
+      justify-self: center;
+      width: 0;
+      height: 2.25rem;
+      margin: 0 0 9px;
+      border-top: 0;
+      border-left: 1.5px solid var(--text);
+    }
+    .read .line {
+      border-left-style: dashed;
+    }
+    .line::after {
+      top: auto;
+      right: auto;
+      bottom: -9px;
+      left: -6.25px;
+      border-top: 9px solid var(--text);
+      border-right: 5.5px solid transparent;
+      border-bottom: 0;
+      border-left: 5.5px solid transparent;
+    }
+    .verb {
+      grid-row: 1;
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+</style>

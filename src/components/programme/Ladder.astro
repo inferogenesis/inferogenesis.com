@@ -1,0 +1,55 @@
+---
+import type { Rung } from '../../content/schemas';
+import Callout from '../Callout.astro';
+import LadderRow from './LadderRow.astro';
+import RichText from './RichText.astro';
+
+interface Props {
+  rungs: Rung[];
+  lines: Map<string, string>;
+  definitions: Map<string, string>;
+}
+
+const { rungs, lines, definitions } = Astro.props;
+---
+
+<div class="ladder">
+  <p class="term-host">
+    <RichText
+      text="Each row joins [[agent|agents]] through one [[world]]. The agents line up down the sides and the worlds down the middle. The first row is the pattern every rung fills in."
+      definitions={definitions}
+      id="ladder-intro"
+    />
+  </p>
+  <ol class="pattern-box">
+    <LadderRow lines={lines} definitions={definitions} />
+  </ol>
+  <Callout kind="roadmap" title="Planned. Every rung waits on its gates.">
+    <ol class="rungs">
+      {rungs.map((rung) => (
+        <LadderRow rung={rung} lines={lines} definitions={definitions} />
+      ))}
+    </ol>
+  </Callout>
+</div>
+
+<style>
+  .ladder {
+    container: ladder / inline-size;
+  }
+  .pattern-box {
+    margin: 1rem 0 0;
+    padding: 0.5rem 1rem 0 3rem;
+    border: 1px dashed var(--text-muted);
+    border-radius: 6px;
+  }
+  .rungs {
+    margin: 0;
+    padding: 0;
+  }
+  @container ladder (max-width: 34rem) {
+    .pattern-box {
+      padding-left: 1rem;
+    }
+  }
+</style>

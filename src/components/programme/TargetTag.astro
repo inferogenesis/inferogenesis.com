@@ -1,0 +1,62 @@
+---
+type Kind = 'target' | 'literature' | 'exists' | 'scoped';
+
+interface Props {
+  kind: Kind;
+  // A target or L item ID, whose line the tag links to on the same page.
+  id?: string;
+  // The line itself, shown on hover. The link is what works everywhere.
+  line?: string;
+  href?: string;
+}
+
+const { kind, id, line, href } = Astro.props;
+const target =
+  href ??
+  (kind === 'target'
+    ? `#target-${id}`
+    : kind === 'literature'
+      ? `#literature-${id}`
+      : undefined);
+---
+
+{target ? (
+  <a class:list={['tag', kind]} href={target} title={line}>
+    <slot>{id}</slot>
+  </a>
+) : (
+  <span class:list={['tag', kind]}>
+    <slot />
+  </span>
+)}
+
+<style>
+  .tag {
+    display: inline-block;
+    padding: 0 0.5rem;
+    border: 1px solid var(--text);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.6;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a.tag:hover,
+  a.tag:focus-visible {
+    border-color: var(--link);
+    color: var(--link);
+  }
+  .literature {
+    border-style: dashed;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .scoped {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+</style>

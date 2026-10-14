@@ -185,6 +185,47 @@ const programme = {
   gates: { asOf: '2026-09-23', rows: [gate] },
 };
 
+const ladderWorld = {
+  drawing: 'direct-channel',
+  label: 'synaptic cleft',
+  objects: ['DirectChannel'],
+  act: 'releases transmitter',
+  read: 'receptor binding',
+};
+
+const ladder = {
+  ...programme,
+  status: 'planned',
+  gates: undefined,
+  repository: undefined,
+  figure: 'seam-join',
+  targets: [
+    { id: 'G4', claim: 'Lands DirectChannel, then runs BN-3a to BN-3c.' },
+    { id: 'BN-3b', claim: 'The same two cells give the same ordering on both worlds.' },
+  ],
+  literature: [{ id: 'L12', status: 'open' }],
+  ladder: [
+    {
+      rung: 3,
+      name: 'Neurons',
+      summary: 'Two neurons joined by a cleft.',
+      gates: ['G4'],
+      literature: 'L12',
+      agent: 'presynaptic neuron',
+      reader: 'postsynaptic neuron',
+      worlds: [
+        ladderWorld,
+        {
+          ...ladderWorld,
+          drawing: 'diffusion-2d',
+          objects: ['DiffusionField2D'],
+          targets: ['BN-3b'],
+        },
+      ],
+    },
+  ],
+};
+
 test.describe('programme schema', () => {
   test('accepts a programme with a dated gates table', () => {
     expect(programmeSchema.safeParse(programme).success).toBe(true);
@@ -258,6 +299,138 @@ test.describe('programme schema', () => {
       repository: undefined,
     };
     expect(programmeSchema.safeParse(entry).success).toBe(true);
+  });
+
+  test('accepts a ladder whose every tag has its line', () => {
+    expect(programmeSchema.safeParse(ladder).success).toBe(true);
+  });
+
+  test('rejects a rung gate with no line to explain it', () => {
+    const entry = { ...ladder, targets: ladder.targets.filter((t) => t.id !== 'G4') };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a world tagged with a target that has no line', () => {
+    const entry = {
+      ...ladder,
+      targets: ladder.targets.filter((t) => t.id !== 'BN-3b'),
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a literature badge with no L item behind it', () => {
+    expect(programmeSchema.safeParse({ ...ladder, literature: [] }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects a closed L item that names no source', () => {
+    const entry = { ...ladder, literature: [{ id: 'L12', status: 'closed' }] };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects the same target ID twice', () => {
+    const entry = { ...ladder, targets: [...ladder.targets, ladder.targets[0]] };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a target ID outside the G, T and BN forms', () => {
+    const entry = {
+      ...ladder,
+      targets: [...ladder.targets, { id: 'gate four', claim: 'A claim.' }],
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a rung that claims to exist without the release that shows it', () => {
+    const rung = {
+      ...ladder.ladder[0],
+      exists: { what: 'agent model', url: 'https://example.com/' },
+    };
+    expect(programmeSchema.safeParse({ ...ladder, ladder: [rung] }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects a flagship equation and a flagship figure together', () => {
+    const equation = { tex: 'a = b', label: 'The decomposition under test' };
+    expect(programmeSchema.safeParse({ ...ladder, equation }).success).toBe(false);
+  });
+
+  test('accepts terms the text marks and the list defines', () => {
+    const entry = {
+      ...ladder,
+      scope: 'Agents meet through the [[seam]] and [[world object|world objects]].',
+      terms: [
+        { term: 'seam', definition: 'Where an agent meets the world.' },
+        { term: 'world object', definition: 'The code that plays the world.' },
+      ],
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(true);
+  });
+
+  test('rejects a marked term with no definition', () => {
+    const entry = { ...ladder, scope: 'Agents meet through the [[seam]].' };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects a marked term inside a rung summary with no definition', () => {
+    const rung = { ...ladder.ladder[0], summary: 'A [[coordinator]] writes a field.' };
+    expect(programmeSchema.safeParse({ ...ladder, ladder: [rung] }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects term markup in the question, which leaves the page as plain text', () => {
+    const entry = {
+      ...ladder,
+      question: 'What does the [[seam]] keep?',
+      terms: [{ term: 'seam', definition: 'Where an agent meets the world.' }],
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects the same term defined twice', () => {
+    const term = { term: 'seam', definition: 'Where an agent meets the world.' };
+    expect(programmeSchema.safeParse({ ...ladder, terms: [term, term] }).success).toBe(
+      false,
+    );
+  });
+
+  test('accepts a premise with a term and a link', () => {
+    const entry = {
+      ...ladder,
+      premise: {
+        title: 'A string of thought experiments',
+        text: 'They grew out of the [p* programme](/programmes/p-star/) and the [[seam]].',
+      },
+      terms: [{ term: 'seam', definition: 'Where an agent meets the world.' }],
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(true);
+  });
+
+  test('rejects a link that is neither https nor a path on this site', () => {
+    const entry = {
+      ...ladder,
+      premise: {
+        title: 'Premise',
+        text: 'See [the harness](http://example.com/harness).',
+      },
+    };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects link markup in the question, which leaves the page as plain text', () => {
+    const entry = { ...ladder, question: 'Does [the seam](/programmes/sn/) hold?' };
+    expect(programmeSchema.safeParse(entry).success).toBe(false);
+  });
+
+  test('rejects rungs out of order', () => {
+    const rungs = [
+      { ...ladder.ladder[0], rung: 3 },
+      { ...ladder.ladder[0], rung: 2 },
+    ];
+    expect(programmeSchema.safeParse({ ...ladder, ladder: rungs }).success).toBe(false);
   });
 
   test('rejects a gates table without an as-of date', () => {
