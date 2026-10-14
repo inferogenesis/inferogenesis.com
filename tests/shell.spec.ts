@@ -191,3 +191,13 @@ test('the active sidebar item is marked for assistive technology', async ({ page
     'cpomdp',
   );
 });
+
+test("a write-up marks its project in the sidebar, as the page's location", async ({
+  page,
+}) => {
+  await page.goto('/projects/cpomdp/applied/anti-surge/');
+  await expect(page.locator('#site-sidebar a[aria-current="true"]')).toHaveText(
+    'cpomdp',
+  );
+  await expect(page.locator('#site-sidebar a[aria-current="page"]')).toHaveCount(0);
+});

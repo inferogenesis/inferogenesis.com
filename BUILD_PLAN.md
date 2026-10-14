@@ -246,7 +246,7 @@ Gate: cutting a cpomdp release updates the apex within 24 hours with no commit t
 ### P4. Writing and learn
 
 - [ ] Blog plumbing per the ADR-001 outcome, with RSS
-- [ ] Applied write-ups under each project, first the cpomdp anti-surge one (ADR-003)
+- [x] Applied write-ups under each project, first the cpomdp anti-surge one (ADR-003)
 - [x] D1 resolved: back catalogue migrated from dj-elliott.com or linked canonically
 - [ ] Learn section with one active inference primer
 - [ ] Workshop material ("Build a curious rocket") under `/learn/`

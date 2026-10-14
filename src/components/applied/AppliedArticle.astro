@@ -14,8 +14,10 @@ interface Props {
 
 const { writeUp, project, lastModified, editUrl, issueUrl } = Astro.props;
 const { title, description, published, updated, docs, computedBy } = writeUp.data;
-// A reader recognises the script's path in its repo, not the full GitHub URL.
-const scriptPath = /\/blob\/[^/]+\/(.+)$/.exec(new URL(computedBy).pathname)?.[1];
+// A reader recognises the script's path in its repo, not the full GitHub URL. A pinned
+// ref is named, because the numbers on the page came from that commit.
+const [, scriptRef, scriptPath] =
+  /\/blob\/([^/]+)\/(.+)$/.exec(new URL(computedBy).pathname) ?? [];
 ---
 
 <header class="applied-header">
@@ -37,8 +39,9 @@ const scriptPath = /\/blob\/[^/]+\/(.+)$/.exec(new URL(computedBy).pathname)?.[1
 <Callout kind="note" title="Computed">
   <p>
     Every number on this page is computed by{' '}
-    <a href={computedBy}>{scriptPath ?? computedBy}</a>. None is a measurement. The
-    method is in <a href={docs}>the {project.data.name} docs</a>.
+    <a href={computedBy}>{scriptPath ?? computedBy}</a>
+    {scriptRef && scriptRef !== 'main' && ` at ${scriptRef}`}. None is a measurement.
+    The method is in <a href={docs}>the {project.data.name} docs</a>.
   </p>
 </Callout>
 

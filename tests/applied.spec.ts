@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const writeUpPath = '/projects/cpomdp/applied/anti-surge/';
 const script =
-  'https://github.com/inferogenesis/cpomdp/blob/main/examples/surge_margin.py';
+  'https://github.com/inferogenesis/cpomdp/blob/6a2e89d/examples/surge_margin.py';
 const docs = 'https://cpomdp.inferogenesis.com/guides/surge_margin/';
 
 test('a project lists its write-ups after what it does and before its capabilities', async ({
@@ -71,3 +71,10 @@ for (const width of [1280, 375]) {
     expect(overflow).toBe(0);
   });
 }
+
+test('a write-up names the commit its numbers were computed at', async ({ page }) => {
+  await page.goto(writeUpPath);
+  await expect(page.locator('.callout', { hasText: 'computed by' })).toContainText(
+    'examples/surge_margin.py at 6a2e89d',
+  );
+});

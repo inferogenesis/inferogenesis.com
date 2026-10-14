@@ -2,6 +2,9 @@
 import { listProjects } from '../../lib/projects';
 
 const current = Astro.url.pathname;
+// A project's own pages, such as its applied write-ups, keep the project marked.
+const currentness = (href: string) =>
+  href === current ? 'page' : current.startsWith(href) ? 'true' : undefined;
 // A group joins in the PR that ships its section's first page.
 const nav = [
   {
@@ -21,10 +24,7 @@ const nav = [
       <ul>
         {group.items.map((item) => (
           <li>
-            <a
-              href={item.href}
-              aria-current={item.href === current ? 'page' : undefined}
-            >
+            <a href={item.href} aria-current={currentness(item.href)}>
               {item.label}
             </a>
           </li>
@@ -60,10 +60,10 @@ const nav = [
     color: var(--text);
     text-decoration: none;
   }
-  a[aria-current='page'] {
+  a[aria-current] {
     color: var(--accent);
   }
-  a[aria-current='page']::before {
+  a[aria-current]::before {
     content: '';
     position: absolute;
     top: 0.35rem;
