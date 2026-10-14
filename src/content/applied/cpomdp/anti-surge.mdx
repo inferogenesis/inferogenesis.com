@@ -14,8 +14,14 @@ import figure from './surge_margin.png';
 
 ## The result
 
-I gave a cpomdp agent one job. It holds a centrifugal compressor's flow at a 5% margin
-above the surge line, in percent of design flow. Then I changed its flow meter and
+Based on the work by [Sathish, Khader, Sayma and Shah](https://doi.org/10.1115/GT2024-124905) I took the opportunity to point cpomdp at a real world industrial application. Doing some quick research and then math derivations revealed that the R(x) paper would yet again prove useful in helping us understand the mechanics of how to build one of these sensors in the linear Gaussian regime without being reduced to a Kalman filter.
+
+Previous work by Sathish et al., briefly summarised, looked at designing a natural gas centrifugal compressor that is prone to surge and simulating it in an Aspen HYSYS dynamic model, with active inference put forward as an alternative to PID and model predictive control when the conditions get noisy and uncertain.
+
+What they don't get into is the flow meter. They make the case that active inference copes well with noisy and uncertain conditions, and the uncertainty they focus on is the gas arriving at the compressor, with suction conditions that shift over a reservoir's life. The noise in the flow reading itself, and how that noise changes as the flow moves, doesn't come up. That turns out to matter. An active inference agent is curious, and it will happily drift toward wherever its meter reads best, even when that's past the surge line.
+
+Here I wanted to take cpomdp and fill in the gaps. Setting a cpomdp agent to hold a centrifugal compressor's flow at a 5% margin
+above the surge line, in percent of design flow, I then changed its flow meter and
 nothing else. Each meter is 0.2% accurate at design flow. Only the shape of its error
 changes.
 
@@ -41,12 +47,12 @@ its first step. It settles there too.
 ## Why the meter decides
 
 The agent's objective has an information term. It rewards a reading by how much the
-reading would teach, and quiet readings teach most. So the agent drifts toward the flows
-its own meter reads best.
+reading would teach, and quiet(low noise) readings teach most. So the agent drifts toward the flows
+its own meter reads best. Not a cautionary value as stated by Sathish et al.
 
 A DP element reads flow through a square root, and its transmitter error is roughly flat
 in pressure. Its flow noise is worst at low flow, near surge. A Coriolis meter's error is
-a fixed share of the reading, so its noise is lowest at low flow. The sign flips. The term
+a fixed share of the reading so its noise is lowest at low flow meaning The sign flips. The term
 that holds the DP agent off surge pulls the Coriolis agent in. The
 [cpomdp docs](https://cpomdp.inferogenesis.com/guides/surge_margin/) derive both noise
 models and a closed-form law for where the agent stands.
