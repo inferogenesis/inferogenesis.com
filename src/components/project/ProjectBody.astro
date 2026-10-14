@@ -1,11 +1,13 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import AppliedList from './AppliedList.astro';
 import CapabilityTable from './CapabilityTable.astro';
 import CiteThis from './CiteThis.astro';
 import InstallBlock from './InstallBlock.astro';
 import ProjectHeader from './ProjectHeader.astro';
 import Releases from './Releases.astro';
 import Snippet from './Snippet.astro';
+import PageMeta from '../shell/PageMeta.astro';
 import type { Release } from '../../lib/releases';
 
 interface Props {
@@ -13,13 +15,22 @@ interface Props {
   releases: Release[];
   citationFile?: string;
   pythonRange?: string | null;
+  applied?: { title: string; description: string; href: string }[];
   lastModified?: Date;
   editUrl: string;
   issueUrl: string;
 }
 
-const { entry, releases, citationFile, pythonRange, lastModified, editUrl, issueUrl } =
-  Astro.props;
+const {
+  entry,
+  releases,
+  citationFile,
+  pythonRange,
+  applied = [],
+  lastModified,
+  editUrl,
+  issueUrl,
+} = Astro.props;
 const project = entry.data;
 const [latest] = releases;
 const citable = {
@@ -52,6 +63,8 @@ const citable = {
 
 <slot />
 
+{applied.length > 0 && <AppliedList writeUps={applied} />}
+
 <h2 id="capabilities">Capabilities</h2>
 <CapabilityTable backends={project.backends} capabilities={project.capabilities} />
 
@@ -61,28 +74,4 @@ const citable = {
 <h2 id="cite">Cite this</h2>
 <CiteThis project={citable} />
 
-<footer class="page-meta">
-  {lastModified && (
-    <span>
-      Last modified{' '}
-      <time datetime={lastModified.toISOString()}>
-        {lastModified.toISOString().slice(0, 10)}
-      </time>
-    </span>
-  )}
-  <a href={editUrl}>Edit on GitHub</a>
-  <a href={issueUrl}>Report an issue</a>
-</footer>
-
-<style>
-  .page-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--text-muted);
-    color: var(--text-muted);
-    font-size: 0.875rem;
-  }
-</style>
+<PageMeta lastModified={lastModified} editUrl={editUrl} issueUrl={issueUrl} />

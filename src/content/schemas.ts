@@ -72,6 +72,13 @@ export const researchRecordSchema = z.object({
 
 export type ResearchRecord = z.infer<typeof researchRecordSchema>;
 
+const updateFollowsPublication = (dated: { published: Date; updated?: Date }) =>
+  !dated.updated || dated.updated >= dated.published;
+const updatePredatesPublication = {
+  message: 'An update cannot predate publication.',
+  path: ['updated'],
+};
+
 export const writingSchema = z
   .object({
     title: z.string(),
@@ -81,10 +88,21 @@ export const writingSchema = z
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   })
-  .refine((post) => !post.updated || post.updated >= post.published, {
-    message: 'An update cannot predate publication.',
-    path: ['updated'],
-  });
+  .refine(updateFollowsPublication, updatePredatesPublication);
+
+// A project's write-up on a real problem. Its directory names the project, so the
+// frontmatter does not.
+export const appliedSchema = z
+  .object({
+    title: z.string(),
+    description: z.string().min(1),
+    published: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    docs: z.url(),
+    computedBy: z.url(),
+  })
+  .strict()
+  .refine(updateFollowsPublication, updatePredatesPublication);
 
 const tier = z.enum(['exact', 'bounded', 'computed']);
 

@@ -50,6 +50,7 @@ The spike is one day. Build the project page template both ways, with the sideba
 /                         Organisation landing
 /projects/                Index of software
   /projects/cpomdp/
+    /projects/cpomdp/applied/anti-surge/   A write-up on a real problem (ADR-003)
   /projects/warrantlib/
 /programmes/              Index of research programmes
   /programmes/p-star/     Certifiable Active Inference
@@ -73,14 +74,17 @@ Sidebar groups mirror these sections. The top nav carries Projects, Programmes, 
 2. Install block with copy button.
 3. Minimal runnable example, pulled from `examples/site_snippet.py` at the release tag shown in the badge.
 4. What it does. Three to six short sections, each linking into the docs subdomain.
-5. Capability table (the MDN browser-compatibility analogue). Rows are features. Columns are version introduced and backend support.
-6. Releases (last five, from the GitHub releases API at build time).
-7. Cite this (BibTeX and CFF from the repo's `CITATION.cff` at the same tag).
-8. Footer meta: last modified, edit on GitHub, report an issue.
+5. Applied. The project's write-ups on real problems, each a page under `/projects/<project>/applied/`. Left out when there are none.
+6. Capability table (the MDN browser-compatibility analogue). Rows are features. Columns are version introduced and backend support.
+7. Releases (last five, from the GitHub releases API at build time).
+8. Cite this (BibTeX and CFF from the repo's `CITATION.cff` at the same tag).
+9. Footer meta: last modified, edit on GitHub, report an issue.
 
 **Programme page.** Question, scope, papers, pre-registered gates. A gates table lists each cell with outcome (PASS / FAIL / VOID / pending), tier and warrant, and carries an "as of" date. Roadmap items sit inside the roadmap callout.
 
 **Research entry.** DOI, arXiv ID, venue, abstract, reproduction artefacts. Schema.org `ScholarlyArticle`.
+
+**Applied write-up.** A page of its project. The result comes first. The layout labels every number computed and links the script that computed it, above the body. The method stays in the docs subdomain and is linked. Schema.org `TechArticle`.
 
 **Writing post.** Article layout with contents panel, reading time, tags, RSS. Cross-posts on Bluesky, X, Reddit and the AII Discord link here as canonical.
 
@@ -242,6 +246,7 @@ Gate: cutting a cpomdp release updates the apex within 24 hours with no commit t
 ### P4. Writing and learn
 
 - [ ] Blog plumbing per the ADR-001 outcome, with RSS
+- [ ] Applied write-ups under each project, first the cpomdp anti-surge one (ADR-003)
 - [x] D1 resolved: back catalogue migrated from dj-elliott.com or linked canonically
 - [ ] Learn section with one active inference primer
 - [ ] Workshop material ("Build a curious rocket") under `/learn/`

@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import ProjectBody from '../../components/project/ProjectBody.astro';
 import Base from '../../layouts/Base.astro';
+import { appliedPath, appliedWriteUps } from '../../lib/applied';
 import { lastModified } from '../../lib/lastModified';
 import { resolvePythonRange } from '../../lib/pypi';
 import { citationFileUrl, latestReleases, projectReleases } from '../../lib/releases';
@@ -30,11 +31,18 @@ const software = softwareSourceCode(
   new URL(Astro.url.pathname, Astro.site).href,
 );
 
+const applied = (await appliedWriteUps(entry.id)).map((writeUp) => ({
+  title: writeUp.data.title,
+  description: writeUp.data.description,
+  href: appliedPath(writeUp),
+}));
+
 const sourcePath = `src/content/projects/${entry.id}.mdx`;
 const fixedHeadings = [
   { depth: 2, slug: 'install', text: 'Install' },
   { depth: 2, slug: 'example', text: 'Example' },
   ...headings,
+  ...(applied.length > 0 ? [{ depth: 2, slug: 'applied', text: 'Applied' }] : []),
   { depth: 2, slug: 'capabilities', text: 'Capabilities' },
   { depth: 2, slug: 'releases', text: 'Releases' },
   { depth: 2, slug: 'cite', text: 'Cite this' },
@@ -53,6 +61,7 @@ const fixedHeadings = [
     releases={releases}
     citationFile={citationFile}
     pythonRange={pythonRange}
+    applied={applied}
     lastModified={lastModified(sourcePath)}
     editUrl={`https://github.com/inferogenesis/inferogenesis.com/edit/main/${sourcePath}`}
     issueUrl="https://github.com/inferogenesis/inferogenesis.com/issues/new/choose"

@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Callout from '../Callout.astro';
+import PageMeta from '../shell/PageMeta.astro';
+import { isoDate } from '../../lib/dates';
+
+interface Props {
+  writeUp: CollectionEntry<'applied'>;
+  project: CollectionEntry<'projects'>;
+  lastModified?: Date;
+  editUrl: string;
+  issueUrl: string;
+}
+
+const { writeUp, project, lastModified, editUrl, issueUrl } = Astro.props;
+const { title, description, published, updated, docs, computedBy } = writeUp.data;
+// A reader recognises the script's path in its repo, not the full GitHub URL.
+const scriptPath = /\/blob\/[^/]+\/(.+)$/.exec(new URL(computedBy).pathname)?.[1];
+---
+
+<header class="applied-header">
+  <h1>{title}</h1>
+  <p class="lede">{description}</p>
+  <p class="meta">
+    <time class="published" datetime={isoDate(published)}>
+      {isoDate(published)}
+    </time>
+    {updated && (
+      <span>
+        {'Updated '}
+        <time datetime={isoDate(updated)}>{isoDate(updated)}</time>
+      </span>
+    )}
+  </p>
+</header>
+
+<Callout kind="note" title="Computed">
+  <p>
+    Every number on this page is computed by{' '}
+    <a href={computedBy}>{scriptPath ?? computedBy}</a>. None is a measurement. The
+    method is in <a href={docs}>the {project.data.name} docs</a>.
+  </p>
+</Callout>
+
+<slot />
+
+<PageMeta lastModified={lastModified} editUrl={editUrl} issueUrl={issueUrl} />
+
+<style>
+  .lede {
+    font-size: 1.125rem;
+  }
+  .meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  appliedSchema,
   pageSchema,
   programmeSchema,
   projectSchema,
@@ -92,6 +93,39 @@ test.describe('research record schema', () => {
     expect(
       researchRecordSchema.safeParse({ ...record, published: '2026-07' }).success,
     ).toBe(false);
+  });
+});
+
+const applied = {
+  title: 'A write-up',
+  description: 'One line on what it found.',
+  published: '2026-10-13',
+  docs: 'https://cpomdp.inferogenesis.com/guides/surge_margin/',
+  computedBy:
+    'https://github.com/inferogenesis/cpomdp/blob/main/examples/surge_margin.py',
+};
+
+test.describe('applied write-up schema', () => {
+  test('accepts a write-up naming its docs and the script behind its numbers', () => {
+    expect(appliedSchema.safeParse(applied).success).toBe(true);
+  });
+
+  test('rejects a write-up that does not name the script behind its numbers', () => {
+    expect(appliedSchema.safeParse({ ...applied, computedBy: undefined }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects an update dated before publication', () => {
+    expect(appliedSchema.safeParse({ ...applied, updated: '2026-10-01' }).success).toBe(
+      false,
+    );
+  });
+
+  test('rejects a typed project, which its directory names', () => {
+    expect(appliedSchema.safeParse({ ...applied, project: 'cpomdp' }).success).toBe(
+      false,
+    );
   });
 });
 

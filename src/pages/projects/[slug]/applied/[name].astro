@@ -1,0 +1,50 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import AppliedArticle from '../../../../components/applied/AppliedArticle.astro';
+import Base from '../../../../layouts/Base.astro';
+import { appliedParts } from '../../../../lib/applied';
+import { lastModified } from '../../../../lib/lastModified';
+import { techArticle } from '../../../../lib/structuredData';
+
+export async function getStaticPaths() {
+  const writeUps = await getCollection('applied');
+  return Promise.all(
+    writeUps.map(async (writeUp) => {
+      const { project: slug, name } = appliedParts(writeUp);
+      const project = await getEntry('projects', slug);
+      if (!project) {
+        throw new Error(`${writeUp.id} sits under ${slug}, which is not a project`);
+      }
+      return { params: { slug, name }, props: { writeUp, project } };
+    }),
+  );
+}
+
+const { writeUp, project } = Astro.props;
+const { Content, headings } = await render(writeUp);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const sourcePath = `src/content/applied/${writeUp.id}.mdx`;
+---
+
+<Base
+  title={writeUp.data.title}
+  description={writeUp.data.description}
+  headings={headings}
+  crumbs={[
+    { label: 'Projects', href: '/projects/' },
+    { label: project.data.name, href: `/projects/${project.id}/` },
+    { label: 'Applied', href: `/projects/${project.id}/#applied` },
+    { label: writeUp.data.title },
+  ]}
+  structuredData={techArticle(writeUp.data, project.data, pageUrl)}
+>
+  <AppliedArticle
+    writeUp={writeUp}
+    project={project}
+    lastModified={lastModified(sourcePath)}
+    editUrl={`https://github.com/inferogenesis/inferogenesis.com/edit/main/${sourcePath}`}
+    issueUrl="https://github.com/inferogenesis/inferogenesis.com/issues/new/choose"
+  >
+    <Content />
+  </AppliedArticle>
+</Base>
