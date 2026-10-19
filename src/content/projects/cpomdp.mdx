@@ -15,7 +15,7 @@ backends:
   - JAX
   - RxInfer
 snippet:
-  source: the README Quickstart at v0.4.4
+  source: the README Quickstart at v0.5.0
   code: |
     import jax.numpy as jnp
     from cpomdp import Agent, Belief, LinearGaussianModel, StateGoal
@@ -24,11 +24,11 @@ snippet:
     # position along, and we only ever observe position (through a noisy sensor).
     dt = 0.1
     model = LinearGaussianModel(
-        dynamics=[[1, dt], [0, 1]],          # velocity carries position along
-        control=[[0], [dt]],                 # a push nudges velocity
-        sensor_model=[[1, 0]],               # we observe position only
+        dynamics_matrix=[[1, dt], [0, 1]],   # velocity carries position along
+        control_matrix=[[0], [dt]],          # a push nudges velocity
+        observation_matrix=[[1, 0]],         # we observe position only
         dynamics_noise=jnp.eye(2) * 1e-6,
-        sensor_noise=[[1e-2]],
+        observation_noise=[[1e-2]],
         prior=Belief(mean=[0, 0], cov=jnp.eye(2)),
     )
 
@@ -37,10 +37,10 @@ snippet:
 
     true_state = jnp.array([0.0, 0.0])
     for _ in range(100):
-        obs = model.sensor_model @ true_state            # what the agent gets to see
-        agent.infer_states(obs)                           # perceive
-        action = agent.sample_action()                    # act
-        true_state = model.dynamics @ true_state + model.control @ action
+        obs = model.observation_matrix @ true_state     # what the agent gets to see
+        agent.infer_states(obs)                         # perceive
+        action = agent.sample_action()                  # act
+        true_state = model.dynamics_matrix @ true_state + model.control_matrix @ action
 
     print(jnp.round(agent.belief.mean, 3))   # ≈ [1, 0]
 capabilities:
@@ -55,6 +55,12 @@ capabilities:
     backends: { JAX: yes, RxInfer: no }
   - feature: Multi-step EFE with exhaustive search and a completeness certificate
     since: 0.4.4
+    backends: { JAX: yes, RxInfer: no }
+  - feature: Exhaustive search in blocks, with memory set by the block size
+    since: 0.5.0
+    backends: { JAX: yes, RxInfer: no }
+  - feature: Finite-horizon LQR and Kalman schedules
+    since: 0.5.0
     backends: { JAX: yes, RxInfer: no }
 ---
 
@@ -84,10 +90,12 @@ straight for the goal or detours to sharpen its belief first. See
 
 ## Multi-step EFE, searched and certified
 
-`policy_efe` scores an H-step horizon. `EnumeratedEfeSearch` sweeps the full action
+`policy_efe` scores an H-step horizon. `EnumeratedEFESearch` sweeps the full action
 space and returns a `CompletenessCertificate`, so the best plan is decided over the
-declared action set rather than sampled from it. See
-[expected free energy](https://cpomdp.inferogenesis.com/api/efe/).
+declared action set rather than sampled from it. `ChunkedEFESearch` runs the same sweep
+in blocks, so memory follows the block size rather than the number of plans. See
+[expected free energy](https://cpomdp.inferogenesis.com/api/efe/) and
+[exhaustive search](https://cpomdp.inferogenesis.com/api/search/).
 
 ## Inference as message passing
 

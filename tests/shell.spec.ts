@@ -13,6 +13,8 @@ const pages = [
   '/support/',
   '/research/',
   '/research/state-dependent-observation-noise/',
+  '/proposals/',
+  '/proposals/uncertainty-aware-anti-surge/',
   '/programmes/',
   '/programmes/p-star/',
   '/writing/',

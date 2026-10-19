@@ -56,6 +56,7 @@ The spike is one day. Build the project page template both ways, with the sideba
   /programmes/p-star/     Certifiable Active Inference
   /programmes/sn/         SN programme
 /research/                Papers, preprints, datasets (DOI-first list)
+/proposals/               Research questions open for someone to take on (ADR-004)
 /writing/                 Technical posts (RSS)
 /learn/                   Active inference and FEP primers, workshop material
 /about/                   Organisation, people, AI-use statement, funding
@@ -81,6 +82,8 @@ Sidebar groups mirror these sections. The top nav carries Projects, Programmes, 
 9. Footer meta: last modified, edit on GitHub, report an issue.
 
 **Programme page.** Question, scope, papers, pre-registered gates. A gates table lists each cell with outcome (PASS / FAIL / VOID / pending), tier and warrant, and carries an "as of" date. Roadmap items sit inside the roadmap callout.
+
+**Proposal.** Title, status, size, the question, what a first result looks like, kind of work and skills, all read from the project's GitHub discussion at build time. The discussion is canonical and is where to respond.
 
 **Research entry.** DOI, arXiv ID, venue, abstract, reproduction artefacts. Schema.org `ScholarlyArticle`.
 
@@ -216,7 +219,7 @@ The minimum the workshop deck can point at.
 - [x] Project layout with the §4 order enforced
 - [ ] `examples/site_snippet.py` added to the cpomdp repo and executed in cpomdp CI (task lives in the cpomdp repo, tracked here)
 - [ ] Same for warrantlib, once it has a repo of its own, else pinned to the monorepo path
-- [x] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
+- [x] cpomdp page, version and snippet hand-pinned to v0.5.0 until P3 automates it
 - [x] warrantlib page
 - [x] Landing page with project grid (releases and posts strips deferred to P3)
 - [x] About: organisation statement, people, AI-use statement, self-funded note
@@ -238,6 +241,7 @@ Gate: the workshop deck's final slide links to inferogenesis.com and every link 
 - [x] DataCite fetch for research entries
 - [x] Nightly scheduled rebuild
 - [ ] Landing releases strip and posts strip
+- [x] Proposals list and entry pages, read from cpomdp's Research Questions discussions (ADR-004)
 - [ ] JSON-LD for all four content types
 - [x] OG image generation
 

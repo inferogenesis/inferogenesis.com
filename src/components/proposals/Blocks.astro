@@ -1,0 +1,26 @@
+---
+import type { ProposalBlock } from '../../lib/discussions';
+import Inline from './Inline.astro';
+
+interface Props {
+  blocks: ProposalBlock[];
+}
+
+const { blocks } = Astro.props;
+---
+
+{blocks.map((block) =>
+  block.type === 'paragraph' ? (
+    <p>
+      <Inline source={block.text} />
+    </p>
+  ) : (
+    <ul>
+      {block.items.map((item) => (
+        <li>
+          <Inline source={item} />
+        </li>
+      ))}
+    </ul>
+  ),
+)}

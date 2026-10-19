@@ -37,6 +37,14 @@ test.describe('llms.txt', () => {
     );
   });
 
+  test('lists each proposal with its status and its discussion', () => {
+    expect(text).toContain('\n## Proposals\n');
+    expect(text).toMatch(
+      /- \[From the surge-margin example[^\]]*\]\(https:\/\/inferogenesis\.com\/proposals\/uncertainty-aware-anti-surge\/\): Open/,
+    );
+    expect(text).toContain('https://github.com/inferogenesis/cpomdp/discussions/192');
+  });
+
   test('lists each post under Writing, linked where it lives, before Optional', () => {
     const writing = text.indexOf('\n## Writing\n');
     const optional = text.indexOf('\n## Optional\n');

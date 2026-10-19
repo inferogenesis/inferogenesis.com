@@ -30,7 +30,7 @@ test.describe('Python range from PyPI', () => {
   }
 
   for (const [id, version] of [
-    ['cpomdp', '0.4.4'],
+    ['cpomdp', '0.5.0'],
     ['warrantlib', '0.3.0'],
   ]) {
     test(`the recorded response for ${id} ${version} reproduces the committed snapshot`, async () => {
@@ -44,9 +44,9 @@ test.describe('Python range from PyPI', () => {
   }
 
   test('asks PyPI for the released version, not the latest', async () => {
-    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.4.4'));
-    await fetchPythonRange('cpomdp', '0.4.4', { fetch, today });
-    expect(requests).toEqual(['https://pypi.org/pypi/cpomdp/0.4.4/json']);
+    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.5.0'));
+    await fetchPythonRange('cpomdp', '0.5.0', { fetch, today });
+    expect(requests).toEqual(['https://pypi.org/pypi/cpomdp/0.5.0/json']);
   });
 
   test('fails on an HTTP error and names the status', async () => {
@@ -57,28 +57,28 @@ test.describe('Python range from PyPI', () => {
   });
 
   test('a local build reads the snapshot for the release it shows', async () => {
-    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.4.4'));
-    const range = await resolvePythonRange('cpomdp', 'cpomdp', '0.4.4', {
+    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.5.0'));
+    const range = await resolvePythonRange('cpomdp', 'cpomdp', '0.5.0', {
       env: {},
       fetch,
       today,
     });
     expect(requests).toHaveLength(0);
-    expect(range.requiresPython).toBe('>=3.10');
+    expect(range.requiresPython).toBe('>=3.11');
   });
 
   test('a local build fails when the snapshot is for another version', async () => {
-    const { fetch } = fakeFetch(recorded('cpomdp-0.4.4'));
+    const { fetch } = fakeFetch(recorded('cpomdp-0.5.0'));
     await expect(
       resolvePythonRange('cpomdp', 'cpomdp', '0.4.5', { env: {}, fetch, today }),
     ).rejects.toThrow('0.4.5');
   });
 
   test('a live build asks PyPI for the release it shows', async () => {
-    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.4.4'));
+    const { fetch, requests } = fakeFetch(recorded('cpomdp-0.5.0'));
     const env = { CI: 'true', GITHUB_TOKEN: 'token' };
-    await resolvePythonRange('cpomdp', 'cpomdp', '0.4.4', { env, fetch, today });
-    expect(requests).toEqual(['https://pypi.org/pypi/cpomdp/0.4.4/json']);
+    await resolvePythonRange('cpomdp', 'cpomdp', '0.5.0', { env, fetch, today });
+    expect(requests).toEqual(['https://pypi.org/pypi/cpomdp/0.5.0/json']);
   });
 });
 

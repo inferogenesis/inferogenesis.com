@@ -1,0 +1,48 @@
+{
+  "discussion": "https://github.com/inferogenesis/cpomdp/discussions/192",
+  "title": "From the surge-margin example to an uncertainty-aware anti-surge controller",
+  "author": "DanBoringName",
+  "opened": "2026-10-17",
+  "updated": "2026-10-17",
+  "question": [
+    {
+      "type": "paragraph",
+      "text": "Given its flow meter's real state-dependent uncertainty `R(Q)`, does an active inference agent hold a centrifugal compressor's surge margin better than a fixed-margin anti-surge controller on the same plant? The example covers differential-pressure meters (orifice, venturi, nozzle) and Coriolis meters. \"Better\" is defined under the first result."
+    },
+    {
+      "type": "paragraph",
+      "text": "**The continuation is open as a paper. Lead authorship is yours of course. I'm happy to co-author the meter derivation and the cpomdp side if that helps and my contribution is sufficient. If not I only ask you cite cpomdp.**"
+    }
+  ],
+  "firstResult": [
+    {
+      "type": "paragraph",
+      "text": "One meter type, Coriolis. The example covers it, and it is the case where the epistemic term pulls toward surge."
+    },
+    {
+      "type": "paragraph",
+      "text": "Give it a measured or literature-sourced uncertainty model, zero-stability term included. The SEVA work below reports an uncertainty with every measurement and is one place to start. Put a hard surge constraint on the margin. Run the agent and a fixed-margin anti-surge controller on the same plant, with the same meter and the same disturbances. Sweep `Λ` for the agent and the margin setting for the baseline, and report both margin-versus-efficiency curves. Efficiency here is recycle avoided."
+    },
+    {
+      "type": "paragraph",
+      "text": "\"Better\" means the agent's curve dominates. At the same rate of surge-limit violations it holds a smaller mean margin. Or at the same mean margin it violates less."
+    },
+    {
+      "type": "paragraph",
+      "text": "A negative result counts. An agent that needs the hard limit to stay out of surge, and does no better than a fixed margin once it has one, is worth writing up."
+    }
+  ],
+  "kind": [
+    "Application / industry example",
+    "Validation against a benchmark or oracle (RxInfer, published data)"
+  ],
+  "size": "Paper-sized",
+  "status": "Open, looking for someone to take it",
+  "skills": [
+    "Flow metering or process instrumentation",
+    "compressor or anti-surge control",
+    "Bayesian filtering",
+    "JAX"
+  ],
+  "retrieved": "2026-10-18"
+}

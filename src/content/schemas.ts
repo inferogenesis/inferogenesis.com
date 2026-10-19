@@ -180,6 +180,41 @@ export type Gate = z.infer<typeof gate>;
 export type Programme = z.infer<typeof programmeSchema>;
 export type VerifiedCell = Programme['verified'][number];
 
+const discussionUrl = z
+  .url()
+  .regex(
+    /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/discussions\/\d+$/,
+    'a GitHub discussion URL',
+  );
+
+// A proposal names the discussion that states it. Everything the discussion holds comes
+// from the discussion. Strict, so a typed title or question fails the build.
+export const proposalSchema = z.object({ discussion: discussionUrl }).strict();
+
+// A block of the discussion's prose, kept as markdown source and rendered inline.
+const block = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('paragraph'), text: z.string().min(1) }),
+  z.object({ type: z.literal('list'), items: z.array(z.string().min(1)).min(1) }),
+]);
+
+export const proposalRecordSchema = z.object({
+  discussion: discussionUrl,
+  title: z.string().min(1),
+  author: z.string().min(1),
+  opened: z.iso.date(),
+  updated: z.iso.date(),
+  question: z.array(block).min(1),
+  firstResult: z.array(block).default([]),
+  kind: z.array(z.string().min(1)).min(1),
+  size: z.string().min(1),
+  status: z.string().min(1),
+  skills: z.array(z.string().min(1)).default([]),
+  retrieved: z.iso.date(),
+});
+
+export type ProposalBlock = z.infer<typeof block>;
+export type ProposalRecord = z.infer<typeof proposalRecordSchema>;
+
 export const pageSchema = z.object({
   title: z.string(),
   description: z.string().min(1),

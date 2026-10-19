@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import ProposalEntry from '../../components/proposals/ProposalEntry.astro';
+import Base from '../../layouts/Base.astro';
+import { proposalRecord } from '../../lib/discussions';
+
+const entries = await Promise.all(
+  (await getCollection('proposals')).map(async (entry) => ({
+    entry,
+    record: await proposalRecord(entry.id, entry.data.discussion),
+  })),
+);
+entries.sort((a, b) => b.record.opened.localeCompare(a.record.opened));
+const headings = entries.map(({ entry, record }) => ({
+  depth: 2,
+  slug: entry.id,
+  text: record.title,
+}));
+---
+
+<Base
+  title="Proposals"
+  description="Research questions the Inferogenesis software makes reachable and that are open for someone to take on, each stated in full on its GitHub discussion."
+  headings={headings}
+  crumbs={[{ label: 'Proposals' }]}
+>
+  <h1>Proposals</h1>
+  <p>
+    Research questions the projects here make reachable and that are open for someone to
+    take on. Each is stated in full on a GitHub discussion, with what the software
+    already provides and what is missing. That discussion is the place to respond.
+  </p>
+  {entries.map(({ entry, record }) => (
+    <ProposalEntry entry={entry} record={record} />
+  ))}
+</Base>

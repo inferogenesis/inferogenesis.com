@@ -5,6 +5,7 @@ import {
   pageSchema,
   programmeSchema,
   projectSchema,
+  proposalSchema,
   researchSchema,
 } from './content/schemas';
 
@@ -28,9 +29,21 @@ const programmes = defineCollection({
   schema: programmeSchema,
 });
 
+const proposals = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/proposals' }),
+  schema: proposalSchema,
+});
+
 const applied = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/applied' }),
   schema: appliedSchema,
 });
 
-export const collections = { projects, pages, research, programmes, applied };
+export const collections = {
+  projects,
+  pages,
+  research,
+  programmes,
+  proposals,
+  applied,
+};
