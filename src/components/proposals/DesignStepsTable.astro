@@ -1,0 +1,87 @@
+---
+import StatusGlyph from '../StatusGlyph.astro';
+import Inline from './Inline.astro';
+
+type Status = 'now' | 'simplified' | 'open';
+
+interface Step {
+  step: string;
+  design: string;
+  // Inline markdown, so a name from the code can sit in backticks.
+  current: string;
+  status: Status;
+}
+
+interface Props {
+  project: string;
+  version: string;
+  steps: Step[];
+}
+
+const { project, version, steps } = Astro.props;
+// Filled, ringed and dashed, so the three read apart without colour.
+const glyph = { now: 'pass', simplified: 'pending', open: 'void' } as const;
+// The no-break spaces keep "In cpomdp" and "2. Observations" whole when a cell wraps.
+const label: Record<Status, string> = {
+  now: `In\u00a0${project} now`,
+  simplified: 'Simplified version',
+  open: 'Open',
+};
+const keepNumberWithName = (step: string) => step.replace(' ', '\u00a0');
+---
+
+<div
+  class="steps-scroll"
+  role="region"
+  aria-label={`The design against ${project} ${version}`}
+  tabindex="0"
+>
+  <table class="steps">
+    <thead>
+      <tr>
+        <th scope="col">Step</th>
+        <th scope="col">What the design calls for</th>
+        <th scope="col">
+          In {project} {version}
+        </th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {steps.map((row) => (
+        <tr>
+          <th scope="row">{keepNumberWithName(row.step)}</th>
+          <td>{row.design}</td>
+          <td>
+            <Inline source={row.current} />
+          </td>
+          <td data-status={row.status}>
+            <span class="status">
+              <StatusGlyph state={glyph[row.status]} label={label[row.status]} />
+              <span>{label[row.status]}</span>
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .steps-scroll {
+    overflow-x: auto;
+  }
+  th[scope='row'] {
+    font-weight: 500;
+  }
+  /* The glyph stays beside its label, and the label wraps under itself. */
+  .status {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+  }
+  .status :global(.glyph) {
+    flex: none;
+    margin-top: 0.3rem;
+  }
+</style>
