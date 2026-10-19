@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { backCatalogue } from '../lib/backCatalogue';
 import { researchRecord } from '../lib/datacite';
+import { proposalRecord } from '../lib/discussions';
 import { llmsText } from '../lib/llmsText';
 import { listProjects } from '../lib/projects';
 import { citationFileUrl, projectReleases } from '../lib/releases';
@@ -38,6 +39,20 @@ export const GET: APIRoute = async ({ site }) => {
       title: entry.data.title,
       note: entry.data.question,
     }));
+  const proposals = (
+    await Promise.all(
+      (await getCollection('proposals')).map(async (entry) => ({
+        entry,
+        record: await proposalRecord(entry.id, entry.data.discussion),
+      })),
+    )
+  )
+    .sort((a, b) => b.record.opened.localeCompare(a.record.opened))
+    .map(({ entry, record }) => ({
+      path: `/proposals/${entry.id}/`,
+      title: record.title,
+      note: `${record.status}. ${record.size}. Respond on ${record.discussion}.`,
+    }));
   const pages = (await getCollection('pages'))
     .sort((a, b) => a.data.title.localeCompare(b.data.title))
     .map((entry) => ({
@@ -54,6 +69,7 @@ export const GET: APIRoute = async ({ site }) => {
     projects,
     research,
     programmes,
+    proposals,
     writing: (await backCatalogue()).posts,
     pages,
   });

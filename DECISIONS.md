@@ -138,3 +138,47 @@ cpomdp anti-surge write-up.
 - Every number on it is computed by a script in the project's repo. The layout says so
   above the body and links the script, so no write-up can leave the label out.
 - Its structured data is a `TechArticle` about the project's `SoftwareSourceCode`.
+
+---
+
+## ADR-004. Proposals are read from GitHub discussions
+
+**Date:** 2026-10-18
+**Status:** Accepted
+**Phase:** P3
+
+### Decision
+
+The site has a top-level **Proposals** section at `/proposals/`, in the primary
+navigation after Research. A proposal is a research question open for someone to take
+on. It is written in the Research Questions category of a project's GitHub discussions,
+whose form fixes its fields. The discussion is canonical and is where to respond.
+
+Each proposal is an entry at `src/content/proposals/<name>.mdx` whose frontmatter names
+its discussion and nothing else. The build reads the title, author, dates, the question,
+what a first result looks like, kind of work, rough size, status and skills from the
+GitHub REST API, as research entries read DataCite. The entry's MDX body carries only
+what the site adds, such as a link to a write-up here. The first is the
+uncertainty-aware anti-surge controller, cpomdp discussion #192.
+
+### Alternatives
+
+- Listing every discussion in the category. Anyone can open one, so the site would
+  publish text nobody here chose. An entry is the choice to list one.
+- Copying the discussion into MDX. Two copies drift, and the status changes on the
+  discussion first.
+- Rendering the whole discussion body. The page summarises and links, as the project
+  pages do. Why it matters, what the software provides, what is missing and the prior
+  art stay on the discussion.
+
+### Consequences
+
+- CI reads each discussion live with its `GITHUB_TOKEN` and fails if the fetch fails. A
+  local build reads `data/proposals/<name>.json`.
+- The build refuses a discussion outside Research Questions, and one whose form has no
+  question.
+- The discussion's prose is markdown. The site renders paragraphs, bullet lists, inline
+  code, bold, italics and web links, and nothing else. No discussion text becomes raw
+  HTML.
+- A form heading renamed on GitHub drops that field from the page, or fails the build
+  for a required one, so a change to the form is a change here too.

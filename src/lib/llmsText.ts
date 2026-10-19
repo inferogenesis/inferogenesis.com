@@ -24,6 +24,7 @@ export interface LlmsSite {
   projects: LlmsProject[];
   research: (ResearchRecord & { path: string })[];
   programmes: LlmsLink[];
+  proposals: LlmsLink[];
   writing: LinkedPost[];
   pages: LlmsLink[];
 }
@@ -69,6 +70,7 @@ export function llmsText(input: LlmsSite): string {
     ['Projects', input.projects.map((project) => projectLine(project, input.site))],
     ['Research', input.research.map((record) => researchLine(record, input.site))],
     ['Programmes', input.programmes.map((link) => linkLine(link, input.site))],
+    ['Proposals', input.proposals.map((link) => linkLine(link, input.site))],
     ['Writing', input.writing.map(postLine)],
     ['Optional', input.pages.map((link) => linkLine(link, input.site))],
   ];

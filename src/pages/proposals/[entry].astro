@@ -1,0 +1,38 @@
+---
+import { getCollection, render } from 'astro:content';
+import ProposalEntry from '../../components/proposals/ProposalEntry.astro';
+import Base from '../../layouts/Base.astro';
+import { proposalRecord } from '../../lib/discussions';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('proposals');
+  return entries.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const record = await proposalRecord(entry.id, entry.data.discussion);
+const { Content, headings: bodyHeadings } = await render(entry);
+const headings = [
+  { depth: 2, slug: 'question', text: 'The question' },
+  ...(record.firstResult.length > 0
+    ? [{ depth: 2, slug: 'first-result', text: 'What a first result looks like' }]
+    : []),
+  { depth: 2, slug: 'scope', text: 'Kind of work' },
+  ...(record.skills.length > 0
+    ? [{ depth: 2, slug: 'skills', text: 'Skills that would help' }]
+    : []),
+  ...bodyHeadings.filter((heading) => heading.depth === 2),
+  { depth: 2, slug: 'respond', text: 'Respond' },
+];
+---
+
+<Base
+  title={record.title}
+  description={`A ${record.size.toLowerCase()} proposal, ${record.status.toLowerCase()}. Stated in full on its GitHub discussion.`}
+  headings={headings}
+  crumbs={[{ label: 'Proposals', href: '/proposals/' }, { label: record.title }]}
+>
+  <ProposalEntry entry={entry} record={record} standalone>
+    <Content />
+  </ProposalEntry>
+</Base>

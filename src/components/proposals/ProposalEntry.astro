@@ -1,0 +1,96 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { ProposalRecord } from '../../lib/discussions';
+import Blocks from './Blocks.astro';
+
+interface Props {
+  entry: CollectionEntry<'proposals'>;
+  record: ProposalRecord;
+  // On the list the title links to the entry page and only the question shows.
+  standalone?: boolean;
+}
+
+const { entry, record, standalone = false } = Astro.props;
+const Title = standalone ? 'h1' : 'h2';
+const Section = standalone ? 'h2' : 'h3';
+const number = record.discussion.split('/').pop();
+---
+
+<article class="proposal" id={standalone ? undefined : entry.id}>
+  <Title>
+    {standalone ? record.title : <a href={`/proposals/${entry.id}/`}>{record.title}</a>}
+  </Title>
+  <p class="meta">
+    <span class="status">{record.status}</span>
+    <span>{record.size}</span>
+    <span>
+      Opened <time datetime={record.opened}>{record.opened}</time>
+    </span>
+  </p>
+  <Section id={standalone ? 'question' : undefined}>The question</Section>
+  <Blocks blocks={standalone ? record.question : record.question.slice(0, 1)} />
+  {standalone && record.firstResult.length > 0 && (
+    <>
+      <h2 id="first-result">What a first result looks like</h2>
+      <Blocks blocks={record.firstResult} />
+    </>
+  )}
+  {standalone && (
+    <>
+      <h2 id="scope">Kind of work</h2>
+      <ul>
+        {record.kind.map((kind) => (
+          <li>{kind}</li>
+        ))}
+      </ul>
+      {record.skills.length > 0 && (
+        <>
+          <h2 id="skills">Skills that would help</h2>
+          <ul>
+            {record.skills.map((skill) => (
+              <li>{skill}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      <slot />
+      <h2 id="respond">Respond</h2>
+      <p>
+        The discussion states the proposal in full, with what the software already
+        provides, what is missing and the prior art. Reply there to take it on or to ask
+        about it.
+      </p>
+    </>
+  )}
+  <p class="source">
+    <a href={record.discussion}>Discussion #{number}</a> by {record.author}, last
+    updated <time datetime={record.updated}>{record.updated}</time>.
+  </p>
+</article>
+
+<style>
+  .proposal {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--text-muted);
+  }
+  h2 {
+    margin-bottom: 0.25rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0;
+    color: var(--text-muted);
+  }
+  .status {
+    padding: 0 0.6rem;
+    border: 1px solid var(--text-muted);
+    border-radius: 999px;
+    font-size: 0.875rem;
+  }
+  .source {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>
