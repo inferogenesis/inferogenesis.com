@@ -131,15 +131,15 @@ test.describe('GitHub releases at build time', () => {
 
   test('skips drafts and prereleases', async () => {
     const extra = [
-      { ...recorded[0], tag_name: 'v0.5.0', draft: true, published_at: null },
-      { ...recorded[0], tag_name: 'v0.5.0rc1', prerelease: true },
+      { ...recorded[0], tag_name: 'v0.5.1', draft: true, published_at: null },
+      { ...recorded[0], tag_name: 'v0.5.1rc1', prerelease: true },
     ];
     const { fetch } = fakeFetch([...extra, ...recorded]);
     const live = await fetchGithubReleases('inferogenesis/cpomdp', 'token', {
       fetch,
       today,
     });
-    expect(live.releases[0].releaseTag).toBe('v0.4.4');
+    expect(live.releases[0].releaseTag).toBe('v0.5.0');
   });
 
   test('fails on an HTTP error and names the status', async () => {

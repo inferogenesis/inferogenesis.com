@@ -216,7 +216,7 @@ The minimum the workshop deck can point at.
 - [x] Project layout with the §4 order enforced
 - [ ] `examples/site_snippet.py` added to the cpomdp repo and executed in cpomdp CI (task lives in the cpomdp repo, tracked here)
 - [ ] Same for warrantlib, once it has a repo of its own, else pinned to the monorepo path
-- [x] cpomdp page, version and snippet hand-pinned to v0.4.4 until P3 automates it
+- [x] cpomdp page, version and snippet hand-pinned to v0.5.0 until P3 automates it
 - [x] warrantlib page
 - [x] Landing page with project grid (releases and posts strips deferred to P3)
 - [x] About: organisation statement, people, AI-use statement, self-funded note

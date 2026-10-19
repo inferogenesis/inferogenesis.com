@@ -1,5 +1,12 @@
 [
   {
+    "tag_name": "v0.5.0",
+    "published_at": "2026-10-16T22:43:15Z",
+    "html_url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.5.0",
+    "draft": false,
+    "prerelease": false
+  },
+  {
     "tag_name": "v0.4.4",
     "published_at": "2026-08-04T21:26:39Z",
     "html_url": "https://github.com/inferogenesis/cpomdp/releases/tag/v0.4.4",
