@@ -93,5 +93,5 @@ test('the applied write-up links the design table', async ({ page }) => {
   await page.goto('/projects/cpomdp/applied/anti-surge/');
   await expect(
     page.getByRole('link', { name: 'sets each step beside what cpomdp has' }),
-  ).toHaveAttribute('href', `${entryPath}#from-the-published-design-to-code`);
+  ).toHaveAttribute('href', `${entryPath}#from-the-published-method-to-code`);
 });

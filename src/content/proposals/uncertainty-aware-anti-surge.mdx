@@ -10,11 +10,11 @@ The example the question grows from is written up here as
 [Anti-surge control](/projects/cpomdp/applied/anti-surge/), with its results and the
 script that computed them.
 
-## From the published design to code
+## From the published method to code
 
-[Sathish et al. (2024)](https://doi.org/10.1115/GT2024-124905) set out a ten-step design
-for an active inference anti-surge controller. The table maps each step to what cpomdp
-v0.5.0 already has.
+[Sathish et al. (2024)](https://doi.org/10.1115/GT2024-124905) set out a ten-step method
+for designing an active inference anti-surge controller, and outline a controller in
+pymdp. The table maps each step to what cpomdp v0.5.0 already has.
 
 <DesignStepsTable
   project="cpomdp"
@@ -29,7 +29,7 @@ v0.5.0 already has.
     },
     {
       step: '2. Observations',
-      design: 'Flow, pressures, temperatures, speed, valve positions',
+      design: 'Flow, inlet and outlet pressures, inlet temperature, speed, valve positions',
       current: 'One flow reading',
       status: 'simplified',
     },
@@ -42,19 +42,20 @@ v0.5.0 already has.
     },
     {
       step: '3b. Transition model',
-      design: 'Dynamics, with a surge line that moves with inlet conditions and speed',
+      design: 'Dynamics, with a surge line that moves with suction conditions and speed',
       current: 'Linear dynamics, fixed surge line',
       status: 'simplified',
     },
     {
       step: '4. Actions',
-      design: 'Anti-surge valve, inlet guide vanes, speed',
+      design:
+        'Inlet guide vanes, speed or the anti-surge valve. The controller they outline uses the valve',
       current: 'One input: an anti-surge valve step, which moves flow',
-      status: 'simplified',
+      status: 'now',
     },
     {
       step: '5. Preferences',
-      design: 'Hold a margin from the surge line, about 10%',
+      design: 'Stay a margin from the surge line, for example 10%',
       current: 'Economic preference weighted by Λ',
       status: 'now',
     },
@@ -65,26 +66,26 @@ v0.5.0 already has.
       status: 'simplified',
     },
     {
-      step: '7. Constraints',
-      design: 'Balance throughput against staying safe',
+      step: '7. Optimise the strategy',
+      design: 'Balance throughput against staying within constraints',
       current: 'No hard surge limit',
       status: 'open',
     },
     {
-      step: '8. Scenarios',
-      design: 'Valve failure, shutdown, low suction pressure',
+      step: '8. Simulate and evaluate',
+      design: 'High header pressure, low suction pressure, startup, emergency shutdown',
       current: "The plant is the agent's own model",
       status: 'open',
     },
     {
       step: '9–10. Refine and deploy',
-      design: 'Iterate, then run on plant',
+      design: 'Iterate and refine, then deploy and monitor',
       current: 'Nothing yet',
       status: 'open',
     },
     {
       step: 'Comparison',
-      design: 'Against PID and MPC controllers',
+      design: 'Named as future work: against PID and MPC surge controllers',
       current:
         'Against a fixed-noise twin of the same agent only. The first result asks for a fixed-margin controller',
       status: 'open',
