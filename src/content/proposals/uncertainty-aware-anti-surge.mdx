@@ -18,7 +18,8 @@ v0.5.0 already has.
 
 <DesignStepsTable
   project="cpomdp"
-  version="v0.5.0"
+  version="0.5.0"
+  asOf={new Date('2026-10-23')}
   steps={[
     {
       step: '1. Hidden states',
@@ -35,8 +36,9 @@ v0.5.0 already has.
     {
       step: '3a. Observation model',
       design: 'How each reading relates to the hidden state',
-      current: 'Derived from meter physics for DP and Coriolis meters, and a fixed-noise twin',
-      status: 'now',
+      current:
+        'Power-law noise models for DP and Coriolis meters, derived from meter physics, and a fixed-noise twin',
+      status: 'simplified',
     },
     {
       step: '3b. Transition model',
@@ -48,7 +50,7 @@ v0.5.0 already has.
       step: '4. Actions',
       design: 'Anti-surge valve, inlet guide vanes, speed',
       current: 'One input: an anti-surge valve step, which moves flow',
-      status: 'now',
+      status: 'simplified',
     },
     {
       step: '5. Preferences',
