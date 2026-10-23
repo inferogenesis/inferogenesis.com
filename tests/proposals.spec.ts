@@ -74,3 +74,24 @@ test("an entry page's own body links where the question starts", async ({ page }
     page.getByRole('main').getByRole('link', { name: 'Anti-surge control' }),
   ).toHaveAttribute('href', '/projects/cpomdp/applied/anti-surge/');
 });
+
+test('the anti-surge entry sets the published design beside one cpomdp release', async ({
+  page,
+}) => {
+  await page.goto(entryPath);
+  const table = page.locator('table.steps');
+  await expect(table.locator('caption')).toContainText(
+    'Checked against cpomdp v0.5.0 on 2026-10-23.',
+  );
+  await expect(table.locator('tbody tr')).toHaveCount(11);
+  for (const status of ['now', 'simplified', 'open']) {
+    await expect(table.locator(`td[data-status="${status}"]`).first()).toBeVisible();
+  }
+});
+
+test('the applied write-up links the design table', async ({ page }) => {
+  await page.goto('/projects/cpomdp/applied/anti-surge/');
+  await expect(
+    page.getByRole('link', { name: 'sets each step beside what cpomdp has' }),
+  ).toHaveAttribute('href', `${entryPath}#from-the-published-method-to-code`);
+});

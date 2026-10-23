@@ -182,3 +182,8 @@ uncertainty-aware anti-surge controller, cpomdp discussion #192.
   HTML.
 - A form heading renamed on GitHub drops that field from the page, or fails the build
   for a required one, so a change to the form is a change here too.
+- What the site adds can be a comparison the discussion doesn't make. The anti-surge
+  entry sets a published design beside one release of cpomdp. Such a table names the
+  release and the date it was checked, and says when the project has released since. Its
+  statuses can fall behind the discussion's "What's missing", so a change there means
+  checking the table again.

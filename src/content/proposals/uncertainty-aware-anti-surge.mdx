@@ -2,8 +2,103 @@
 discussion: https://github.com/inferogenesis/cpomdp/discussions/192
 ---
 
+import DesignStepsTable from '../../components/proposals/DesignStepsTable.astro';
+
 ## Where it starts
 
 The example the question grows from is written up here as
 [Anti-surge control](/projects/cpomdp/applied/anti-surge/), with its results and the
 script that computed them.
+
+## From the published method to code
+
+[Sathish et al. (2024)](https://doi.org/10.1115/GT2024-124905) set out a ten-step method
+for designing an active inference anti-surge controller, and outline a controller in
+pymdp. The table maps each step to what cpomdp v0.5.0 already has.
+
+<DesignStepsTable
+  project="cpomdp"
+  version="0.5.0"
+  asOf={new Date('2026-10-23')}
+  steps={[
+    {
+      step: '1. Hidden states',
+      design: 'Pressure ratio, reduced mass flow, distance to the surge line',
+      current: 'Surge margin, the flow above the surge line, as one continuous state',
+      status: 'simplified',
+    },
+    {
+      step: '2. Observations',
+      design: 'Flow, inlet and outlet pressures, inlet temperature, speed, valve positions',
+      current: 'One flow reading',
+      status: 'simplified',
+    },
+    {
+      step: '3a. Observation model',
+      design: 'How each reading relates to the hidden state',
+      current:
+        'Power-law noise models for DP and Coriolis meters, derived from meter physics, and a fixed-noise twin',
+      status: 'simplified',
+    },
+    {
+      step: '3b. Transition model',
+      design: 'Dynamics, with a surge line that moves with suction conditions and speed',
+      current: 'Linear dynamics, fixed surge line',
+      status: 'simplified',
+    },
+    {
+      step: '4. Actions',
+      design:
+        'Inlet guide vanes, speed or the anti-surge valve. The controller they outline uses the valve',
+      current: 'One input: an anti-surge valve step, which moves flow',
+      status: 'now',
+    },
+    {
+      step: '5. Preferences',
+      design: 'Stay a margin from the surge line, for example 10%',
+      current: 'Economic preference weighted by Λ',
+      status: 'now',
+    },
+    {
+      step: '6. Control loop',
+      design: 'Infer, plan, act, repeat',
+      current: 'The `Agent` in closed loop, noise-free, one-step plan',
+      status: 'simplified',
+    },
+    {
+      step: '7. Optimise the strategy',
+      design: 'Balance throughput against staying within constraints',
+      current: 'No hard surge limit',
+      status: 'open',
+    },
+    {
+      step: '8. Simulate and evaluate',
+      design: 'High header pressure, low suction pressure, startup, emergency shutdown',
+      current: "The plant is the agent's own model",
+      status: 'open',
+    },
+    {
+      step: '9–10. Refine and deploy',
+      design: 'Iterate and refine, then deploy and monitor',
+      current: 'Nothing yet',
+      status: 'open',
+    },
+    {
+      step: 'Comparison',
+      design: 'Named as future work: against PID and MPC surge controllers',
+      current:
+        'Against a fixed-noise twin of the same agent only. The first result asks for a fixed-margin controller',
+      status: 'open',
+    },
+  ]}
+/>
+
+- **DP:** a differential-pressure flow meter, such as an orifice plate.
+- **Λ:** the weight on the economic preference. It sets where the agent wants to sit.
+- **PID:** proportional-integral-derivative, the standard industrial controller.
+- **MPC:** model predictive control.
+
+The cpomdp results are direction results on a simplified plant. The plant has no
+compressor dynamics and no noise, and the agent plans one step ahead. The size of the
+standoff from surge depends on Λ, so it is not a citable number. The "Open" rows are
+the proposed study.

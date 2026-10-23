@@ -1,0 +1,105 @@
+---
+import { projectReleases } from '../../lib/releases';
+import StatusGlyph from '../StatusGlyph.astro';
+import Inline from './Inline.astro';
+
+type Status = 'now' | 'simplified' | 'open';
+
+interface Step {
+  step: string;
+  design: string;
+  // Inline markdown, so a name from the code can sit in backticks.
+  current: string;
+  status: Status;
+}
+
+interface Props {
+  project: string;
+  // The release the rows were checked against, as the release data writes it: 0.5.0.
+  version: string;
+  asOf: Date;
+  steps: Step[];
+}
+
+const { project, version, asOf, steps } = Astro.props;
+// The rows describe one release. A newer one is named, so the nightly build flags the gap.
+const [latest] = (await projectReleases(project)).releases;
+const asOfDate = asOf.toISOString().slice(0, 10);
+// Filled, ringed and dashed, so the three read apart without colour.
+const glyph = { now: 'pass', simplified: 'pending', open: 'void' } as const;
+// The no-break spaces keep "In cpomdp" and "2. Observations" whole when a cell wraps.
+const label: Record<Status, string> = {
+  now: `In\u00a0${project} now`,
+  simplified: 'Simplified version',
+  open: 'Open',
+};
+const keepNumberWithName = (step: string) => step.replace(' ', '\u00a0');
+---
+
+<div
+  class="steps-scroll"
+  role="region"
+  aria-label={`The method against ${project} v${version}`}
+  tabindex="0"
+>
+  <table class="steps">
+    <caption>
+      {`Checked against ${project} v${version} on `}
+      <time datetime={asOfDate}>{asOfDate}</time>
+      {'.'}
+      {latest.version !== version &&
+        ` ${project} has since released v${latest.version}.`}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Step</th>
+        <th scope="col">What the method calls for</th>
+        <th scope="col">
+          In {project} v{version}
+        </th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {steps.map((row) => (
+        <tr>
+          <th scope="row">{keepNumberWithName(row.step)}</th>
+          <td>{row.design}</td>
+          <td>
+            <Inline source={row.current} />
+          </td>
+          <td data-status={row.status}>
+            <span class="status">
+              <StatusGlyph state={glyph[row.status]} label={label[row.status]} />
+              <span>{label[row.status]}</span>
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .steps-scroll {
+    overflow-x: auto;
+  }
+  caption {
+    padding-bottom: 0.5rem;
+    color: var(--text-muted);
+    text-align: left;
+  }
+  th[scope='row'] {
+    font-weight: 500;
+  }
+  /* The glyph stays beside its label, and the label wraps under itself. */
+  .status {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+  }
+  .status :global(.glyph) {
+    flex: none;
+    margin-top: 0.3rem;
+  }
+</style>
