@@ -110,6 +110,8 @@ jobs:
             pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"
       # The action succeeds even when the agent stops short, say on a denied command,
       # and posts nothing. A review that left no comment fails here instead of passing.
+      # A PR that edits this file always fails here: the action skips any run whose
+      # workflow differs from main's.
       - name: check the review was posted
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
