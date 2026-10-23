@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+    inputs:
+      pr:
+        description: Number of the pull request to review
+        required: true
+        type: number
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,6 +28,8 @@ jobs:
       contents: read
       pull-requests: write
       id-token: write
+    env:
+      PR: ${{ github.event.pull_request.number || inputs.pr }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -47,6 +54,9 @@ jobs:
             echo "::error::CLAUDE_CODE_OAUTH_TOKEN is $kind (whitespace: $whitespace). Reset it from claude setup-token."
             exit 1
           fi
+      - name: note when the review starts
+        id: start
+        run: echo "at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
       - uses: anthropics/claude-code-action@v1
         # Gates nothing: main has no required checks and forks skip the job.
         env:
@@ -54,8 +64,10 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           show_full_output: true
+          # The checkout is a detached merge commit, so gh can't find the PR by itself.
           prompt: |
-            Review this PR against its merge base.
+            Review pull request #${{ env.PR }} against its merge base. Pass
+            ${{ env.PR }} to every `gh pr` command.
 
             Report every issue you find. Do not filter by severity while
             searching, and tag each finding [BLOCKER] or [NIT]. A severity
@@ -96,3 +108,17 @@ jobs:
             "Read,Grep,Glob,Bash(git
             diff:*),Bash(git log:*),Bash(git show:*),Bash(ls:*),Bash(cat:*),Bash(grep:*),Bash(gh
             pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"
+      # The action succeeds even when the agent stops short, say on a denied command,
+      # and posts nothing. A review that left no comment fails here instead of passing.
+      - name: check the review was posted
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SINCE: ${{ steps.start.outputs.at }}
+        run: |
+          posted=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments?since=$SINCE" \
+            --jq "[.[] | select(.user.login == \"claude[bot]\" and .created_at >= \"$SINCE\")] | length")
+          echo "Review comments on #$PR since $SINCE: $posted"
+          if [[ "$posted" -eq 0 ]]; then
+            echo "::error::The review posted no comment on #$PR. Its last message is in the step above."
+            exit 1
+          fi
