@@ -17,10 +17,11 @@ concurrency:
 jobs:
   review:
     name: claude review
-    # Forks don't get the secret.
+    # Forks don't get the secret. Neither do Dependabot runs.
     if: >-
       github.event_name == 'workflow_dispatch'
-      || github.event.pull_request.head.repo.fork == false
+      || (github.event.pull_request.head.repo.fork == false
+      && github.actor != 'dependabot[bot]')
     # ubuntu-latest moves to Ubuntu 26 from 2026-10-19. Move once CI passes there.
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -63,6 +64,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # The weekly upkeep run opens its PRs as the Claude app. The action turns bot
+          # actors away unless listed, so without this those PRs get no review.
+          allowed_bots: "claude[bot]"
           show_full_output: true
           # The checkout is a detached merge commit, so gh can't find the PR by itself.
           prompt: |
